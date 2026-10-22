@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { WeekSourcePanel } from "@/components/play/WeekSourcePanel";
 import { ConsultButton } from "@/components/play/ConsultButton";
 import { EmailInquiryButton } from "@/components/play/EmailInquiryButton";
 import { ShareButton } from "@/components/play/ShareButton";
@@ -201,6 +202,8 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
               ))}
             </ul>
           </section>
+
+          <WeekSourcePanel weekNo={week.weekNo} />
 
           <section aria-labelledby="teacher-detail-title" className="mt-10">
             <h2 id="teacher-detail-title" className="font-display text-[24px] text-pop-ink sm:text-[28px]">교사용 자세히 보기</h2>
