@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ConsultButton } from "@/components/play/ConsultButton";
+import { EmailInquiryButton } from "@/components/play/EmailInquiryButton";
 import { ShareButton } from "@/components/play/ShareButton";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -216,12 +217,13 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
         <div className="flex flex-col items-center gap-4 rounded-[28px] bg-white/70 px-5 py-7 text-center">
           <h2 id="week-next-step" className="font-display text-[24px] text-pop-ink">우리 원에서 해 보려면</h2>
           <p className="max-w-[44ch] text-[15px] font-medium leading-relaxed text-pop-ink-muted">
-            체험 화면은 저장되지 않아요. 실제 도입은 소개 사이트에서 상담으로 이어집니다.
+            체험 화면은 저장되지 않아요. 도입 상담은 전화 · 이메일로 받습니다.
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             <ShareButton path={`/experience/weeks/${week.weekNo}`} tone="white" size="md" />
+            <EmailInquiryButton screen="week" weekNo={week.weekNo} tone="white" size="md" />
             <ConsultButton medium="week" campaign={`w${week.weekNo}`} tone="ink" size="md">
-              우리 유치원 도입 문의
+              도입 상담 안내
             </ConsultButton>
           </div>
         </div>

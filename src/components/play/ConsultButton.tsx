@@ -1,23 +1,21 @@
-import { consultHref } from "@/data/site";
+import { consultHref, type ExperienceScreen } from "@/data/site";
 import { popButtonClass, type PopSize, type PopTone } from "./PopButton";
 
 /**
- * 도입 문의 버튼 — 소개 사이트의 상담 폼으로 보낸다 (E-4).
+ * 도입 상담 안내로 가는 버튼 (E-4 · A 동선).
  *
- * ── 왜 소개 사이트로 보내나 ───────────────────────────────────────────
+ * ── 무엇을 고쳤나 ────────────────────────────────────────────────
  *
- * 전에는 홈 문의 영역(`/#contact`)으로만 갔다. 거기엔 전화번호와 메일 주소가 있어 연락은 되지만,
- * **어느 체험 화면이 상담으로 이어졌는지 알 수 없었다.** 체험 사이트가 아무것도 저장하지
- * 않기 때문이다. 그래서 접수는 이미 폼이 있는 소개 사이트에서 하고, 어디서 넘어왔는지는
- * 주소에 적어 보낸다.
+ * 전에는 「소개 사이트의 상담 폼으로 보낸다」고 적었는데 **소개 사이트에는
+ * 상담 폼이 없다.** 전화와 이메일로 받는 안내 페이지(/contact)다. 폼이 있다고
+ * 써 두면 열었을 때 없는 것을 찾게 된다.
  *
- * ★ 체험 사이트는 여전히 아무 정보도 받지 않는다. 여기서 집계하거나 전송하지 않는다 —
- *   utm 은 링크에 붙은 글자일 뿐이다.
- * ★ 전화 · 이메일 경로는 홈 「도입 문의」와 푸터에 그대로 둔다. 폼을 못 쓰는 사람의
- *   길을 막지 않는다.
+ * ★ 이 사이트는 그대로 아무 정보도 받지 않는다. 어느 화면에서 왔는지는 주소에
+ *   적어 보내지만, **집계 장치가 없으므로 자동으로 세어진다고 말하지 않는다.**
+ * ★ 전화 경로는 홈 「도입 문의」와 푸터에, 그리고 가는 곳인 안내 페이지에도 있다.
  */
 export function ConsultButton({
-  children = "우리 유치원 도입 문의",
+  children = "도입 상담 안내",
   medium,
   campaign,
   tone = "ink",
@@ -25,8 +23,8 @@ export function ConsultButton({
   className,
 }: {
   children?: string;
-  /** 어느 화면에서 왔는지 — classroom · week · report · weeks */
-  medium: string;
+  /** 어느 화면에서 왔는지 */
+  medium: ExperienceScreen;
   /** 주차처럼 더 좁은 구분이 필요할 때 (예: w4) */
   campaign?: string;
   tone?: PopTone;
@@ -42,7 +40,7 @@ export function ConsultButton({
       className={popButtonClass(tone, size, className)}
     >
       {children}
-      <span className="sr-only"> (소개 사이트에서 열림)</span>
+      <span className="sr-only"> (새 창에서 열려요)</span>
     </a>
   );
 }

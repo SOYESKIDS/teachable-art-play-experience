@@ -8,6 +8,7 @@ import { ContentStatusBadge, DemoNotice } from "../Badges";
 import { ArrowRight, PlayIcon, popButtonClass } from "../PopButton";
 import { ConsultButton } from "../ConsultButton";
 import { ShareButton } from "../ShareButton";
+import { EmailInquiryButton } from "../EmailInquiryButton";
 import { Buddy } from "../Doodles";
 import { Motif } from "../Motif";
 import { Sticker } from "../Stickers";
@@ -572,8 +573,9 @@ function DoneScreen({ week, elapsed, nextWeekNo, onRestart }: { week: Experience
       <div className="mx-auto mt-6 flex max-w-[640px] flex-col items-center justify-center gap-3 rounded-[28px] bg-white/70 p-4 sm:flex-row">
         <Link href="/experience/weeks" className={popButtonClass("ghost", "md")}>다른 주차 고르기</Link>
         <ShareButton path={`/experience/classroom/${week.weekNo}`} tone="white" size="md" />
+        <EmailInquiryButton screen="classroom" weekNo={week.weekNo} tone="white" size="md" />
         <ConsultButton medium="classroom" campaign={`w${week.weekNo}`} tone="white" size="md">
-          우리 원에서 해 보기 (도입 문의)
+          우리 원에서 해 보기
         </ConsultButton>
       </div>
       <p className="mt-6 text-[14px] font-semibold text-pop-ink-muted">체험용 화면이라 수업 기록 · 관찰 · 출결은 저장되지 않았습니다.</p>

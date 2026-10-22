@@ -1,5 +1,6 @@
 import { Buddy } from "@/components/play/Doodles";
 import { ConsultButton } from "@/components/play/ConsultButton";
+import { EmailInquiryButton } from "@/components/play/EmailInquiryButton";
 import { ShareButton } from "@/components/play/ShareButton";
 import { DemoNotice } from "@/components/play/Badges";
 import { Sticker } from "@/components/play/Stickers";
@@ -44,7 +45,8 @@ export default function ExperienceWeeksPage() {
         {/* 둘러보기를 마친 다음 행동 (E-4 · E-5) */}
         <div className="mx-auto mt-10 flex max-w-[640px] flex-col items-center justify-center gap-3 rounded-[28px] bg-white/70 p-4 sm:flex-row">
           <ShareButton path="/experience/weeks" tone="white" size="md" />
-          <ConsultButton medium="weeks" tone="ink" size="md">우리 유치원 도입 문의</ConsultButton>
+          <EmailInquiryButton screen="weeks" tone="white" size="md" />
+          <ConsultButton medium="weeks" tone="ink" size="md">도입 상담 안내</ConsultButton>
         </div>
       </div>
     </main>

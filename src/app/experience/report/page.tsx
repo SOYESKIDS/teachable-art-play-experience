@@ -1,5 +1,6 @@
 import { Buddy } from "@/components/play/Doodles";
 import { ConsultButton } from "@/components/play/ConsultButton";
+import { EmailInquiryButton } from "@/components/play/EmailInquiryButton";
 import { ShareButton } from "@/components/play/ShareButton";
 import Link from "next/link";
 import { DemoNotice } from "@/components/play/Badges";
@@ -122,7 +123,8 @@ export default function ExperienceReportPage() {
         {/* 리포트를 본 다음 행동 (E-4) */}
         <div className="mx-auto mt-6 flex max-w-[640px] flex-col items-center justify-center gap-3 rounded-[28px] bg-white/70 p-4 sm:flex-row">
           <ShareButton path="/experience/report" tone="white" size="md" />
-          <ConsultButton medium="report" tone="ink" size="md">우리 유치원 도입 문의</ConsultButton>
+          <EmailInquiryButton screen="report" tone="white" size="md" />
+          <ConsultButton medium="report" tone="ink" size="md">도입 상담 안내</ConsultButton>
         </div>
       </div>
     </main>
