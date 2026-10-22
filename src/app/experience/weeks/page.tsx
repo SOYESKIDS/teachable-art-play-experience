@@ -1,4 +1,6 @@
 import { Buddy } from "@/components/play/Doodles";
+import { ConsultButton } from "@/components/play/ConsultButton";
+import { ShareButton } from "@/components/play/ShareButton";
 import { DemoNotice } from "@/components/play/Badges";
 import { Sticker } from "@/components/play/Stickers";
 import { WeekExplorer } from "@/components/play/WeekExplorer";
@@ -38,6 +40,12 @@ export default function ExperienceWeeksPage() {
       </section>
       <div className="mx-auto max-w-[1320px] 2xl:max-w-[1520px] px-4 pb-20 pt-6 sm:px-6">
         <WeekExplorer parts={EXPERIENCE_PARTS} weeks={EXPERIENCE_WEEKS} />
+
+        {/* 둘러보기를 마친 다음 행동 (E-4 · E-5) */}
+        <div className="mx-auto mt-10 flex max-w-[640px] flex-col items-center justify-center gap-3 rounded-[28px] bg-white/70 p-4 sm:flex-row">
+          <ShareButton path="/experience/weeks" tone="white" size="md" />
+          <ConsultButton medium="weeks" tone="ink" size="md">우리 유치원 도입 문의</ConsultButton>
+        </div>
       </div>
     </main>
   );

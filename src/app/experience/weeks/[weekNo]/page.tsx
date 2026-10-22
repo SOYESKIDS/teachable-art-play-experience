@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { ConsultButton } from "@/components/play/ConsultButton";
+import { ShareButton } from "@/components/play/ShareButton";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContentStatusBadge, DemoNotice } from "@/components/play/Badges";
@@ -205,6 +207,25 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
           </section>
         </div>
       </div>
+
+      {/*
+        체험을 본 다음 행동 (E-4). 전에는 이 화면에서 다음 주차로만 갈 수 있어,
+        「우리 원에서 해 볼까」라는 생각이 든 순간에 갈 곳이 없었다.
+      */}
+      <section aria-labelledby="week-next-step" className="mx-auto max-w-[1320px] 2xl:max-w-[1520px] px-4 pt-12 sm:px-6">
+        <div className="flex flex-col items-center gap-4 rounded-[28px] bg-white/70 px-5 py-7 text-center">
+          <h2 id="week-next-step" className="font-display text-[24px] text-pop-ink">우리 원에서 해 보려면</h2>
+          <p className="max-w-[44ch] text-[15px] font-medium leading-relaxed text-pop-ink-muted">
+            체험 화면은 저장되지 않아요. 실제 도입은 소개 사이트에서 상담으로 이어집니다.
+          </p>
+          <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <ShareButton path={`/experience/weeks/${week.weekNo}`} tone="white" size="md" />
+            <ConsultButton medium="week" campaign={`w${week.weekNo}`} tone="ink" size="md">
+              우리 유치원 도입 문의
+            </ConsultButton>
+          </div>
+        </div>
+      </section>
 
       <nav aria-label="다른 주차" className="mx-auto grid max-w-[1320px] 2xl:max-w-[1520px] gap-4 px-4 py-12 sm:grid-cols-2 sm:px-6">
         {prev ? (
