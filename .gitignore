@@ -6,6 +6,3 @@
 *.tsbuildinfo
 next-env.d.ts
 .DS_Store
-
-# 원본 자료 보관 (배포하지 않는다)
-자료보관/
