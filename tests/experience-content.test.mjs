@@ -9,7 +9,8 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { EXPERIENCE_WEEKS, EXPERIENCE_PARTS, parseDurationMinutes, splitMinutes, STAGE_ORDER } from "../src/data/experience/weeks.ts";
+import { EXPERIENCE_WEEKS, EXPERIENCE_PARTS, parseDurationMinutes, STAGE_ORDER } from "../src/data/experience/weeks.ts";
+import { CORE_MIN_MINUTES, CORE_MAX_MINUTES } from "../src/data/experience/official-plan.ts";
 import { DEMO_LESSONS } from "../src/data/experience/demo-lessons.ts";
 import { DEMO_REPORT } from "../src/data/experience/report.ts";
 import { CHARACTERS_ENABLED, characterImage, characterGroupImage } from "../src/data/experience/characters.ts";
@@ -62,7 +63,10 @@ test("빈 제목 · 목표 · 준비물 · 발문 · 관찰 · 안전 · 가정�
     assert.ok(b.observationPoints.length >= 3, `${at} observation`);
     assert.ok(b.safety.length >= 1, `${at} safety`);
     assert.ok(b.coreExperiences.length >= 2, `${at} core experiences`);
-    for (const k of STAGE_ORDER) assert.ok(b.childLines[k]?.trim(), `${at} childLine ${k}`);
+    for (const k of STAGE_ORDER) {
+      if (k === "open") continue; // 열기 단계의 큰 글씨는 데이터가 아니라 고정 문장이다
+      assert.ok(b.childLines[k]?.trim(), `${at} childLine ${k}`);
+    }
   }
 });
 
@@ -81,12 +85,18 @@ test("누리과정은 공식 5개 영역 명칭만, SOYE KIDS 핵심경험은 �
 test("수업 다섯 단계 · 시간 합이 공식 수업 시간 가운데 값과 같다", () => {
   for (const w of EXPERIENCE_WEEKS) {
     assert.deepEqual(w.stages.map((s) => s.key), STAGE_ORDER);
+    // 기본 수업은 30~40분이고, 단계 합이 화면이 말하는 시간과 정확히 같아야 한다.
+    // 어긋나면 교사가 수업 중에 시간을 잘못 잡는다.
     const sum = w.stages.reduce((n, s) => n + s.minutes, 0);
-    assert.equal(sum, parseDurationMinutes(w.durationLabel), `${w.weekNo}주`);
+    assert.equal(sum, w.totalMinutes, `${w.weekNo}주 단계 합`);
+    assert.equal(sum, w.duration.coreRecommended, `${w.weekNo}주 기본 수업 시간`);
+    assert.ok(sum >= CORE_MIN_MINUTES && sum <= CORE_MAX_MINUTES, `${w.weekNo}주 ${sum}분은 30~40분 밖`);
+    // 공식 원본 시간은 지우지 않고 그대로 들고 있어야 한다
+    assert.equal(w.duration.originalDurationLabel, w.durationLabel, `${w.weekNo}주 원본 시간 보존`);
     assert.ok(w.stages.every((s) => s.minutes >= 3 && s.childLine && s.guide && s.teacherQuestion));
   }
   assert.equal(parseDurationMinutes("약 55~65분"), 60);
-  assert.equal(Object.values(splitMinutes(53)).reduce((a, b) => a + b, 0), 53);
+
 });
 
 test("교사 검토에서 지적된 표현이 체험 문장에 없다", () => {

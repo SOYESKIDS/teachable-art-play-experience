@@ -18,16 +18,65 @@ export const CONTENT_STATUS_LABEL: Record<ExperienceContentStatus, string> = {
   demo_draft: "체험용 구성 · 정식 교안 확정 전",
 };
 
-/** 수업 진행 다섯 단계 — 실제 주차에 공식 순서가 있으면 그 순서를 쓴다. */
-export type StageKey = "story" | "move" | "explore" | "make" | "share";
+/**
+ * 수업 진행 단계.
+ *
+ * ★ `open` 은 30~40분 기본 수업을 만들며 더했다. 공식 가이드 1~16주차의
+ *   「도입 5분」이 원래 있던 단계인데 화면에는 빠져 있었다.
+ * ★ `explore` 는 기본 수업 순서에서 빠졌다. 내용은 버리지 않고 `move` 단계의
+ *   안내에 함께 붙인다 — 몸과 감각으로 탐색하는 하나의 시간으로 묶는다.
+ */
+export type StageKey = "open" | "story" | "move" | "explore" | "make" | "share";
 
 export const STAGE_LABEL: Record<StageKey, string> = {
-  story: "이야기 만나기",
-  move: "몸으로 표현하기",
+  open: "이야기 열기",
+  story: "그림책 만나기",
+  // 「몸·감각으로 탐색」의 가운데 점과 「짧은」의 첫 글자는 제목 글꼴에 없다.
+  // 한 제목이 두 글꼴로 갈라져 보이므로 뜻이 같은 다른 말을 쓴다.
+  move: "몸과 감각으로 탐색",
   explore: "탐색하기",
-  make: "만들기",
-  share: "정리하고 나누기",
+  make: "예술로 표현하기",
+  share: "나누고 정리",
 };
+
+/** 기본 수업에 실제로 쓰는 다섯 단계 (explore 는 move 안으로 들어간다) */
+export const CORE_STAGE_ORDER: readonly StageKey[] = ["open", "story", "move", "make", "share"];
+
+/**
+ * 선택 확장활동 — 기본 수업을 마친 뒤 교사가 **골라서** 하는 것.
+ *
+ * ★ 기본 수업 완료를 막지 않는다. 하지 않아도 한 회차가 끝난다.
+ * ★ 시간을 모르면 지어내지 않는다. estimatedMinutes 가 null 이면 화면은
+ *   「검수 필요」라고 적는다.
+ */
+export interface OptionalExtension {
+  key: string;
+  title: string;
+  activity: string;
+  /** 공식 가이드에 분이 있으면 그 값, 없으면 null */
+  estimatedMinutes: number | null;
+  /** 그 분이 어디서 왔는지 (또는 왜 비어 있는지) */
+  minutesNote: string;
+  materials: string[];
+  teacherPrompt: string | null;
+  safetyNote: string | null;
+  /** 기본 수업의 어느 단계에서 이어지는지 */
+  linkToCore: string;
+  /** 원본 가이드 출처 */
+  source: string;
+  sourceStatus: "verified" | "pending_review";
+}
+
+/** 기본 수업 시간 — 공식 원본을 지우지 않고 나란히 둔다 */
+export interface LessonDuration {
+  coreMin: number;
+  coreMax: number;
+  /** 이 주차 기본 수업 단계 합 (30~40 사이) */
+  coreRecommended: number;
+  /** 공식 가이드의 원래 권장 시간 — 바꾸지 않고 보존한다 */
+  originalDurationLabel: string;
+  sourceStatus: "verified" | "pending_review";
+}
 
 export type MotifKey =
   | "school" | "medal" | "heart" | "seed" | "flower" | "house" | "butterfly" | "forest"
@@ -91,16 +140,26 @@ export interface DemoLessonBody {
   observationPoints: string[];
   homeConnection: string;
   safety: string[];
-  /** 각 단계의 교실 화면 문장 */
-  childLines: Record<StageKey, string>;
+  /**
+   * 각 단계의 교실 화면 문장.
+   *
+   * ★ `open` 은 여기 없다. 「이야기 열기」의 문장은 공식 가이드의 도입 제목에서
+   *   가져온다 (official-plan.ts introTitle). 손으로 지어내지 않는다.
+   */
+  childLines: Record<Exclude<StageKey, "open">, string>;
   /** 마무리 질문 */
   closingQuestion: string;
 }
 
 export interface ExperienceWeek extends OfficialWeekMeta {
   body: DemoLessonBody;
+  /** 기본 수업 다섯 단계 (합 = duration.coreRecommended) */
   stages: ClassStage[];
+  /** 선택 확장활동 — 기본 수업 뒤에 고르는 것 */
+  extensions: OptionalExtension[];
+  duration: LessonDuration;
   image: ExperienceImage | null;
+  /** 기본 수업 합계. duration.coreRecommended 와 같다 */
   totalMinutes: number;
 }
 

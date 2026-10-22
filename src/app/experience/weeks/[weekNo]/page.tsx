@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps<"/experience/weeks/
   if (!week) return {};
   return {
     title: `${week.weekNo}주차 「${week.title}」 | 수업 체험 | TeachAble Art Play`,
-    description: `${week.coreMessage} — 성장 키워드 「${week.growthKeyword}」 · ${week.durationLabel}`,
+    description: `${week.coreMessage} — 성장 키워드 「${week.growthKeyword}」 · 기본 수업 ${week.totalMinutes}분`,
     alternates: { canonical: `/experience/weeks/${week.weekNo}` },
   };
 }
@@ -86,7 +86,8 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
           <dl className="mt-6 grid grid-cols-2 gap-3">
             {[
               ["성장 키워드", `#${week.growthKeyword}`],
-              ["수업 시간", week.durationLabel],
+              ["기본 수업", `${week.totalMinutes}분 (${week.duration.coreMin}~${week.duration.coreMax}분)`],
+              ["원래 권장 시간", `${week.duration.originalDurationLabel} · 공식 가이드`],
               ["대표 활동", week.activitySummary],
               ["결과물", week.outcome ?? "공식 결과물 정리 중"],
             ].map(([k, v]) => (
@@ -139,7 +140,10 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
             </Block>
           </div>
 
-          <h2 className="mt-14 font-display text-[30px] text-pop-ink sm:text-[36px]">수업 흐름</h2>
+          <h2 className="mt-14 font-display text-[30px] text-pop-ink sm:text-[36px]">기본 수업 {week.totalMinutes}분</h2>
+          <p className="mt-2 text-[15px] leading-relaxed text-pop-ink-muted">
+            다섯 단계로 한 회차가 끝나요. 아래 선택 확장활동은 하지 않아도 됩니다.
+          </p>
           <ol className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             {week.stages.map((s, i) => (
               <li key={s.key} className={cx("flex flex-col rounded-[28px] p-5", ["bg-pop-sky-soft", "bg-pop-pink-soft", "bg-pop-mint-soft", "bg-pop-yellow-soft", "bg-pop-lilac-soft"][i])}>
@@ -162,6 +166,41 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
               <p className="mt-3 inline-flex rounded-full bg-white px-3.5 py-2 text-[14px] font-bold text-pop-ink">공식 결과물 · {week.outcome ?? "정리 중"}</p>
             </Block>
           </div>
+
+          {/*
+            선택 확장활동 — 기본 수업을 마친 뒤 고르는 것.
+            ★ 시간을 모르면 숫자를 지어내지 않는다. estimatedMinutes 가 비면 「검수 필요」라고 적는다.
+          */}
+          <section aria-labelledby="week-ext-title" className="mt-14">
+            <h2 id="week-ext-title" className="font-display text-[30px] text-pop-ink sm:text-[36px]">선택 확장활동</h2>
+            <p className="mt-2 text-[15px] leading-relaxed text-pop-ink-muted">
+              원의 일정에 맞춰 골라서 더 합니다. 기본 수업만으로도 한 회차가 끝나요.
+            </p>
+            <ul className="mt-6 grid gap-4 md:grid-cols-2">
+              {week.extensions.map((x) => (
+                <li key={x.key} className="flex flex-col rounded-[28px] bg-white p-5 ring-1 ring-pop-ink/5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="font-display text-[20px] text-pop-ink">{x.title}</h3>
+                    <span className={cx("rounded-full px-2.5 py-1 text-[12px] font-bold",
+                      x.estimatedMinutes === null ? "bg-pop-cream text-pop-ink-muted" : "bg-pop-mint-soft text-pop-mint-deep")}>
+                      {x.estimatedMinutes === null ? "예상 시간 검수 필요" : `약 ${x.estimatedMinutes}분`}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-[15px] leading-relaxed text-pop-ink">{x.activity}</p>
+                  <dl className="mt-3 flex flex-col gap-1.5 text-[13px] leading-relaxed text-pop-ink-muted">
+                    <div className="flex gap-2"><dt className="shrink-0 font-bold">기본 수업과의 연결</dt><dd>{x.linkToCore}</dd></div>
+                    <div className="flex gap-2"><dt className="shrink-0 font-bold">준비물</dt><dd>{x.materials.slice(0, 4).join(" · ")}</dd></div>
+                    {x.teacherPrompt ? <div className="flex gap-2"><dt className="shrink-0 font-bold">교사 발문</dt><dd>“{x.teacherPrompt}”</dd></div> : null}
+                    {x.safetyNote ? <div className="flex gap-2"><dt className="shrink-0 font-bold">안전 주의</dt><dd>{x.safetyNote}</dd></div> : null}
+                    <div className="flex gap-2"><dt className="shrink-0 font-bold">원본 가이드 출처</dt><dd>{x.source}</dd></div>
+                    <div className="flex gap-2"><dt className="shrink-0 font-bold">검수 상태</dt>
+                      <dd>{x.sourceStatus === "verified" ? "공식 가이드 확인" : "검수 필요"}</dd></div>
+                  </dl>
+                  <p className="mt-auto pt-3 text-[12px] font-semibold text-pop-ink-muted">{x.minutesNote}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
 
           <section aria-labelledby="teacher-detail-title" className="mt-10">
             <h2 id="teacher-detail-title" className="font-display text-[24px] text-pop-ink sm:text-[28px]">교사용 자세히 보기</h2>

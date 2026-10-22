@@ -42,6 +42,7 @@ const subscribeWide = (onChange: () => void) => {
 };
 
 const STAGE_TONE: Record<StageKey, { soft: string; solid: string; text: string; color: string }> = {
+  open: { soft: "bg-pop-mint-soft", solid: "bg-pop-mint", text: "text-pop-mint-deep", color: "#22c3b5" },
   story: { soft: "bg-pop-sky-soft", solid: "bg-pop-sky", text: "text-pop-sky-deep", color: "#4da3ff" },
   move: { soft: "bg-pop-pink-soft", solid: "bg-pop-pink", text: "text-pop-pink-deep", color: "#ff4f8b" },
   explore: { soft: "bg-pop-mint-soft", solid: "bg-pop-mint", text: "text-pop-mint-deep", color: "#22c3b5" },
@@ -54,6 +55,7 @@ function StageIcon({ stage, className = "h-12 w-12" }: { stage: StageKey; classN
   return (
     <svg viewBox="0 0 64 64" aria-hidden="true" className={className}>
       <circle cx="32" cy="32" r="29" fill={STAGE_TONE[stage].color} />
+      {stage === "open" && <g {...s}><path d="M32 14v36M14 24h36" strokeWidth="4" /><circle cx="32" cy="32" r="12" fill="#fff" /></g>}
       {stage === "story" && <g {...s}><path d="M14 20c6-2 12-2 18 2v24c-6-4-12-4-18-2z" fill="#fff" /><path d="M50 20c-6-2-12-2-18 2v24c6-4 12-4 18-2z" fill="#fff" /></g>}
       {stage === "move" && <g {...s}><circle cx="32" cy="15" r="5" fill="#fff" /><path d="M32 21v14M19 25l13 5 13-5M24 50l8-15 8 15" /></g>}
       {stage === "explore" && <g {...s}><circle cx="28" cy="28" r="11" fill="#fff" /><path d="M36 36l12 12" strokeWidth="5" /></g>}
@@ -277,7 +279,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
             {phase.kind === "intro" ? "수업 준비" : phase.kind === "done" ? "수업 완료" : `${stageIndex + 1} / ${stages.length} 단계 · ${current?.title}`}
           </span>
           <span className="tabular">
-            {phase.kind === "stage" ? `진행 ${formatClock(elapsed)} · 계획 약 ${current?.minutes}분` : `전체 약 ${week.totalMinutes}분`}
+            {phase.kind === "stage" ? `진행 ${formatClock(elapsed)} · 계획 ${current?.minutes}분` : `기본 수업 ${week.totalMinutes}분`}
           </span>
         </div>
         <div className="mt-2 flex gap-1.5" role="progressbar" aria-label="수업 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
@@ -442,7 +444,8 @@ function IntroScreen({ week, onStart }: { week: ExperienceWeek; onStart: () => v
       <div className="flex flex-col justify-center gap-5 p-2">
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full bg-pop-yellow-soft px-3 py-1 text-[14px] font-bold text-pop-ink">#{week.growthKeyword}</span>
-          <span className="rounded-full bg-pop-sky-soft px-3 py-1 text-[14px] font-bold text-pop-sky-deep">{week.durationLabel}</span>
+          <span className="rounded-full bg-pop-sky-soft px-3 py-1 text-[14px] font-bold text-pop-sky-deep">기본 수업 {week.totalMinutes}분</span>
+          <span className="rounded-full bg-pop-cream px-3 py-1 text-[14px] font-bold text-pop-ink-muted">선택 확장활동 별도</span>
         </div>
         <h2 className="font-display text-[40px] leading-tight text-pop-ink sm:text-[52px]">《{week.title}》</h2>
         <p className="text-[19px] font-medium leading-relaxed text-pop-ink">{week.coreMessage}</p>
@@ -481,6 +484,7 @@ function Fold({ title, badge, children, defaultOpen = false }: { title: string; 
 
 function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage }) {
   const extra: Record<StageKey, { label: string; text: string }[]> = {
+    open: [{ label: "오늘 여는 말", text: week.body.goal }],
     story: [{ label: "그림책 활동", text: week.body.story }],
     move: [{ label: "신체표현", text: week.body.movement }, { label: "음악 · 리듬", text: week.body.music }],
     explore: [{ label: "탐색", text: week.body.explore }],
@@ -507,6 +511,32 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
         <p className="text-[13px] font-bold text-pop-sky-deep">교사 발문</p>
         <p className="mt-1 text-[20px] font-bold leading-relaxed text-pop-ink">“{stage.teacherQuestion}”</p>
       </div>
+      {/*
+        선택 확장활동 — 교사 화면에만 둔다. 교실 화면(아이들이 보는 쪽)에는 띄우지 않는다.
+        ★ 기본 수업 완료를 막지 않는다. 접힌 채로 두고 필요할 때만 연다.
+      */}
+      {week.extensions.length ? (
+        <div className="mt-4">
+          <Fold title={`선택 확장활동 ${week.extensions.length}개 (기본 수업 뒤)`}>
+            <ul className="grid gap-3">
+              {week.extensions.map((x) => (
+                <li key={x.key} className="rounded-2xl bg-pop-cream p-4">
+                  <p className="flex flex-wrap items-center gap-2">
+                    <span className="font-display text-[17px] text-pop-ink">{x.title}</span>
+                    <span className="rounded-full bg-white px-2 py-0.5 text-[12px] font-bold text-pop-ink-muted">
+                      {x.estimatedMinutes === null ? "예상 시간 검수 필요" : `약 ${x.estimatedMinutes}분`}
+                    </span>
+                  </p>
+                  <p className="mt-1.5 text-[15px] leading-relaxed text-pop-ink">{x.activity}</p>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-pop-ink-muted">준비물 · {x.materials.slice(0, 4).join(" · ")}</p>
+                  {x.safetyNote ? <p className="mt-1 text-[13px] leading-relaxed text-pop-ink-muted">안전 주의 · {x.safetyNote}</p> : null}
+                </li>
+              ))}
+            </ul>
+          </Fold>
+        </div>
+      ) : null}
+
       <div className="mt-4 grid gap-2">
         {details.length ? (
           <Fold title="세부 활동">
