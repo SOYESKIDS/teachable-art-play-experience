@@ -68,26 +68,18 @@ test("비밀값처럼 보이는 문자열이 저장소에 없다", () => {
 // ★ 손으로 적은 고정 목록이다. 새 파일이 public 에 들어오면 그대로 걸린다.
 const ALLOWED_PUBLIC_FILES = [
   "public/images/site/brand/soyeskids-logo-primary.png",
-  "public/images/24주 수업 이미지 교체/10주_너무뜨겁잖아.png",
-  "public/images/24주 수업 이미지 교체/11주_자!떠나자.png",
-  "public/images/24주 수업 이미지 교체/12주_세상은 알록달록.png",
-  "public/images/24주 수업 이미지 교체/13주_동글동글 보름달.png",
-  "public/images/24주 수업 이미지 교체/14주_말하지 않아도 괜찮아!.png",
-  "public/images/24주 수업 이미지 교체/15주_따뜻한 소리가 들려요.png",
-  "public/images/24주 수업 이미지 교체/16주_나비야놀러와.png",
-  "public/images/24주 수업 이미지 교체/1주차_유치원 가는 날.png",
-  "public/images/24주 수업 이미지 교체/2주차_끝까지 해보자.png",
-  "public/images/24주 수업 이미지 교체/3주차_마음을 말해요.png",
-  "public/images/24주 수업 이미지 교체/4주차_소예의 씨앗.png",
-  "public/images/24주 수업 이미지 교체/5주차_우린 모두 특별해.png",
-  "public/images/24주 수업 이미지 교체/6주차_우리들의 비밀기지.png",
-  "public/images/24주 수업 이미지 교체/7주차_나비야, 놀라와!.png",
-  "public/images/24주 수업 이미지 교체/8주_우리들의 숲.png",
-  "public/images/24주 수업 이미지 교체/9주_안녕봄아.png",
+  "public/images/week-covers-web/week-01.webp",
+  "public/images/week-covers-web/week-02.webp",
+  "public/images/week-covers-web/week-03.webp",
+  "public/images/week-covers-web/week-04.webp",
+  "public/images/week-covers-web/week-05.webp",
+  "public/images/week-covers-web/week-06.webp",
+  "public/images/week-covers-web/week-07.webp",
+  "public/images/week-covers-web/week-08.webp",
 ];
 
-test("배포 폴더(public)에는 로고와 승인된 주차 표지 16장만 있다", () => {
-  assert.equal(ALLOWED_PUBLIC_FILES.length, 17, "로고 1 + 표지 16");
+test("배포 폴더(public)에는 로고와 승인된 주차 표지 8장만 있다", () => {
+  assert.equal(ALLOWED_PUBLIC_FILES.length, 9, "로고 1 + 표지 8");
   // zip · pdf · 동영상 · 문서 · 임의 업로드 파일이 들어오면 여기서 걸린다
   assert.deepEqual(files("public", /./).map(rel).sort(), [...ALLOWED_PUBLIC_FILES].sort());
 });
@@ -95,10 +87,10 @@ test("배포 폴더(public)에는 로고와 승인된 주차 표지 16장만 있
 test("허용 목록과 media.ts 등록이 어긋나지 않는다", async () => {
   const { WEEK_IMAGE_FILES, WEEK_MEDIA } = await import("../src/data/experience/media.ts");
   assert.deepEqual([...WEEK_IMAGE_FILES].sort(),
-    ALLOWED_PUBLIC_FILES.filter((f) => f.includes("24주 수업 이미지 교체")).sort());
-  // 1~16주차만 등록한다 — 17~24주차는 자체 제작 SVG 를 쓴다
+    ALLOWED_PUBLIC_FILES.filter((f) => f.includes("week-covers-web")).sort());
+  // 그림 속 내용이 확인된 1~8주차만 등록한다. 나머지는 자체 제작 SVG 를 쓴다
   assert.deepEqual(Object.keys(WEEK_MEDIA).map(Number).sort((a, b) => a - b),
-    Array.from({ length: 16 }, (_, i) => i + 1));
+    Array.from({ length: 8 }, (_, i) => i + 1));
 });
 
 test("public 의 그림은 실제 이미지 파일이다 (확장자와 내용이 같다)", () => {

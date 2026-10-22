@@ -133,24 +133,24 @@ test("성장 리포트 예시는 교정된 주차 활동과 맞는다 (지난 �
   }
 });
 
-test("캐릭터 사진은 그대로 없고, 주차 그림은 1~16주차 표지만 쓴다", () => {
+test("캐릭터 사진은 그대로 없고, 주차 그림은 1~8주차 표지만 쓴다", () => {
   assert.equal(CHARACTERS_ENABLED, false);
   for (const w of EXPERIENCE_WEEKS) {
     assert.equal(characterImage(w.body.character), null, `${w.weekNo}주 캐릭터`);
-    if (w.weekNo <= 16) {
-      // 1~16주차는 소예키즈가 준 표지를 쓴다
+    if (w.weekNo <= 8) {
+      // 1~8주차는 그림 속 내용이 확인된 표지를 쓴다
       assert.ok(w.image, `${w.weekNo}주 표지 없음`);
       assert.match(w.image.src, /^\/images\//, `${w.weekNo}주 표지 주소`);
       assert.ok(w.image.width > 0 && w.image.height > 0, `${w.weekNo}주 표지 크기`);
       assert.ok(w.image.alt.includes(`${w.weekNo}주차`), `${w.weekNo}주 대체 텍스트`);
     } else {
-      // 17~24주차는 표지가 없다 — 자체 제작 SVG 를 그대로 쓴다
+      // 9~24주차는 표지를 등록하지 않는다 — 자체 제작 SVG 를 그대로 쓴다
       assert.equal(w.image, null, `${w.weekNo}주는 표지를 등록하지 않는다`);
     }
   }
   assert.equal(characterGroupImage(), null);
   assert.deepEqual(Object.keys(MEDIA), []);
   assert.deepEqual(Object.keys(WEEK_MEDIA).map(Number).sort((a, b) => a - b),
-    Array.from({ length: 16 }, (_, i) => i + 1));
+    Array.from({ length: 8 }, (_, i) => i + 1));
   for (const p of EXPERIENCE_PARTS) assert.equal("image" in p, false, `PART ${p.partNo}`);
 });
