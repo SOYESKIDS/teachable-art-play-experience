@@ -65,8 +65,33 @@ test("비밀값처럼 보이는 문자열이 저장소에 없다", () => {
   }
 });
 
-test("배포 폴더(public)에는 로고만 있다 — 사진 · 캐릭터 · 회사 자료 그림 없음", () => {
-  assert.deepEqual(files("public", /./).map(rel), ["public/images/site/brand/soyeskids-logo-primary.png"]);
+test("배포 폴더(public)에는 로고와 등록된 주차 표지만 있다", async () => {
+  // ★ 허용 목록을 여기에 손으로 적지 않는다. media.ts 의 등록 목록에서 읽어,
+  //   등록하지 않은 파일이 public 에 들어오면 그대로 걸리게 한다.
+  const { WEEK_IMAGE_FILES } = await import("../src/data/experience/media.ts");
+  const allowed = ["public/images/site/brand/soyeskids-logo-primary.png", ...WEEK_IMAGE_FILES].sort();
+  assert.deepEqual(files("public", /./).map(rel).sort(), allowed);
+});
+
+test("public 의 그림은 실제 이미지 파일이다 (압축파일 · 실행파일 없음)", async () => {
+  const { WEEK_IMAGE_FILES } = await import("../src/data/experience/media.ts");
+  const MAGIC = [
+    [Buffer.from([0x89, 0x50, 0x4e, 0x47]), "PNG"],
+    [Buffer.from([0xff, 0xd8, 0xff]), "JPEG"],
+    [Buffer.from("RIFF"), "WEBP"],
+  ];
+  for (const f of WEEK_IMAGE_FILES) {
+    assert.match(f, /\.(png|jpe?g|webp)$/i, `${f} — 허용하지 않는 확장자`);
+    const head = readFileSync(join(ROOT, f)).subarray(0, 4);
+    const ok = MAGIC.some(([m]) => head.subarray(0, m.length).equals(m));
+    assert.ok(ok, `${f} — 확장자와 실제 내용이 다르다`);
+  }
+});
+
+test("등록한 표지는 1~16주차뿐이고 17~24주차는 등록하지 않는다", async () => {
+  const { WEEK_MEDIA } = await import("../src/data/experience/media.ts");
+  assert.deepEqual(Object.keys(WEEK_MEDIA).map(Number).sort((a, b) => a - b),
+    Array.from({ length: 16 }, (_, i) => i + 1));
 });
 
 test("문의는 전화 · 이메일 · 영업 사이트 링크뿐이다 (저장하는 폼 없음)", () => {

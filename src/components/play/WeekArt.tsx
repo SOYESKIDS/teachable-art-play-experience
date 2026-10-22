@@ -28,8 +28,14 @@ export function WeekArt({
   const hero = size === "hero";
 
   if (week.image) {
+    const { width, height } = week.image;
     return (
-      <div className={cx("relative overflow-hidden", className)} style={{ backgroundColor: `${week.themeColor}22` }}>
+      <div
+        className={cx("relative overflow-hidden", className)}
+        // ★ 큰 그림은 표지의 **원래 비율**로 둔다. 4:3 틀에 맞추면 위아래가 남거나
+        //   제목이 잘린다. 표지마다 비율이 다르다 (1~8주차 거의 정사각형 · 9~16주차 16:9).
+        style={{ backgroundColor: `${week.themeColor}22`, ...(hero ? { aspectRatio: `${width} / ${height}` } : null) }}
+      >
         <Image
           src={week.image.src}
           alt={week.image.alt}
@@ -38,9 +44,10 @@ export function WeekArt({
           preload={priority}
           fetchPriority={priority ? "high" : undefined}
           sizes={hero ? "(min-width: 1024px) 60vw, 100vw" : "(min-width: 1024px) 25vw, (min-width: 640px) 45vw, 100vw"}
-          className="object-cover"
+          // ★ cover 가 아니라 contain — 표지의 제목과 캐릭터가 잘리면 안 된다.
+          //   남는 자리는 주차 색으로 채워 카드 크기와 줄맞춤을 유지한다.
+          className="object-contain"
         />
-        <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/25 to-transparent" />
       </div>
     );
   }
