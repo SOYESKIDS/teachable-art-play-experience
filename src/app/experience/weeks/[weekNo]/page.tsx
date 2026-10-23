@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { TeacherDashboard } from "@/components/play/TeacherDashboard";
 import { WeekSourcePanel } from "@/components/play/WeekSourcePanel";
 import { ConsultButton } from "@/components/play/ConsultButton";
 import { EmailInquiryButton } from "@/components/play/EmailInquiryButton";
@@ -202,6 +203,8 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
               ))}
             </ul>
           </section>
+
+          <TeacherDashboard week={week} />
 
           <WeekSourcePanel weekNo={week.weekNo} />
 
