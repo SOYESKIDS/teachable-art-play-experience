@@ -1,26 +1,23 @@
 /**
- * 24주 교사용 대시보드 — 대시보드 PDF 원문에서 뽑은 내용.
+ * 24주 교사용 수업 대시보드 — 자료 PDF 12개 영역을 그대로 담는다.
  *
- * ── 지키는 것 ──────────────────────────────────────────────────
+ * ★ 자료에 없는 것은 비워 두고 화면이 「자료에서 확인하지 못했습니다」로 적는다.
+ *   교사가 그대로 따라 하는 글이라 지어내 채우지 않는다.
+ * ★ 1~2주차 성장기록처럼 **원문에 「미작성」이라고 적힌 것**은 따로 구분한다.
+ *   자료를 못 읽은 것이 아니라 원본이 비어 있다.
+ * ★ 교사 발문은 이 자료에 따로 적힌 줄이 없다. 화면은 사이트에 이미 있는
+ *   주차별 발문을 쓴다.
+ * ★ 자료의 수업시간(CORE 45분)은 원문 그대로 두고, 사이트의 기본 35분과
+ *   나란히 보여 준다. 어느 하나로 덮어쓰지 않는다.
  *
- * ★ 자료에 없는 것을 지어내지 않는다. 뽑지 못한 항목은 빈 배열로 두고 화면이
- *   「자료에서 확인하지 못했습니다」로 적는다. 교사가 따라 하는 글이라
- *   잘못 채운 발문 · 준비물보다 비워 두는 편이 안전하다.
- * ★ 1~4주차 자료에는 원문에 「관찰 문항 미작성」 「활동 목표 미작성」이라고
- *   적혀 있다. 자료를 못 읽은 것이 아니라 **원본이 비어 있다.**
- * ★ 이 내용은 **초안이다.** 자료의 「데이터 출처」가 초안 · 원안 확정이라고
- *   밝히고 있어 공식 확정 교안이 아니다.
- * ★ 사이트의 주차명 · 기본 수업 35분 편성을 이 파일이 바꾸지 않는다.
- *   자료의 CORE 45분 표기는 pdfDuration 에 원문 그대로 보존한다.
- *
- * 출처: 대시보드 PDF 24개 (docs/curriculum-upgrade/)
+ * 출처: 대시보드 PDF 24개
  */
 
 export interface DashStep { title: string; guide: string }
+export interface NuriArea { area: string; items: readonly string[] }
 
 export interface WeekDashboard {
   weekNo: number;
-  /** 자료의 주차 제목 — 사이트 제목과 다를 수 있다 (바꾸지 않는다) */
   pdfTitle: string | null;
   keyword: string | null;
   part: string | null;
@@ -50,13 +47,23 @@ export interface WeekDashboard {
   familyTitle: string | null;
   familyHow: readonly string[];
   familyTalk: readonly string[];
+  /** 가정용 교구 (가정에서 쓰는 것) */
+  homeKitName: string | null;
+  homeKitLead: string | null;
+  homeKitItems: readonly string[];
+  homeKitHow: readonly string[];
+  /** 누리과정 연계 — 영역별 */
+  nuri: readonly NuriArea[];
   observations: readonly string[];
   goals: readonly string[];
+  /** 성장기록 예시 (키즈노트) */
+  kidsnote: string | null;
   parentNotice: readonly string[];
   teacherPoint: string | null;
+  /** 다음 주차로 이어지는 산출물 */
+  crossWeek: string | null;
   /** 음원 목록. 실제 파일 · 주소는 없다 */
   media: readonly string[];
-  /** 자료에 영상 주소가 「개발 시 입력」으로만 적혀 있다 */
   mediaPending: boolean;
   /** 원문에 「미작성」이라고 적힌 항목 */
   missingInSource: readonly string[];
@@ -86,20 +93,31 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "w1.workbook.worksheet.0",
     familyTitle: "입학 기념 액자 만들기",
     teacherPoint: null,
+    homeKitName: "입학 기념 액자 키트",
+    homeKitLead: "가정에서 아이와 함께 꾸며 완성해요!",
+    kidsnote: null,
+    crossWeek: null,
     physicalSteps: [
       { title: "교실 탐험", guide: "" },
       { title: "놀이실 탐험", guide: "" },
       { title: "화장실 찾아보기", guide: "" },
       { title: "밖 놀이터 탐험", guide: "" },
     ],
-    physicalMaterials: [],
-    artSteps: [],
     workbookSheets: [
       { title: "같은 그림 찾기", guide: "유치원에서 볼 수 있는 것들을 찾아요." },
       { title: "길 찾기", guide: "유치원으로 가는 길을 찾아가요." },
       { title: "내 물건에는 무엇이", guide: "있을까요? 유치원에 가져가는 물건을 색칠해요." },
       { title: "내 마음 색칠하기", guide: "유치원에 가는 내 마음을 색칠해 보아요." },
     ],
+    nuri: [
+      { area: "사회관계", items: ["새로운 환경에 관심을 가지고 적응한다.", "친구, 선생님과 긍정적으로 상호작용한다."] },
+      { area: "의사소통", items: ["자신의 경험과 생각을 말로 표현한다.", "듣고 이해하며 적절하게 반응한다."] },
+      { area: "자연탐구", items: ["주변 환경을 탐색하고 관심을 가진다.", "사물과 공간의 특성을 알아본다."] },
+      { area: "신체운동·건강", items: ["신체를 조절하여 다양한 놀이를 즐긴다.", "안전하게 생활하는 방법을 안다."] },
+      { area: "예술경험", items: ["다양한 재료로 자신을 표현한다.", "음악과 움직임에 관심을 가지고 즐긴다."] },
+    ],
+    physicalMaterials: [],
+    artSteps: [],
     kitItems: [
       "유치원 탐험 미션 카드",
       "교실 / 어린이집 미니어처 세트",
@@ -126,11 +144,21 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "함께라서 좋아 — 함께 하는 즐거움을 전하는 노래",
       "관찰 문항 미작성 — 관찰 기록 화면에 필요해요",
     ],
+    homeKitItems: [
+      "액자",
+      "데코 스티커",
+      "보석 스티커",
+      "EVA 폼",
+      "리본",
+      "풀",
+    ],
+    homeKitHow: [],
     mediaPending: true,
     missingInSource: [
       "관찰 문항",
       "활동 목표",
       "준비물",
+      "성장기록 예시",
     ],
   },
   {
@@ -156,10 +184,25 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "w2.workbook.worksheet.0",
     familyTitle: "우리 가족 ‘ 도전 OOʼ 미션",
     teacherPoint: null,
+    homeKitName: "끝까지 해보자! 도전 보드",
+    homeKitLead: "매일 노력하면 스티커를 붙이며 끝까지 해낸 나를 칭찬해요!",
+    kidsnote: null,
+    crossWeek: null,
     physicalSteps: [
       { title: "젓가락 미션", guide: "" },
       { title: "집게 미션", guide: "" },
       { title: "협동 릴레이 미션", guide: "" },
+    ],
+    workbookSheets: [
+      { title: "미로 찾기", guide: "마루가 메추리알까지 가는 길을 찾아요." },
+      { title: "선 따라 그리기", guide: "점을 따라 선을 예쁘게 그려요." },
+      { title: "무엇이 다를까요?", guide: "두 그림을 비교하고 다른 곳을 찾아요." },
+      { title: "끝까지 해보자!", guide: "마루에게 응원의 스티커를 붙여주세요." },
+    ],
+    nuri: [
+      { area: "신체운동·건강", items: ["소근육을 조절하여 다양한 도구를 사용한다.", "신체의 움직임을 조절하여 목표를 달성한다."] },
+      { area: "사회관계", items: ["친구와 함께 하는 활동에서 서로를 격려하고 도와준다.", "약속과 규칙을 지키며 함께 놀이한다."] },
+      { area: "의사소통", items: ["자신의 경험을 이야기로 표현한다.", "친구의 이야기를 듣고 공감하며 반응한다."] },
     ],
     physicalMaterials: [],
     artSteps: [
@@ -167,12 +210,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "꾸미기",
       "끈 달기",
       "완성!",
-    ],
-    workbookSheets: [
-      { title: "미로 찾기", guide: "마루가 메추리알까지 가는 길을 찾아요." },
-      { title: "선 따라 그리기", guide: "점을 따라 선을 예쁘게 그려요." },
-      { title: "무엇이 다를까요?", guide: "두 그림을 비교하고 다른 곳을 찾아요." },
-      { title: "끝까지 해보자!", guide: "마루에게 응원의 스티커를 붙여주세요." },
     ],
     kitItems: [
       "메추리알 모형 6개",
@@ -209,11 +246,19 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "도전! 마루! — 도전하는 마루를 응원하는 노래",
       "우리 함께 — 멋진 우리 모두 함께 해낼 수 있는 노래",
     ],
+    homeKitItems: [
+      "도전 미션 칸 (우리 가족 미션)",
+      "요일별 (월 ~ 일) 체크 칸",
+      "오늘의 노력 스티커",
+      "아빠 · 엄마 응원 메시지 칸",
+    ],
+    homeKitHow: [],
     mediaPending: true,
     missingInSource: [
       "관찰 문항",
       "활동 목표",
       "준비물",
+      "성장기록 예시",
     ],
   },
   {
@@ -239,12 +284,27 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "w3.workbook.worksheet.0",
     familyTitle: "우리 가족 ‘ 마음배달 우체통 ʼ",
     teacherPoint: null,
+    homeKitName: "마음배달 우체통 키트",
+    homeKitLead: "우체통 + 마음카드 + 스티커 세트",
+    kidsnote: "오늘은 자신의 마음을 말로 표현하고 친구의 마음도 함께 이해해보는 시간을 가졌습니다. 친구에게 직접 마음을 전하고, 따뜻한 말을 나누며 서로를 배려하는 즐거운 경험을 했습니다. 친구를 향한 작은 표현이 모두를 웃게 만드는 소중한 시간이었습니다.",
+    crossWeek: null,
     physicalSteps: [
       { title: "하트카드 받기", guide: "친구 이름이 적힌 하트카드를 받아요." },
       { title: "마음다리 건너기", guide: "마음다리를 건너 친구에게 다가가요." },
       { title: "우체통에 넣기", guide: "친구의 우체통에 하트를 넣으며 마음을 전해요." },
       { title: "고마움 말하기", guide: "받은 친구는 고마운 마음을 말하고 하이파이브!" },
       { title: "모두 한 번씩", guide: "모든 친구가 한 번씩 전달하고 받아요." },
+    ],
+    workbookSheets: [
+      { title: "친구들의 표정을 보고 기분", guide: "맞추기 여러 표정 그림을 보고 기분을 맞춰요." },
+      { title: "표정과 상황 연결하기", guide: "블록이 무너졌어요 / 친구가 선물을 받았어요 / 친구가 혼자 있어요 — 상황과 표정을 연결해요." },
+      { title: "‘ 나는 어떻게 해줄까?ʼ", guide: "이미지 스티커 붙이기 안아주기, 같이 놀기, 장난감 빌려주기, 박수쳐주기, 꽃 선물하기, 엄지척 중에서 골라 붙여요. 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 이번 주 제작 교구는 없어요. 도안 · 소모품과 원 보유 자료로 운영해요. 마음을 말해요 카드 표정 · 상황 · 해결방법 · 마음표현 카드를 활용하여 다양한 상황에서 반복적으로 놀아요!" },
+    ],
+    nuri: [
+      { area: "의사소통", items: ["자신의 느낌과 생각을 표현한다.", "다른 사람의 이야기를 듣는다.", "상황에 맞게 자신의 의사를 전달한다."] },
+      { area: "사회관계", items: ["친구를 이해하고 배려한다.", "친구와 긍정적인 관계를 형성한다."] },
+      { area: "예술경험", items: ["만들기를 통해 자신의 마음을 표현한다."] },
+      { area: "신체운동·건강", items: ["다양한 신체활동에 즐겁게 참여한다.", "이동하며 균형을 유지하고 소근육을 활용한다."] },
     ],
     physicalMaterials: [
       "마음다리 (징검다리, 평균대, 훌라후프 등)",
@@ -256,11 +316,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "만들기",
       "말하기",
       "전달하기",
-    ],
-    workbookSheets: [
-      { title: "친구들의 표정을 보고 기분", guide: "맞추기 여러 표정 그림을 보고 기분을 맞춰요." },
-      { title: "표정과 상황 연결하기", guide: "블록이 무너졌어요 / 친구가 선물을 받았어요 / 친구가 혼자 있어요 — 상황과 표정을 연결해요." },
-      { title: "‘ 나는 어떻게 해줄까?ʼ", guide: "이미지 스티커 붙이기 안아주기, 같이 놀기, 장난감 빌려주기, 박수쳐주기, 꽃 선물하기, 엄지척 중에서 골라 붙여요. 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 이번 주 제작 교구는 없어요. 도안 · 소모품과 원 보유 자료로 운영해요. 마음을 말해요 카드 표정 · 상황 · 해결방법 · 마음표현 카드를 활용하여 다양한 상황에서 반복적으로 놀아요!" },
     ],
     kitItems: [
       "표정카드",
@@ -293,6 +348,13 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "고마운 마음 송 — 고마워! 고마워! 따뜻한 마음 전해요",
       "우리 함께 송 — 함께하면 좋아 우리는 친구야",
     ],
+    homeKitItems: [
+      "우체통 1개",
+      "마음카드 4장 (선생님 마음 카드 2장, 가족 마음 카드 2장)",
+      "선생님께 보내는 카드 1장",
+      "스티커 1장",
+    ],
+    homeKitHow: [],
     mediaPending: true,
     missingInSource: [
       "활동 목표",
@@ -322,11 +384,27 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "w4.workbook.worksheet.0",
     familyTitle: "우리 가족 ‘ 씨앗 성장 이야기 ʼ",
     teacherPoint: null,
+    homeKitName: "씨앗 · 새싹 성장 도안 키트",
+    homeKitLead: "씨앗 도안 + 새싹 도안 + 꾸미기 재료",
+    kidsnote: "오늘은 씨앗과 새싹의 성장과 소리를 탐색하고, 나만의 마라카스를 만들어 음악에 맞춰 연주해 보았어요. 씨앗이 자라는 모습을 관찰하고 가족의 소중한 순간을 나누며 생명의 시작과 사랑을 느낀 시간이었습니다. 아이의 호기심과 표현력이 자라는 모습이 새싹처럼 반짝였습니다.",
+    crossWeek: "씨앗 · 새싹 (8주차 숲 부착물) → 8주차",
     physicalSteps: [
       { title: "마라카스 꺼내기", guide: "내가 만든 마라카스를 꺼내요." },
       { title: "씨앗 음악 듣기", guide: "씨앗 음악을 들어요." },
       { title: "리듬에 맞춰 춤추기", guide: "리듬에 맞춰 자유롭게 흔들고 춤춰요." },
       { title: "함께 합주하기", guide: "친구들과 함께 합주하며 즐겨요!" },
+    ],
+    workbookSheets: [
+      { title: "씨앗 관찰하기", guide: "다양한 씨앗 (콩, 팥, 옥수수, 해바라기씨) 의 크기, 모양, 색을 관찰하고 연결해요." },
+      { title: "성장 순서 맞추기", guide: "씨앗이 새싹으로 자라는 순서를 맞춰요." },
+      { title: "새싹 그리기", guide: "화분에 내가 상상한 새싹을 자유롭게 그려요." },
+      { title: "무엇이 필요할까요?", guide: "씨앗이 자라기 위해 필요한 것 (물, 햇빛, 흙) 을 찾아 O 표 해요." },
+    ],
+    nuri: [
+      { area: "자연탐구", items: ["씨앗의 크기 · 모양 · 색 · 소리 차이를 탐색한다.", "생명의 성장 과정을 관찰하고 관심을 가진다."] },
+      { area: "예술경험", items: ["다양한 재료로 악기를 만들고 표현한다.", "음악에 맞춰 연주하며 즐거움을 느낀다."] },
+      { area: "신체운동·건강", items: ["다양한 신체활동에 즐겁게 참여한다.", "소근육과 눈 · 손 협응을 활용한다."] },
+      { area: "의사소통", items: ["관찰한 내용을 말로 표현한다.", "자신의 생각과 느낌을 이야기한다."] },
     ],
     physicalMaterials: [],
     artSteps: [
@@ -335,12 +413,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "씨앗 선택하기 — 내가 좋아하는 씨앗을 골라 담아요.",
       "마라카스 꾸미기 — 스티커와 색종이로 예쁘게 꾸며요.",
       "음악과 함께 연주하기 — 씨앗 마라카스를 음악에 맞춰 연주해요!",
-    ],
-    workbookSheets: [
-      { title: "씨앗 관찰하기", guide: "다양한 씨앗 (콩, 팥, 옥수수, 해바라기씨) 의 크기, 모양, 색을 관찰하고 연결해요." },
-      { title: "성장 순서 맞추기", guide: "씨앗이 새싹으로 자라는 순서를 맞춰요." },
-      { title: "새싹 그리기", guide: "화분에 내가 상상한 새싹을 자유롭게 그려요." },
-      { title: "무엇이 필요할까요?", guide: "씨앗이 자라기 위해 필요한 것 (물, 햇빛, 흙) 을 찾아 O 표 해요." },
     ],
     kitItems: [
       "다양한 씨앗 6종",
@@ -385,6 +457,14 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "햇살이 좋아요 — 따뜻한 햇살 아래 쑥쑥 자라요 (원문 판독 확인 필요)",
       "우리는 친구 새싹 — 우리 모두 함께 쑥쑥 자라요",
     ],
+    homeKitItems: [
+      "씨앗 도안 1장 (초음파 사진)",
+      "새싹 도안 2장 (아기때 / 돌때 사진)",
+      "꾸미기 스티커 1장",
+      "꾸미기 재료",
+      "가이드 카드 1장",
+    ],
+    homeKitHow: [],
     mediaPending: true,
     missingInSource: [
       "활동 목표",
@@ -414,10 +494,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "w5.workbook.worksheet.0",
     familyTitle: "우리 가족 꽃 이야기",
     teacherPoint: null,
+    homeKitName: "꽃 도안 꾸며서 보내주세요",
+    homeKitLead: "아이의 활짝 웃는 얼굴 사진을 붙여 보내주세요!",
+    kidsnote: "오늘은 ‘ 우린 모두 특별해 ʼ 그림책을 통해 나와 친구의 다름을 알고 서로를 존중하는 마음을 나누었어요. 나만의 꽃을 꾸미며 자신의 모습을 표현하고, 친구들의 꽃을 보며 칭찬을 주고받았답니다.",
+    crossWeek: "꽃 (8주차 숲 부착물) → 8주차",
     physicalSteps: [
       { title: "분홍꽃!", guide: "랄랄랄라 ~ 손뼉치며 ‘ 분홍꽃!ʼ 하면 아이들이 손뼉치면서 분홍꽃으로 모여요!" },
       { title: "노란꽃!", guide: "깡총깡총 뛰면서 ‘ 노란꽃!ʼ 하면 아이들이 깡총깡총 뛰면서 노란꽃으로 가요!" },
       { title: "다 함께 꽃놀이!", guide: "여러 가지 색의 꽃으로 놀이해요! 파랑꽃, 보라꽃, 주황꽃 등 다양한 색으로 움직여요!" },
+    ],
+    workbookSheets: [
+      { title: "같은 꽃 찾기", guide: "같은 모양과 색의 꽃을 찾아 ○ 하세요." },
+      { title: "다른 꽃 찾기", guide: "다른 모양의 꽃을 찾아 ○ 하세요." },
+      { title: "꽃잎 색칠하기", guide: "예쁘게 색칠해 보세요." },
+      { title: "나를 닮은 꽃 꾸미기", guide: "나를 닮은 꽃을 꾸며보고, 나의 모습을 그리거나 스티커를 붙여요. (나는 이런 아이예요!) 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 이번 주 제작 교구는 없어요. 도안 · 소모품과 원 보유 자료로 운영해요. 꽃 만들기 키트 여러 가지 재료로 나만의 꽃을 만들어요!" },
+    ],
+    nuri: [
+      { area: "사회관계", items: ["나를 알고 소중히 여기기"] },
+      { area: "자연탐구", items: ["다양한 꽃의 모양과 색을 탐색한다."] },
+      { area: "의사소통", items: ["나의 생각과 느낌을 말한다."] },
+      { area: "예술경험", items: ["다양한 미술활동으로 자신을 표현한다.", "43 · 1200900px"] },
     ],
     physicalMaterials: [],
     artSteps: [
@@ -425,12 +521,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "가운데 내 사진 붙이기",
       "줄기와 잎 붙이기",
       "나만의 꽃 완성!",
-    ],
-    workbookSheets: [
-      { title: "같은 꽃 찾기", guide: "같은 모양과 색의 꽃을 찾아 ○ 하세요." },
-      { title: "다른 꽃 찾기", guide: "다른 모양의 꽃을 찾아 ○ 하세요." },
-      { title: "꽃잎 색칠하기", guide: "예쁘게 색칠해 보세요." },
-      { title: "나를 닮은 꽃 꾸미기", guide: "나를 닮은 꽃을 꾸며보고, 나의 모습을 그리거나 스티커를 붙여요. (나는 이런 아이예요!) 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 이번 주 제작 교구는 없어요. 도안 · 소모품과 원 보유 자료로 운영해요. 꽃 만들기 키트 여러 가지 재료로 나만의 꽃을 만들어요!" },
     ],
     kitItems: [
       "꽃 도안 2종",
@@ -463,6 +553,18 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "보내주신 꽃은 교실 전시에 활용합니다.",
     ],
     media: [],
+    homeKitItems: [
+      "꽃 도안 1장",
+      "잎 도안 1장",
+      "꾸미기 스티커",
+      "꾸미기 재료 제안",
+      "사용 안내서",
+    ],
+    homeKitHow: [
+      "꽃 도안에 자유롭게 꾸며요.",
+      "아이의 활짝 웃는 얼굴 사진을 붙여요.",
+      "완성된 꽃 도안을 사진으로 찍어 보내주세요!",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -489,10 +591,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "w6.workbook.worksheet.0",
     familyTitle: "나와 함께 자라는 우리 가족",
     teacherPoint: null,
+    homeKitName: "나와 함께 자라는 우리 가족 (도안 키트)",
+    homeKitLead: "가족사진을 자연 친구들에 붙여 꾸며요.",
+    kidsnote: "오늘은 ‘ 우리들의 비밀기지 ʼ 그림책을 통해 혼자 하기 어려운 일도 친구들과 함께하면 할 수 있다는 것을 알아보았어요. 비와 햇살이 되어 친구에게 도움을 주고, 따뜻한 마음을 나누며 즐겁게 놀이했어요. 그리고 각자 꾸민 장식을 모아 친구들과 힘을 합쳐 멋진 비밀기지를 완성했답니다!",
+    crossWeek: "햇살 · 구름 · 바람 · 빗방울 가족사진 도안 (8주차 현수막 부착) → 8주차",
     physicalSteps: [
       { title: "내 몸에 비가 톡톡!", guide: "〈머리 어깨 무릎 발〉 노래에 맞춰 손가락으로 빗방울을 표현해요. 머리 · 어깨 · 무릎 · 발 톡톡톡!" },
       { title: "친구에게 비를 내려줘요!", guide: "선생님이 “OO 씨앗에게 비가 필요해요!ˮ 하면 비 친구가 찾아가 톡톡톡! 비를 내려줘요. 씨앗 친구는 쑥쑥 ~ 자라요!" },
       { title: "따뜻한 햇살을 전해요!", guide: "이름이 불리면 친구에게 다가가 안아주기, 손잡기, 토닥토닥! 따뜻함을 전해요." },
+    ],
+    workbookSheets: [
+      { title: "같은 것 찾기", guide: "그림 속 비, 바람, 햇살을 찾아 ○ 해요." },
+      { title: "무엇이 필요할까요?", guide: "비, 바람, 햇살과 꽃과 나무를 알맞게 연결해요." },
+      { title: "비 · 바람 · 햇살 표현하기", guide: "빗방울, 바람, 햇살을 다양한 선으로 표현해요." },
+      { title: "함께 완성한 비밀기지", guide: "우비 혼자 있을 때와 친구들과 함께 완성한 비밀기지를 보고 다른 그림을 찾아보거나 스티커로 완성해요." },
+    ],
+    nuri: [
+      { area: "사회관계", items: ["나를 알고 소중히 여기기 (5주차와 동일 — 검수 필요)"] },
+      { area: "자연탐구", items: ["자연현상에 관심 가지기"] },
+      { area: "의사소통", items: ["나의 생각과 느낌을 말한다."] },
+      { area: "예술경험", items: ["다양한 미술활동으로 자신을 표현한다."] },
     ],
     physicalMaterials: [],
     artSteps: [
@@ -500,12 +618,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "하나씩 모아 비밀기지를 꾸며요.",
       "함께 큰 장식을 달아요.",
       "우리 반 깃발을 달면 완성!",
-    ],
-    workbookSheets: [
-      { title: "같은 것 찾기", guide: "그림 속 비, 바람, 햇살을 찾아 ○ 해요." },
-      { title: "무엇이 필요할까요?", guide: "비, 바람, 햇살과 꽃과 나무를 알맞게 연결해요." },
-      { title: "비 · 바람 · 햇살 표현하기", guide: "빗방울, 바람, 햇살을 다양한 선으로 표현해요." },
-      { title: "함께 완성한 비밀기지", guide: "우비 혼자 있을 때와 친구들과 함께 완성한 비밀기지를 보고 다른 그림을 찾아보거나 스티커로 완성해요." },
     ],
     kitItems: [
       "대형 입체 종이집 1개",
@@ -552,6 +664,17 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "‘ 우리 아이가 혼자 자란 게 아니라 가족과 친구들의 사랑 속에서 자라고 있다 ʼ 는 마음을 나눠주세요.",
     ],
     media: [],
+    homeKitItems: [
+      "햇살 도안 1장",
+      "구름 도안 1장",
+      "바람 도안 1장",
+      "빗방울 도안 1장",
+      "꾸미기 스티커",
+    ],
+    homeKitHow: [
+      "가족사진을 붙이고 자유롭게 꾸며요.",
+      "완성 후 어린이집으로 보내주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -578,10 +701,27 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "w7.workbook.worksheet.0",
     familyTitle: "우리 선생님은 나비? 벌?",
     teacherPoint: null,
+    homeKitName: "선생님 얼굴을 붙여요! (교실 게시용)",
+    homeKitLead: "나비 도안 · 벌 도안",
+    kidsnote: "오늘은 나비와 벌이 되어 신체놀이를 즐겼어요. 친구들에게 꽃가루를 붙여주고, 조심히 꿀을 모으며 자연의 고마움과 기다림의 의미를 경험하는 모습이 인상적이었어요. 가족과 함께 선생님을 떠올리며 ‘OO 선생님은 나비 같아 ʼ 라고 이야기한 내용을 공유해 주셔서, 아이가 선생님을 따뜻하게 바라보는 마음을 느낄 수 있었습니다. ＋ 뮤직비디오 썸네일 169 · 1280720px",
+    crossWeek: "나비 · 벌 도안 (선생님 사진) · 데칼코마니 나비 (8주차 숲 부착물) → 8주차",
     physicalSteps: [
       { title: "꽃이 되어줘요!", guide: "친구들이 꽃이 되어 자리에 앉아요." },
       { title: "꽃가루를 붙여줘요!", guide: "친구들이 나비의 양팔 (날개) 에 포스트잇 꽃가루를 붙여줘요." },
       { title: "팔랑팔랑 날아가요!", guide: "나비가 교실을 날아다니며 날갯짓을 하면 꽃가루가 여기저기 떨어져요." },
+    ],
+    workbookSheets: [
+      { title: "나비와 벌 알아보기", guide: "나비와 벌의 모습을 보고 같은 것을 찾아요." },
+      { title: "다른 그림 찾기", guide: "두 그림의 다른 곳을 찾아보아요." },
+      { title: "선 따라 그리기", guide: "나비와 벌이 가는 길을 선을 따라 그려요." },
+      { title: "색칠하고 꾸미기", guide: "예쁜 나비와 벌을 색칠하고 꾸며요. 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 이번 주 제작 교구는 없어요. 도안 · 소모품과 원 보유 자료로 운영해요. 나비 · 벌 놀이 KIT" },
+    ],
+    nuri: [
+      { area: "자연탐구", items: ["생명과 자연에 관심 가지기 자연현상에 호기심 가지기"] },
+      { area: "신체운동·건강", items: ["신체를 조절하여 이동하기 대근육을 이용해 신체활동하기"] },
+      { area: "사회관계", items: ["친구와 함께 놀이하기 차례를 기다리기"] },
+      { area: "의사소통", items: ["경험한 것을 말로 표현하기 동화의 내용에 관심 가지기"] },
+      { area: "예술경험", items: ["다양한 미술재료로 표현하기 노래와 움직임으로 표현하기"] },
     ],
     physicalMaterials: [],
     artSteps: [
@@ -589,12 +729,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "반으로 접어요.",
       "펼치면 나만의 날개 완성!",
       "스티커로 꾸며요.",
-    ],
-    workbookSheets: [
-      { title: "나비와 벌 알아보기", guide: "나비와 벌의 모습을 보고 같은 것을 찾아요." },
-      { title: "다른 그림 찾기", guide: "두 그림의 다른 곳을 찾아보아요." },
-      { title: "선 따라 그리기", guide: "나비와 벌이 가는 길을 선을 따라 그려요." },
-      { title: "색칠하고 꾸미기", guide: "예쁜 나비와 벌을 색칠하고 꾸며요. 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 이번 주 제작 교구는 없어요. 도안 · 소모품과 원 보유 자료로 운영해요. 나비 · 벌 놀이 KIT" },
     ],
     kitItems: [
       "포스트잇 (꽃가루)",
@@ -628,6 +762,11 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "아이의 이야기를 그대로 적어 보내주세요. 감사합니다.",
     ],
     media: [],
+    homeKitItems: [
+      "나비 도안",
+      "벌 도안",
+    ],
+    homeKitHow: [],
     mediaPending: true,
     missingInSource: [
       "준비물",
@@ -656,12 +795,29 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "w8.workbook.worksheet.0",
     familyTitle: "우리 반 숲을 이야기해요!",
     teacherPoint: null,
+    homeKitName: "아이들이 쉽게 붙일 수 있도록 준비해요!",
+    homeKitLead: "교사 사전 준비 안내",
+    kidsnote: "8주차에는 그동안의 활동을 모아 우리 반의 숲을 완성하는 과정을 경험했습니다. 친구들과 함께 자신의 작품을 들고 이동하여 현수막에 붙이며 하나의 큰 숲을 만들어가는 모습이 인상적이었습니다. “함께해서 더 멋진 숲이 되었어요!ˮ 라는 말과 함께 공동체의 즐거움을 느끼는 시간이었습니다.",
+    crossWeek: "4주차 → 씨앗 · 새싹 5주차 → 꽃 6주차 → 햇살 · 구름 · 바람 · 빗방울 가족 도안 7주차 → 나비 · 벌 도안 (선생님 사진)",
     physicalSteps: [
       { title: "씨앗을 심어요!", guide: "씨앗을 들고 현수막으로 이동해 붙여요." },
       { title: "새싹이 자라요!", guide: "새싹을 들고 씨앗 위에 붙여요." },
       { title: "꽃이 피어요!", guide: "꽃을 들고 숲 곳곳에 붙여요." },
       { title: "비 · 바람 · 햇살이 찾아와요!", guide: "비, 바람, 햇살을 들고 하늘과 숲에 붙여요." },
       { title: "나비와 벌이 날아와요!", guide: "나비와 벌을 들고 숲을 더 풍성하게 완성해요." },
+    ],
+    workbookSheets: [
+      { title: "기억해요!", guide: "그동안 만든 자연 친구들을 찾아 선으로 연결해요." },
+      { title: "순서를 맞춰요!", guide: "씨앗이 숲이 되기까지 순서를 생각하며 스티커를 붙여요." },
+      { title: "우리가 만든 숲!", guide: "빈 숲에 스티커를 붙여 우리 반 숲을 완성해요." },
+      { title: "우리 반 숲 이야기", guide: "숲을 완성한 친구들의 얼굴을 그리고 이름을 써요." },
+    ],
+    nuri: [
+      { area: "자연탐구", items: ["생명과 자연에 관심 가지기 자연현상에 호기심 가지기"] },
+      { area: "신체운동·건강", items: ["신체를 조절하여 이동하기 대근육을 이용해 신체활동하기"] },
+      { area: "사회관계", items: ["친구와 함께 놀이하기 공동체의 소중함을 알고 경험하기"] },
+      { area: "의사소통", items: ["경험한 것을 말로 표현하기 동화의 내용에 관심 가지기"] },
+      { area: "예술경험", items: ["다양한 미술재료로 표현하기 노래와 움직임으로 표현하기"] },
     ],
     physicalMaterials: [],
     artSteps: [
@@ -671,12 +827,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "비 · 바람 · 햇살을 붙여요.",
       "나비와 벌을 붙여요.",
       "우리 반 친구들과 선생님의 마음을 더해 완성해요!",
-    ],
-    workbookSheets: [
-      { title: "기억해요!", guide: "그동안 만든 자연 친구들을 찾아 선으로 연결해요." },
-      { title: "순서를 맞춰요!", guide: "씨앗이 숲이 되기까지 순서를 생각하며 스티커를 붙여요." },
-      { title: "우리가 만든 숲!", guide: "빈 숲에 스티커를 붙여 우리 반 숲을 완성해요." },
-      { title: "우리 반 숲 이야기", guide: "숲을 완성한 친구들의 얼굴을 그리고 이름을 써요." },
     ],
     kitItems: [
       "대형 우리 반 성장 숲 현수막 (제공)",
@@ -724,6 +874,8 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "자연을 사랑하고 서로의 마음을 더해 멋진 숲을 만든 아이들에게 따뜻한 칭찬 부탁드립니다.",
     ],
     media: [],
+    homeKitItems: [],
+    homeKitHow: [],
     mediaPending: true,
     missingInSource: [
       "준비물",
@@ -752,12 +904,27 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "봄꽃을 피워요",
     familyTitle: "꽃다발 전달 · 표정촬영",
     teacherPoint: "꽃의 이름을 많이 가르치기보다 색과 움직임을 충분히 느끼고 표현하도록 합니다. 설명서 원안은 ‘ 꽃비가 내려요!ʼ(꽃잎 뿌리기) 였으나, 담임 교사 혼자 진행할 때 바닥에 흩어진 종이 꽃잎을 치우는 부담이 커서 스카프 놀이로 바꿨어요. 스카프는 바구니에 모으면 정리가 끝나고 다른 주차에도 다시 쓸 수 있어요.",
+    homeKitName: "꽃다발 포장 도안 (제작 교구 아님 · 소모품)",
+    homeKitLead: "가정에서 꽃다발을 포장하고 마음을 적어 전해요.",
+    kidsnote: "오늘은 봄바람 스카프를 들고 살랑살랑, 휘리릭 몸으로 봄을 표현했어요. 노래가 멈추면 스카프를 머리 위로 활짝 펼쳐 꽃이 되어 멈추는 모습이 정말 예뻤습니다. 이어서 “봄바람이 불어옵니다!ˮ 자리 바꾸기 놀이로 웃음이 끊이지 않았고, 뽁뽁이 도장으로 벚꽃을 찍어 나만의 꽃다발을 만들며 소중한 사람을 떠올렸어요.",
+    crossWeek: "봄 표정 사진 → 16주차 사계절 회고에 사용 → 16주차",
     physicalSteps: [
       { title: "스카프를 골라요", guide: "분홍 · 노랑 · 연두 중 좋아하는 색 스카프를 하나 골라요." },
       { title: "살랑살랑 봄바람", guide: "느린 노래에 맞춰 스카프를 살랑살랑 흔들어요." },
       { title: "휘리릭 회오리 바람!", guide: "빠른 노래로 바뀌면 스카프를 크게 돌리며 뛰어다녀요." },
       { title: "던졌다 잡기", guide: "스카프를 위로 던지고 떨어질 때 두 손으로 잡아요." },
       { title: "꽃이 되어 멈춰요", guide: "노래가 멈추면 스카프를 머리 위로 활짝 펼쳐 꽃이 되어 멈춰요." },
+    ],
+    workbookSheets: [
+      { title: "같은 꽃 찾기", guide: "같은 모양과 색의 봄꽃을 찾아 ○ 해요." },
+      { title: "봄꽃을 피워요", guide: "가지에 꽃 스티커를 붙여 나무를 꽃으로 가득 채워요." },
+      { title: "바람이 지나간 길", guide: "바람에 날린 꽃잎의 길을 선으로 따라 그려요." },
+      { title: "봄에 만난 것", guide: "봄에 본 것을 그리거나 스티커로 붙여요." },
+    ],
+    nuri: [
+      { area: "자연탐구", items: ["봄의 색과 바람의 세기를 탐색한다.", "바람에 날리는 모습에 호기심을 가진다."] },
+      { area: "예술경험", items: ["스카프로 바람과 꽃을 몸으로 표현한다.", "찍기와 손도장으로 꽃다발을 표현한다."] },
+      { area: "신체운동·건강", items: ["음악의 빠르기에 맞춰 신체를 조절하여 움직인다.", "신호를 듣고 방향과 속도를 바꾸어 이동한다."] },
     ],
     physicalMaterials: [
       "봄바람 스카프 또는 얇은 보자기 (원 보유)",
@@ -769,12 +936,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "도화지에 콕콕 찍으면 벚꽃 송이가 피어나요.",
       "초록 물감 손도장으로 잎을 만들어요.",
       "포장지로 감싸고 리본을 묶어 완성해요!",
-    ],
-    workbookSheets: [
-      { title: "같은 꽃 찾기", guide: "같은 모양과 색의 봄꽃을 찾아 ○ 해요." },
-      { title: "봄꽃을 피워요", guide: "가지에 꽃 스티커를 붙여 나무를 꽃으로 가득 채워요." },
-      { title: "바람이 지나간 길", guide: "바람에 날린 꽃잎의 길을 선으로 따라 그려요." },
-      { title: "봄에 만난 것", guide: "봄에 본 것을 그리거나 스티커로 붙여요." },
     ],
     kitItems: [
       "꽃다발 도안 · 포장지 · 리본 (소모품)",
@@ -825,6 +986,17 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "봄바람이 불어옵니다 — 자리 바꾸기 놀이 노래",
       "안녕? 봄아! — 봄을 맞이하는 인사 노래",
     ],
+    homeKitItems: [
+      "꽃다발 포장지 1장",
+      "리본 1개",
+      "메시지 카드 1장",
+      "꾸미기 스티커",
+    ],
+    homeKitHow: [
+      "아이와 함께 꽃다발을 포장해요.",
+      "메시지 카드에 한마디 적어요.",
+      "전달하고 사진을 찍어 보내주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -851,11 +1023,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "한여름 곤충 탐정",
     familyTitle: "여름 곤충 자석",
     teacherPoint: "곤충 지식 암기보다 “어디에 있을까?ˮ, “어떻게 움직일까?ˮ 를 관찰하고 몸으로 표현하게 합니다. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[] 키즈노트 성장기록 예시 RP 성장 리포트 kidsnoteExample",
+    homeKitName: "여름 곤충 자석 도안 (제작 교구 아님 · 소모품)",
+    homeKitLead: "곤충 도안 + 자석 + 꾸미기 재료",
+    kidsnote: "오늘은 여름 곤충을 찾아 떠나는 탐험을 했어요. 집게와 돋보기를 들고 교실 곳곳을 살피며 “여기 숨어 있었어!ˮ 하고 친구들에게 알려주는 모습이 진짜 탐정 같았습니다. 찾은 곤충을 관찰한 뒤에는 매미와 잠자리가 되어 몸으로 움직이며 즐거워했어요.",
+    crossWeek: "여름 곤충 자석 → 가정 보관, 16주차 회고에 활용 → 16주차",
     physicalSteps: [
       { title: "곤충을 찾아요!", guide: "교실 곳곳에 숨겨둔 곤충 모형과 카드를 찾아요." },
       { title: "조심조심 담아요!", guide: "집게와 채집통으로 곤충을 조심스럽게 옮겨요." },
       { title: "곤충처럼 움직여요!", guide: "매미, 잠자리, 개미가 되어 몸으로 움직여요." },
       { title: "어디에 있었어?", guide: "어디서 찾았는지, 어떻게 움직이는지 이야기해요." },
+    ],
+    workbookSheets: [
+      { title: "곤충을 찾아라", guide: "그림 속에 숨은 여름 곤충을 찾아 ○ 해요." },
+      { title: "같은 곤충 짝 찾기", guide: "같은 곤충끼리 선으로 이어요." },
+      { title: "어디에 살까요?", guide: "곤충과 사는 곳 (나무 · 풀 · 땅속) 을 알맞게 연결해요." },
+      { title: "나만의 곤충", guide: "내가 상상한 여름 곤충을 그려요." },
+    ],
+    nuri: [
+      { area: "자연탐구", items: ["여름 곤충의 생김새와 움직임을 관찰한다.", "곤충이 사는 곳에 관심을 가진다."] },
+      { area: "신체운동·건강", items: ["곤충의 움직임을 몸으로 표현한다.", "집게 · 돋보기를 사용하며 소근육을 조절한다."] },
+      { area: "의사소통", items: ["관찰한 것을 말로 표현한다.", "친구의 이야기를 듣고 반응한다."] },
     ],
     physicalMaterials: [
       "곤충 모형 · 카드",
@@ -869,12 +1056,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "색칠하고 스티커로 꾸며요.",
       "뒷면에 자석을 붙여요.",
       "가정으로 보내 냉장고에 붙여요.",
-    ],
-    workbookSheets: [
-      { title: "곤충을 찾아라", guide: "그림 속에 숨은 여름 곤충을 찾아 ○ 해요." },
-      { title: "같은 곤충 짝 찾기", guide: "같은 곤충끼리 선으로 이어요." },
-      { title: "어디에 살까요?", guide: "곤충과 사는 곳 (나무 · 풀 · 땅속) 을 알맞게 연결해요." },
-      { title: "나만의 곤충", guide: "내가 상상한 여름 곤충을 그려요." },
     ],
     kitItems: [
       "여름 곤충 모형 6종",
@@ -924,6 +1105,17 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "잠자리 비행 — 잠자리처럼 날아보는 움직임 노래",
       "너무 뜨겁잖아! — 더운 여름을 즐겁게 표현한 노래",
     ],
+    homeKitItems: [
+      "곤충 도안 3종",
+      "자석 스티커 3개",
+      "꾸미기 스티커",
+      "사용 안내서",
+    ],
+    homeKitHow: [
+      "도안을 색칠하고 꾸며요.",
+      "뒷면에 자석을 붙여요.",
+      "냉장고에 붙여 매일 이야기 나눠요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -950,11 +1142,27 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "나의 여권 & 탑승권",
     familyTitle: "여권 · 탑승권 · 선글라스",
     teacherPoint: "실제 해외지식 전달보다 ‘ 새로운 곳을 상상하고 떠나는 즐거움 ʼ 을 중심으로 몸 · 음악 · 역할놀이를 연결합니다. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[] 키즈노트 성장기록 예시 RP 성장 리포트 kidsnoteExample",
+    homeKitName: "꽃목걸이 키트 (가정연계 교구 · 확정)",
+    homeKitLead: "원에서 만든 꽃목걸이를 가정으로 보내 가족과 함께 여행 놀이를 이어가요.",
+    kidsnote: "오늘은 직접 만든 여권을 들고 비행기에 올라 여행을 떠났어요. 팔을 활짝 벌려 교실을 날아다니고, 도착해서는 꽃목걸이를 걸고 훌라댄스를 추며 즐거워했습니다. “나는 바다에 가고 싶어요ˮ 라며 가고 싶은 곳을 이야기하는 모습이 인상적이었어요.",
+    crossWeek: "여권 · 여행 사진 → 16주차 사계절 회고에 사용 → 16주차",
     physicalSteps: [
       { title: "여권을 보여주세요!", guide: "내가 만든 여권을 들고 탑승 줄에 서요." },
       { title: "비행기 출발!", guide: "팔을 넓게 벌리고 교실을 한 바퀴 날아요." },
       { title: "알로하! 훌라댄스", guide: "음악에 맞춰 허리와 손을 움직이며 춤춰요." },
       { title: "찰칵! 여행 사진", guide: "꽃목걸이를 걸고 친구들과 포즈를 취해요." },
+    ],
+    workbookSheets: [
+      { title: "나의 여권", guide: "내 얼굴을 그리고 이름을 써요." },
+      { title: "탑승권 만들기", guide: "가고 싶은 곳을 골라 탑승권에 붙여요." },
+      { title: "무엇을 가져갈까?", guide: "여행 가방에 넣을 물건을 골라 ○ 해요." },
+      { title: "내가 가고 싶은 곳", guide: "상상한 여행지를 그려요." },
+    ],
+    nuri: [
+      { area: "예술경험", items: ["음악에 맞춰 몸을 움직이며 표현한다.", "다양한 재료로 의상을 만들어 표현한다."] },
+      { area: "의사소통", items: ["가고 싶은 곳과 이유를 말로 표현한다.", "역할놀이에서 상황에 맞게 말한다."] },
+      { area: "사회관계", items: ["친구와 함께 역할을 나누어 놀이한다.", "차례를 지키며 참여한다."] },
+      { area: "신체운동·건강", items: ["리듬에 맞춰 신체를 조절하여 움직인다.", "공간을 이동하며 신체활동을 즐긴다."] },
     ],
     physicalMaterials: [
       "하와이풍 음원",
@@ -968,12 +1176,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "색띠를 허리끈에 붙여 훌라치마를 만들어요.",
       "스티커로 자유롭게 꾸며요.",
       "완성한 옷을 입고 춤춰요!",
-    ],
-    workbookSheets: [
-      { title: "나의 여권", guide: "내 얼굴을 그리고 이름을 써요." },
-      { title: "탑승권 만들기", guide: "가고 싶은 곳을 골라 탑승권에 붙여요." },
-      { title: "무엇을 가져갈까?", guide: "여행 가방에 넣을 물건을 골라 ○ 해요." },
-      { title: "내가 가고 싶은 곳", guide: "상상한 여행지를 그려요." },
     ],
     kitItems: [
       "꽃목걸이 키트 (가정연계 교구 · 확정)",
@@ -1023,6 +1225,19 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "알로하 훌라 — 훌라댄스를 추며 부르는 노래",
       "새로운 곳으로 — 낯선 곳의 즐거움을 담은 노래",
     ],
+    homeKitItems: [
+      "꽃 모양 파츠",
+      "목걸이 끈",
+      "꾸미기 스티커",
+      "여권 · 탑승권 도안",
+      "사용 안내서",
+    ],
+    homeKitHow: [
+      "원에서 만든 꽃목걸이를 집으로 가져가요.",
+      "가족이 함께 걸고 여행 사진을 찍어요.",
+      "여권에 사진을 붙이고 가고 싶은 곳을 적어요.",
+      "원으로 보내주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -1049,11 +1264,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "알록달록 가을 바구니",
     familyTitle: "가을 산물 준비",
     teacherPoint: "가을 색을 정답처럼 정하기보다 아이가 보고 느낀 색 · 모양 · 촉감을 말하고 분류하도록 돕습니다. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[] 키즈노트 성장기록 예시 RP 성장 리포트 kidsnoteExample",
+    homeKitName: "가을 산물 수집 봉투 (가정 준비 협조)",
+    homeKitLead: "산책하며 모은 가을을 담아 보내주세요.",
+    kidsnote: "오늘은 상자 속 가을 산물을 손으로 만져보며 “까끌까끌해요!ˮ, “동글동글해요!ˮ 하고 느낌을 말로 표현했어요. 꺼내어 확인한 뒤에는 색깔별로 나누어 담고, 모은 가을 산물로 우리 반 허수아비를 함께 꾸미며 가을의 풍성함을 경험했습니다.",
+    crossWeek: "가을 산물 허수아비 → 교실 전시, 16주차 회고 사진에 사용 → 16주차",
     physicalSteps: [
       { title: "상자에 손을 넣어요", guide: "보지 않고 상자 속 가을 산물을 만져요." },
       { title: "어떤 느낌이야?", guide: "까끌까끌, 매끈매끈 느낌을 말로 표현해요." },
       { title: "꺼내서 확인해요", guide: "무엇이었는지 꺼내 보고 친구들과 확인해요." },
       { title: "색깔별로 모아요", guide: "빨강 · 노랑 · 갈색 바구니에 나누어 담아요." },
+    ],
+    workbookSheets: [
+      { title: "같은 색 찾기", guide: "같은 색의 가을 산물을 찾아 ○ 해요." },
+      { title: "가을 산물 분류하기", guide: "나무 열매와 낙엽을 알맞게 나눠요." },
+      { title: "알록달록 가을 바구니", guide: "바구니에 가을 산물 스티커를 붙여요." },
+      { title: "내가 찾은 가을", guide: "내가 본 가을의 모습을 그려요. 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 허수아비 만들기 키트 · 유치원 활동 교구 허수아비 만들기 키트 (유치원 활동 교구 · 확정) 가을 산물을 붙여 우리 반 허수아비를 완성하는 원내 활동 교구예요." },
+    ],
+    nuri: [
+      { area: "자연탐구", items: ["가을 산물의 색 · 모양 · 촉감의 차이를 탐색한다.", "기준에 따라 자연물을 분류한다."] },
+      { area: "예술경험", items: ["자연물을 활용해 창의적으로 표현한다.", "가을의 색을 미술활동으로 표현한다."] },
+      { area: "의사소통", items: ["느낌과 생각을 말로 표현한다.", "친구의 표현을 듣고 비교한다."] },
     ],
     physicalMaterials: [
       "촉감 상자",
@@ -1065,12 +1295,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "낙엽과 씨앗으로 옷을 꾸며요.",
       "얼굴을 그려 표정을 만들어요.",
       "모자와 팔을 붙여 완성해요!",
-    ],
-    workbookSheets: [
-      { title: "같은 색 찾기", guide: "같은 색의 가을 산물을 찾아 ○ 해요." },
-      { title: "가을 산물 분류하기", guide: "나무 열매와 낙엽을 알맞게 나눠요." },
-      { title: "알록달록 가을 바구니", guide: "바구니에 가을 산물 스티커를 붙여요." },
-      { title: "내가 찾은 가을", guide: "내가 본 가을의 모습을 그려요. 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 허수아비 만들기 키트 · 유치원 활동 교구 허수아비 만들기 키트 (유치원 활동 교구 · 확정) 가을 산물을 붙여 우리 반 허수아비를 완성하는 원내 활동 교구예요." },
     ],
     kitItems: [
       "허수아비 본체 · 모자 · 팔 파츠",
@@ -1110,6 +1334,16 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "가을 바구니 — 가을 산물을 모으는 노래",
       "허수아비 친구 — 허수아비와 인사하는 노래",
     ],
+    homeKitItems: [
+      "수집 봉투 1개",
+      "가을 산물 안내 카드 1장",
+      "꾸미기 스티커",
+    ],
+    homeKitHow: [
+      "산책하며 가을 산물을 모아요.",
+      "봉투에 담고 아이 이름을 써요.",
+      "원으로 보내주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -1136,11 +1370,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "동글동글 보름달 소원",
     familyTitle: "복주머니 전하기",
     teacherPoint: "보름달의 과학 설명보다 둥근 모양, 밤의 느낌, 소중한 사람에게 전하고 싶은 마음을 몸과 말로 표현하게 합니다. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[] 키즈노트 성장기록 예시 RP 성장 리포트 kidsnoteExample",
+    homeKitName: "복주머니 전달 도안 (제작 교구 아님 · 소모품)",
+    homeKitLead: "복주머니 + 소원 카드",
+    kidsnote: "오늘은 친구들과 손을 잡고 달빛 강강술래를 했어요. 천천히 돌다가 점점 빨라지는 노래에 맞춰 웃음소리가 교실에 가득했습니다. 이어서 복주머니를 만들며 “할머니 건강하세요ˮ 하고 소중한 사람을 떠올리는 마음을 담았어요.",
+    crossWeek: "복주머니 → 가정 전달, 16주차 회고 사진에 사용 → 16주차",
     physicalSteps: [
       { title: "손을 잡고 둥글게", guide: "친구와 손을 잡고 커다란 원을 만들어요." },
       { title: "달이 떠올라요", guide: "노래에 맞춰 천천히 돌아요." },
       { title: "빙글빙글 강강술래!", guide: "점점 빠르게 돌며 즐겨요." },
       { title: "소원을 말해요", guide: "가운데 보름달을 보며 한 사람씩 소원을 말해요." },
+    ],
+    workbookSheets: [
+      { title: "보름달 찾기", guide: "여러 모양의 달 중에서 보름달을 찾아 ○ 해요." },
+      { title: "동글동글 보름달", guide: "달을 따라 그리고 예쁘게 색칠해요." },
+      { title: "나의 소원", guide: "보름달에 담고 싶은 소원을 그려요." },
+      { title: "누구에게 전할까?", guide: "마음을 전하고 싶은 사람을 그리거나 스티커로 붙여요. 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 이번 주 제작 교구는 없어요. 도안 · 소모품과 원 보유 자료로 운영해요. 보름달 활동 자료 (별도 교구 없음) 제작 교구 없이 도안 · 소모품과 원 보유 자료로 운영해요." },
+    ],
+    nuri: [
+      { area: "사회관계", items: ["소중한 사람을 떠올리고 마음을 전한다.", "친구와 함께 하나의 놀이를 완성한다."] },
+      { area: "예술경험", items: ["전통 놀이의 노래와 움직임을 즐긴다.", "복주머니를 꾸미며 창의적으로 표현한다."] },
+      { area: "의사소통", items: ["소원과 바람을 말로 표현한다.", "친구의 소원을 듣고 반응한다."] },
     ],
     physicalMaterials: [
       "강강술래 음원",
@@ -1153,12 +1402,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "보름달과 소원 그림을 그려요.",
       "복 (福) 글자를 붙이고 꾸며요.",
       "끈을 달아 완성해요!",
-    ],
-    workbookSheets: [
-      { title: "보름달 찾기", guide: "여러 모양의 달 중에서 보름달을 찾아 ○ 해요." },
-      { title: "동글동글 보름달", guide: "달을 따라 그리고 예쁘게 색칠해요." },
-      { title: "나의 소원", guide: "보름달에 담고 싶은 소원을 그려요." },
-      { title: "누구에게 전할까?", guide: "마음을 전하고 싶은 사람을 그리거나 스티커로 붙여요. 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 이번 주 제작 교구는 없어요. 도안 · 소모품과 원 보유 자료로 운영해요. 보름달 활동 자료 (별도 교구 없음) 제작 교구 없이 도안 · 소모품과 원 보유 자료로 운영해요." },
     ],
     kitItems: [
       "대형 보름달 소품 1개",
@@ -1198,6 +1441,17 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "강강술래 — 손잡고 도는 전통 놀이 노래",
       "소원을 담아 — 마음을 담아 전하는 노래",
     ],
+    homeKitItems: [
+      "복주머니 도안 1장",
+      "복 (福) 글자 스티커",
+      "소원 카드 1장",
+      "끈 1개",
+    ],
+    homeKitHow: [
+      "아이와 함께 복주머니를 완성해요.",
+      "소원 카드에 아이의 말을 그대로 적어요.",
+      "가족에게 전하고 사진을 보내주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -1224,11 +1478,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "겨울에는 무엇이 필요할까?",
     familyTitle: "개인 장갑 준비",
     teacherPoint: "겨울을 설명하기보다 눈의 감각과 몸의 흔적을 놀이로 경험하고, 따뜻하게 지내기 위한 생활 요소를 연결합니다. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[] 키즈노트 성장기록 예시 RP 성장 리포트 kidsnoteExample",
+    homeKitName: "개인 장갑 준비 안내 (가정 준비물)",
+    homeKitLead: "겨울 놀이를 위한 가정 준비물",
+    kidsnote: "오늘은 교실에서 말랑말랑한 눈놀이를 했어요. “차가워요!ˮ, “폭신해요!ˮ 하며 눈을 만지고 동글동글 눈덩이를 굴려 친구와 함께 눈사람을 완성했습니다. 이어서 반짝이는 나만의 눈 결정을 만들어 창가에 걸며 겨울을 즐겼어요.",
+    crossWeek: "나의 눈 결정 → 교실 전시, 16주차 회고 사진에 사용 → 16주차",
     physicalSteps: [
       { title: "눈을 만져요", guide: "인공눈 (폼) 을 손으로 만지며 느낌을 이야기해요." },
       { title: "눈덩이를 굴려요", guide: "두 손으로 눈을 모아 동글동글 굴려요." },
       { title: "발자국을 찍어요", guide: "하얀 매트 위에 발자국과 손자국을 남겨요." },
       { title: "눈사람을 만들어요", guide: "친구와 함께 눈덩이를 쌓아 눈사람을 완성해요." },
+    ],
+    workbookSheets: [
+      { title: "겨울에는 무엇이 필요할까?", guide: "겨울에 필요한 물건을 찾아 ○ 해요." },
+      { title: "여름과 겨울 나누기", guide: "여름 물건과 겨울 물건을 알맞게 나눠요." },
+      { title: "눈 결정 따라 그리기", guide: "선을 따라 눈 결정을 그려요." },
+      { title: "나의 겨울 놀이", guide: "겨울에 하고 싶은 놀이를 그려요." },
+    ],
+    nuri: [
+      { area: "신체운동·건강", items: ["눈의 감각을 느끼며 신체를 움직인다.", "따뜻하게 지내는 방법을 알고 실천한다."] },
+      { area: "자연탐구", items: ["눈과 겨울 날씨의 특징을 탐색한다.", "계절에 따른 생활의 변화를 안다."] },
+      { area: "예술경험", items: ["눈 결정을 다양한 재료로 표현한다.", "몸의 흔적으로 자유롭게 표현한다."] },
     ],
     physicalMaterials: [
       "인공눈 · 눈놀이 폼",
@@ -1242,12 +1511,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "반짝이 풀과 은색 재료로 꾸며요.",
       "가운데를 원하는 색으로 칠해요.",
       "끈을 달아 걸어요!",
-    ],
-    workbookSheets: [
-      { title: "겨울에는 무엇이 필요할까?", guide: "겨울에 필요한 물건을 찾아 ○ 해요." },
-      { title: "여름과 겨울 나누기", guide: "여름 물건과 겨울 물건을 알맞게 나눠요." },
-      { title: "눈 결정 따라 그리기", guide: "선을 따라 눈 결정을 그려요." },
-      { title: "나의 겨울 놀이", guide: "겨울에 하고 싶은 놀이를 그려요." },
     ],
     kitItems: [
       "인공눈 · 눈놀이 폼",
@@ -1298,6 +1561,15 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "눈사람 친구 — 눈사람을 만드는 노래",
       "따뜻하게 입어요 — 겨울 옷차림 노래",
     ],
+    homeKitItems: [
+      "장갑 이름표 스티커",
+      "겨울 준비물 안내 카드",
+    ],
+    homeKitHow: [
+      "아이 이름을 적은 장갑을 준비해요.",
+      "이름표 스티커를 붙여요.",
+      "원으로 보내주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -1324,11 +1596,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "누구에게 마음을 전할까?",
     familyTitle: "어른에게 마음배지 전달",
     teacherPoint: "“착한 일을 해야 해ˮ 라고 가르치기보다 누구에게 어떤 마음을 전하고 싶은지 아이가 직접 떠올리고 선택하도록 합니다. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[] 키즈노트 성장기록 예시 RP 성장 리포트 kidsnoteExample",
+    homeKitName: "온기벨 키트 (가정연계 교구 · 확정)",
+    homeKitLead: "원에서 만든 온기벨을 집으로 가져가 현관에 걸고 마음을 나눠요.",
+    kidsnote: "오늘은 고마운 마음을 담은 마음배지를 만들어 직접 전했어요. “선생님 고마워요ˮ 하며 배지를 달아주는 손길이 무척 따뜻했습니다. 이어서 딸랑딸랑 소리가 나는 온기벨을 만들며 나눔의 즐거움을 함께 느꼈어요.",
+    crossWeek: "마음배지 · 온기벨 → 가정 전달, 16주차 회고 사진에 사용 → 16주차",
     physicalSteps: [
       { title: "마음을 떠올려요", guide: "고마운 사람, 도와주고 싶은 사람을 떠올려요." },
       { title: "배지를 골라 꾸며요", guide: "전하고 싶은 마음에 맞는 배지를 고르고 꾸며요." },
       { title: "다가가 전해요", guide: "그 사람에게 걸어가 배지를 달아줘요." },
       { title: "마음을 말해요", guide: "“고마워요ˮ, “힘내세요ˮ 하고 마음을 말로 전해요." },
+    ],
+    workbookSheets: [
+      { title: "표정을 살펴봐요", guide: "여러 표정을 보고 어떤 마음인지 말해요." },
+      { title: "도움이 필요한 친구", guide: "도움이 필요한 장면을 찾아 ○ 해요." },
+      { title: "어떤 마음을 전할까?", guide: "상황과 어울리는 마음배지를 연결해요." },
+      { title: "누구에게 전할까?", guide: "마음을 전하고 싶은 사람을 그리거나 써요. 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 온기벨 키트 · 가정연계 교구 온기 나눔 자료 (가정 교구 ‘ 온기벨 ʼ 연계) 온기벨은 가정연계 교구로 제작되고, 마음배지는 도안 · 소모품으로 준비해요." },
+    ],
+    nuri: [
+      { area: "사회관계", items: ["다른 사람의 마음을 헤아리고 배려한다.", "감사한 마음을 행동으로 표현한다."] },
+      { area: "의사소통", items: ["고마운 마음을 말로 전한다.", "상황에 맞는 인사말을 사용한다."] },
+      { area: "예술경험", items: ["따뜻한 느낌을 색과 재료로 표현한다.", "소리의 차이를 듣고 즐긴다."] },
     ],
     physicalMaterials: [
       "마음배지 도안",
@@ -1341,12 +1628,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "따뜻한 색으로 색칠해요.",
       "방울을 달아 소리를 확인해요.",
       "끈과 리본으로 완성해요!",
-    ],
-    workbookSheets: [
-      { title: "표정을 살펴봐요", guide: "여러 표정을 보고 어떤 마음인지 말해요." },
-      { title: "도움이 필요한 친구", guide: "도움이 필요한 장면을 찾아 ○ 해요." },
-      { title: "어떤 마음을 전할까?", guide: "상황과 어울리는 마음배지를 연결해요." },
-      { title: "누구에게 전할까?", guide: "마음을 전하고 싶은 사람을 그리거나 써요. 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 온기벨 키트 · 가정연계 교구 온기 나눔 자료 (가정 교구 ‘ 온기벨 ʼ 연계) 온기벨은 가정연계 교구로 제작되고, 마음배지는 도안 · 소모품으로 준비해요." },
     ],
     kitItems: [
       "온기벨 키트 (가정연계 교구 · 확정)",
@@ -1385,6 +1666,20 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "딸랑딸랑 온기벨 — 방울 소리와 함께 부르는 노래",
       "나눠요 우리 — 마음을 나누는 노래",
     ],
+    homeKitItems: [
+      "온기벨 본체",
+      "방울",
+      "끈 · 리본",
+      "마음배지 도안 2장",
+      "배지 핀 2개",
+      "감사 카드 1장",
+    ],
+    homeKitHow: [
+      "원에서 만든 온기벨을 집 현관에 걸어요.",
+      "드나들 때마다 딸랑 소리를 들어요.",
+      "마음배지를 꾸며 전할 사람에게 전해요.",
+      "전하는 순간을 사진으로 보내주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -1411,11 +1706,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "나의 사계절",
     familyTitle: "1분 비밀 영상편지",
     teacherPoint: "새로운 내용을 더 가르치는 주차가 아니라 9~15주의 사진 · 작품 · 기억을 돌아보고 “나는 무엇을 기억하는가ˮ 를 말하게 하는 통합 · 회고 주차입니다. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[] 키즈노트 성장기록 예시 RP 성장 리포트 kidsnoteExample",
+    homeKitName: "1분 비밀 영상편지 안내",
+    homeKitLead: "가정에서 촬영해 보내주시는 영상편지",
+    kidsnote: "오늘은 봄부터 겨울까지 우리 반 사진을 함께 보며 8주를 돌아보았어요. “이거 내가 만든 꽃다발이에요!ˮ 하며 반가워하는 모습이 사랑스러웠습니다. 가장 기억에 남는 순간을 골라 영상편지로 남기며, 한 뼘 더 자란 자신의 모습을 이야기했어요.",
+    crossWeek: "사계절 사진 액자 · 영상편지 → 수료 자료로 가정 전달 15주차 → 9~15주차 사진 · 작품 · 기억",
     physicalSteps: [
       { title: "사계절을 다시 만나요", guide: "봄부터 겨울까지 우리 반 사진을 함께 봐요." },
       { title: "기억에 남는 순간 고르기", guide: "가장 기억에 남는 활동 사진을 하나 골라요." },
       { title: "영상편지를 남겨요", guide: "한 사람씩 카메라 앞에서 이야기를 남겨요." },
       { title: "다 같이 보며 박수!", guide: "친구들의 영상을 함께 보며 박수를 보내요." },
+    ],
+    workbookSheets: [
+      { title: "사계절 연결하기", guide: "봄 · 여름 · 가을 · 겨울 사진과 계절을 연결해요." },
+      { title: "내가 좋아한 활동", guide: "가장 즐거웠던 활동에 ○ 해요." },
+      { title: "나의 사계절", guide: "계절마다 기억나는 장면을 그려요." },
+      { title: "고마운 사람에게", guide: "고마운 사람을 그리고 마음을 전해요. 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 이번 주 제작 교구는 없어요. 도안 · 소모품과 원 보유 자료로 운영해요. 사계절 회고 자료 (별도 교구 없음) 9~15주 사진 · 작품과 원 보유 자료로 운영해요." },
+    ],
+    nuri: [
+      { area: "사회관계", items: ["함께한 시간을 돌아보며 소중함을 느낀다.", "고마운 사람에게 마음을 전한다."] },
+      { area: "의사소통", items: ["경험한 것을 이야기로 표현한다.", "친구의 이야기를 듣고 공감한다."] },
+      { area: "예술경험", items: ["사진과 작품으로 자신의 경험을 표현한다.", "노래와 영상으로 마음을 표현한다."] },
     ],
     physicalMaterials: [
       "9~15주차 활동 사진",
@@ -1428,12 +1738,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "봄 · 여름 · 가을 · 겨울 칸에 사진을 붙여요.",
       "계절별 색으로 꾸며요.",
       "이름을 써서 완성해요!",
-    ],
-    workbookSheets: [
-      { title: "사계절 연결하기", guide: "봄 · 여름 · 가을 · 겨울 사진과 계절을 연결해요." },
-      { title: "내가 좋아한 활동", guide: "가장 즐거웠던 활동에 ○ 해요." },
-      { title: "나의 사계절", guide: "계절마다 기억나는 장면을 그려요." },
-      { title: "고마운 사람에게", guide: "고마운 사람을 그리고 마음을 전해요. 교구 / 놀이 자료 키트 PR 준비 · 물류 LS 수업 진행 가이드 kit 이번 주 제작 교구는 없어요. 도안 · 소모품과 원 보유 자료로 운영해요. 사계절 회고 자료 (별도 교구 없음) 9~15주 사진 · 작품과 원 보유 자료로 운영해요." },
     ],
     kitItems: [
       "사계절 배경판 1개",
@@ -1473,6 +1777,11 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "한 뼘 더 자랐어 — 성장을 축하하는 노래",
       "고마워 우리 — 함께한 친구들에게 전하는 노래",
     ],
+    homeKitItems: [
+      "촬영 안내 카드 1장",
+      "질문 예시 카드 1장",
+    ],
+    homeKitHow: [],
     mediaPending: true,
     missingInSource: [],
   },
@@ -1499,11 +1808,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "나의 물놀이 약속",
     familyTitle: "우리 집 여름 안전 점검",
     teacherPoint: "물놀이 사고를 무섭게 묘사하지 말고 “이렇게 하면 안전해요ˮ 를 몸으로 반복해 익히게 합니다. 원에서는 동화와 이어지는 물놀이 안전을 중심으로 다루고, 여름철 전기 · 선풍기 안전은 가정연계로 나누면 하루에 몰리지 않아요. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[]",
+    homeKitName: "우리 집 여름 안전 스티커 세트",
+    homeKitLead: "선풍기 · 콘센트 · 욕실 안전 점검을 위한 가정용 교구",
+    kidsnote: "오늘부터 우리 반은 세계여행을 떠나요! 첫 출발은 물놀이터예요. 그림책으로 물놀이 안전을 만난 뒤, 준비운동부터 어른 손 잡고 들어가기까지 몸으로 익혔습니다. “도와주세요!ˮ 하고 크게 외치는 연습도 했어요. 직접 만든 안전 튜브에 우리 반 약속을 담아 교실에 걸었어요.",
+    crossWeek: "우리 반 세계지도 설치 + 출발지 표시 → 24주차까지 사용 → 24주차 나만의 안전 튜브 → 교실 전시",
     physicalSteps: [
       { title: "준비운동 먼저!", guide: "물에 들어가기 전, 노래에 맞춰 다 함께 준비운동을 해요." },
       { title: "어른 손 꼭 잡고", guide: "파란 천 (물) 으로 들어갈 때 반드시 어른 손을 잡고 들어가요." },
       { title: "미끄러워요, 걸어가요", guide: "매트 위를 뛰지 않고 천천히 걸어요." },
       { title: "“도와주세요!ˮ", guide: "튜브를 놓쳤을 때 큰 소리로 어른을 부르는 연습을 해요." },
+    ],
+    workbookSheets: [
+      { title: "안전한 행동 찾기", guide: "물놀이 그림에서 안전한 행동을 찾아 ○ 해요." },
+      { title: "무엇이 필요할까?", guide: "물놀이에 필요한 것 (튜브 · 물안경 · 모자) 을 찾아 연결해요." },
+      { title: "조심해요!", guide: "물놀이에서 하면 안 되는 행동을 찾아 × 해요." },
+      { title: "나의 물놀이 약속", guide: "내가 지킬 약속을 고르고 손도장을 찍어요." },
+    ],
+    nuri: [
+      { area: "신체운동·건강", items: ["물놀이 전 준비운동의 필요성을 알고 실천한다.", "물놀이와 여름철 생활에서 안전하게 행동한다."] },
+      { area: "의사소통", items: ["위험한 상황에서 도움을 요청하는 말을 한다.", "왜 위험한지 이유를 말로 설명한다."] },
+      { area: "사회관계", items: ["함께 정한 약속을 지킨다.", "친구의 안전에도 관심을 가진다."] },
     ],
     physicalMaterials: [
       "파란 천 (물 표현)",
@@ -1517,12 +1841,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "좋아하는 색으로 칠해요.",
       "내가 지킬 약속 스티커를 붙여요.",
       "이름을 써서 완성해요!",
-    ],
-    workbookSheets: [
-      { title: "안전한 행동 찾기", guide: "물놀이 그림에서 안전한 행동을 찾아 ○ 해요." },
-      { title: "무엇이 필요할까?", guide: "물놀이에 필요한 것 (튜브 · 물안경 · 모자) 을 찾아 연결해요." },
-      { title: "조심해요!", guide: "물놀이에서 하면 안 되는 행동을 찾아 × 해요." },
-      { title: "나의 물놀이 약속", guide: "내가 지킬 약속을 고르고 손도장을 찍어요." },
     ],
     kitItems: [
       "파란 물 표현 천 1장",
@@ -1575,6 +1893,16 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "어른 손 꼭 잡고 — 안전하게 들어가는 약속 노래",
       "조심조심 선풍기 — 여름철 전기 안전 노래",
     ],
+    homeKitItems: [
+      "안전 스티커 12 매 (선풍기 · 콘센트 · 욕실)",
+      "우리 집 여름 안전 약속 카드 1장",
+      "사용 안내서",
+    ],
+    homeKitHow: [
+      "집 안을 함께 둘러봐요.",
+      "조심할 곳에 스티커를 붙여요.",
+      "약속 카드를 적어 붙여주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -1601,11 +1929,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "색을 섞어 봐요",
     familyTitle: "우리 집 색깔 찾기",
     teacherPoint: "정답 색 이름을 알려주기보다 “무슨 색이 됐어?ˮ, “어떤 이름을 붙여줄까?ˮ 를 물어 아이가 발견하고 이름 붙이게 합니다. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[] 키즈노트 성장기록 예시 RP 성장 리포트 kidsnoteExample",
+    homeKitName: "색 찾기 미션 카드",
+    homeKitLead: "가정에서 하는 색 탐색 놀이",
+    kidsnote: "오늘은 색의 축제가 열리는 나라로 여행을 떠났어요. 빨강 스카프와 노랑 스카프를 겹치자 “주황색이다!ˮ 하고 눈이 동그래졌습니다. 직접 섞은 색에 ‘ 딸기우유색 ʼ 같은 이름을 붙이며 세상에 하나뿐인 색 카드를 만들었어요.",
+    crossWeek: "우리 반 색 지도 → 교실 전시, 24주차 세계지도에 인도 깃발 부착 → 24주차 17주차 → 우리 반 세계지도 (17주차 설치) — 인도 깃발을 붙여요",
     physicalSteps: [
       { title: "내 색을 골라요", guide: "빨강 · 노랑 · 파랑 스카프 중 하나를 골라요." },
       { title: "색 친구를 만나요", guide: "다른 색 친구와 만나 스카프를 겹쳐 봐요." },
       { title: "무슨 색이 됐어?", guide: "겹친 색을 함께 보고 무슨 색인지 말해요." },
       { title: "알록달록 축제!", guide: "음악에 맞춰 모두 스카프를 흔들며 색의 축제를 즐겨요." },
+    ],
+    workbookSheets: [
+      { title: "같은 색 찾기", guide: "같은 색끼리 찾아 ○ 해요." },
+      { title: "색을 섞으면?", guide: "두 색을 섞으면 무슨 색이 되는지 선으로 연결해요." },
+      { title: "색에 이름 붙이기", guide: "내가 만든 색을 칠하고 이름을 적어요." },
+      { title: "내가 좋아하는 색", guide: "좋아하는 색으로 그림을 자유롭게 꾸며요." },
+    ],
+    nuri: [
+      { area: "자연탐구", items: ["색의 변화를 관찰하고 예상한다.", "물질이 섞이는 과정에 호기심을 가진다."] },
+      { area: "예술경험", items: ["다양한 색으로 자유롭게 표현한다.", "색의 느낌을 즐긴다."] },
+      { area: "의사소통", items: ["색의 느낌을 자기 말로 표현한다.", "내가 만든 색에 이름을 붙여 설명한다."] },
     ],
     physicalMaterials: [
       "색 스카프 (빨강 · 노랑 · 파랑)",
@@ -1619,12 +1962,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "섞은 색을 카드에 칠해요.",
       "내가 만든 색에 이름을 붙여 적어요.",
       "친구들 카드와 모아 색 지도를 만들어요!",
-    ],
-    workbookSheets: [
-      { title: "같은 색 찾기", guide: "같은 색끼리 찾아 ○ 해요." },
-      { title: "색을 섞으면?", guide: "두 색을 섞으면 무슨 색이 되는지 선으로 연결해요." },
-      { title: "색에 이름 붙이기", guide: "내가 만든 색을 칠하고 이름을 적어요." },
-      { title: "내가 좋아하는 색", guide: "좋아하는 색으로 그림을 자유롭게 꾸며요." },
     ],
     kitItems: [
       "색 스카프 3 색 15장",
@@ -1676,6 +2013,16 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "알록달록 축제 — 스카프를 흔들며 부르는 축제 노래",
       "나만의 색 — 내가 만든 색을 소개하는 노래",
     ],
+    homeKitItems: [
+      "색 미션 카드 6장",
+      "색 스티커",
+      "사용 안내서",
+    ],
+    homeKitHow: [
+      "카드를 한 장 뽑아요.",
+      "그 색 물건을 집에서 찾아요.",
+      "찾은 물건을 사진으로 보내주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -1702,11 +2049,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "세계의 악기 탐험",
     familyTitle: "우리 집 리듬 악기",
     teacherPoint: "악기 이름을 외우게 하기보다 소리의 차이 (크다 · 작다, 길다 · 짧다) 를 듣고 몸으로 표현하게 합니다. 4주차 씨앗 마라카스와 달리, 이번 주는 ‘ 여러 나라의 서로 다른 소리 ʼ 를 비교하는 것이 중심이에요. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[]",
+    homeKitName: "우리 집 리듬 카드",
+    homeKitLead: "가정에서 하는 리듬 놀이 카드",
+    kidsnote: "오늘은 소리를 따라 세계여행을 떠났어요. 둥둥 울리는 북소리를 따라가니 아프리카, 딸깍이는 소리를 따라가니 스페인이었습니다. 컵과 풍선으로 나만의 젬베를 만들어 친구들과 신나게 합주하며 리듬을 즐겼어요.",
+    crossWeek: "나만의 젬베 → 음악 영역 비치, 24주차 세계지도에 아프리카 깃발 부착 → 24주차 가져오기 · 우리 반 세계지도 — 아프리카 · 스페인 깃발을 붙여요",
     physicalSteps: [
       { title: "소리를 들어요", guide: "눈을 감고 들려오는 악기 소리를 들어요." },
       { title: "소리를 따라가요", guide: "소리가 나는 곳으로 찾아가요. 어느 나라 악기일까요?" },
       { title: "소리에 맞춰 움직여요", guide: "빠른 소리엔 빠르게, 느린 소리엔 느리게 움직여요." },
       { title: "다 함께 합주!", guide: "각자 고른 악기로 함께 연주해요." },
+    ],
+    workbookSheets: [
+      { title: "어떤 소리일까?", guide: "악기와 소리를 알맞게 연결해요." },
+      { title: "나라와 악기", guide: "나라 깃발과 그 나라 악기를 연결해요." },
+      { title: "큰 소리 작은 소리", guide: "큰 소리가 나는 악기에 ○ 해요." },
+      { title: "나만의 악기", guide: "내가 상상한 악기를 그려요." },
+    ],
+    nuri: [
+      { area: "예술경험", items: ["다양한 악기 소리를 듣고 표현한다.", "리듬에 맞춰 신체와 악기로 표현한다."] },
+      { area: "자연탐구", items: ["소리의 크기와 빠르기 차이를 비교한다.", "소리가 나는 원리에 관심을 가진다."] },
+      { area: "신체운동·건강", items: ["리듬에 맞춰 신체를 조절하여 움직인다.", "소근육을 사용해 악기를 연주한다."] },
     ],
     physicalMaterials: [
       "젬베 (또는 미니 북)",
@@ -1721,12 +2083,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "겉면을 아프리카 무늬로 꾸며요.",
       "두드려 소리를 확인해요.",
       "친구들과 함께 연주해요!",
-    ],
-    workbookSheets: [
-      { title: "어떤 소리일까?", guide: "악기와 소리를 알맞게 연결해요." },
-      { title: "나라와 악기", guide: "나라 깃발과 그 나라 악기를 연결해요." },
-      { title: "큰 소리 작은 소리", guide: "큰 소리가 나는 악기에 ○ 해요." },
-      { title: "나만의 악기", guide: "내가 상상한 악기를 그려요." },
     ],
     kitItems: [
       "미니 젬베 2개",
@@ -1778,6 +2134,16 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "딸깍딸깍 캐스터네츠 — 스페인 악기 리듬 노래",
       "다 함께 합주 — 모두 함께 연주하는 노래",
     ],
+    homeKitItems: [
+      "리듬 카드 6장 (짝짝 · 쿵쿵 · 딸랑)",
+      "악기 사진 카드 4장",
+      "사용 안내서",
+    ],
+    homeKitHow: [
+      "카드를 한 장 뽑아요.",
+      "카드의 리듬을 손뼉이나 물건으로 따라 해요.",
+      "가족이 번갈아 해봐요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -1804,11 +2170,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "나라마다 다른 명절",
     familyTitle: "우리 집 명절 이야기",
     teacherPoint: "명절 이름과 날짜를 외우게 하기보다, 인사 동작과 음식을 직접 해보며 “우리 집은 어떻게 해?ˮ 를 이야기하게 합니다. 13주차 복주머니와 달리 이번 주는 ‘ 나라별 인사와 음식 ʼ 이 중심이에요. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[]",
+    homeKitName: "우리 집 명절 이야기 카드",
+    homeKitLead: "가족 명절 사진을 붙여 보내는 카드",
+    kidsnote: "오늘은 여러 나라의 명절을 만났어요. 한국의 세배부터 중국의 “꽁시파차이ˮ 까지 인사를 배우고, 친구를 만날 때마다 배운 인사를 건네며 즐거워했습니다. 점토로 송편과 만두를 빚어 우리 반 명절 밥상도 차렸어요.",
+    crossWeek: "우리 반 명절 밥상 → 교실 전시, 24주차 세계지도에 아시아 깃발 부착 → 24주차 가져오기 · 우리 반 세계지도 — 한국 · 중국 · 베트남 깃발을 붙여요",
     physicalSteps: [
       { title: "한국, 세배해요", guide: "두 손을 모으고 “새해 복 많이 받으세요ˮ 하고 절해요." },
       { title: "중국, 공수 인사", guide: "두 손을 맞잡고 “꽁시파차이!ˮ 하고 인사해요." },
       { title: "베트남, 인사해요", guide: "두 손을 모으고 고개 숙여 인사해요." },
       { title: "인사 여행!", guide: "음악이 멈추면 만난 친구에게 배운 인사를 해요." },
+    ],
+    workbookSheets: [
+      { title: "명절 음식 찾기", guide: "명절에 먹는 음식을 찾아 ○ 해요." },
+      { title: "나라와 명절", guide: "나라 깃발과 명절 이름을 연결해요." },
+      { title: "인사를 따라 해요", guide: "인사하는 그림을 보고 따라 그려요." },
+      { title: "우리 집 명절", guide: "우리 가족의 명절 모습을 그려요." },
+    ],
+    nuri: [
+      { area: "사회관계", items: ["나라마다 다른 문화가 있음을 안다.", "가족과 이웃에게 감사한 마음을 표현한다."] },
+      { area: "의사소통", items: ["여러 나라의 인사말을 듣고 따라 말한다.", "우리 가족의 명절을 이야기한다."] },
+      { area: "예술경험", items: ["점토로 명절 음식을 만들어 표현한다.", "명절의 분위기를 놀이로 표현한다."] },
     ],
     physicalMaterials: [
       "나라 깃발 3종",
@@ -1822,12 +2203,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "점토로 송편 · 만두 · 월병을 빚어요.",
       "접시 도안에 예쁘게 담아요.",
       "우리 반 명절 밥상을 함께 차려요!",
-    ],
-    workbookSheets: [
-      { title: "명절 음식 찾기", guide: "명절에 먹는 음식을 찾아 ○ 해요." },
-      { title: "나라와 명절", guide: "나라 깃발과 명절 이름을 연결해요." },
-      { title: "인사를 따라 해요", guide: "인사하는 그림을 보고 따라 그려요." },
-      { title: "우리 집 명절", guide: "우리 가족의 명절 모습을 그려요." },
     ],
     kitItems: [
       "나라 깃발 3종",
@@ -1878,6 +2253,17 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "꽁시파차이 — 중국 새해 인사 노래",
       "모여 모여 명절날 — 가족이 모이는 날의 노래",
     ],
+    homeKitItems: [
+      "명절 이야기 카드 1장",
+      "나라 깃발 스티커",
+      "꾸미기 스티커",
+      "사용 안내서",
+    ],
+    homeKitHow: [
+      "가족 명절 사진을 붙여요.",
+      "가족이 하는 명절 인사를 적어요.",
+      "원으로 보내주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -1904,11 +2290,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "토마토가 자라요",
     familyTitle: "우리 집 방울토마토 키우기",
     teacherPoint: "축제 놀이의 신남만 남지 않도록, 씨앗 → 새싹 → 꽃 → 열매의 과정을 먼저 몸으로 표현한 뒤 수확 놀이로 이어갑니다. 4주차 씨앗 경험을 “그때 심었던 씨앗 기억나?ˮ 로 연결해 주세요. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[]",
+    homeKitName: "방울토마토 키우기 키트",
+    homeKitLead: "미니 화분 + 씨앗 + 관찰 카드",
+    kidsnote: "오늘은 스페인의 토마토 축제로 여행을 떠났어요. 작은 씨앗이 되어 웅크렸다가 쑥쑥 자라 열매가 되는 과정을 온몸으로 표현했습니다. 잘 익은 토마토를 따서 축제를 즐긴 뒤에는 토마토 도장을 찍어 우리 반 토마토밭을 만들었어요.",
+    crossWeek: "우리 반 토마토밭 → 교실 전시, 24주차 세계지도에 스페인 깃발 부착 → 24주차 4주차 → 우리 반 세계지도 — 스페인 깃발을 붙여요 / 4주차 씨앗 경험",
     physicalSteps: [
       { title: "씨앗이 되어요", guide: "몸을 웅크려 작은 씨앗이 되어요." },
       { title: "쑥쑥 자라요", guide: "새싹에서 줄기, 꽃까지 천천히 몸을 펴요." },
       { title: "토마토를 따요", guide: "초록 토마토가 빨갛게 익으면 조심히 따요." },
       { title: "토마토 축제!", guide: "말랑한 토마토 공을 던지고 받으며 축제를 즐겨요." },
+    ],
+    workbookSheets: [
+      { title: "자라는 순서", guide: "씨앗부터 토마토가 되기까지 순서대로 번호를 써요." },
+      { title: "색이 변해요", guide: "초록 토마토와 빨간 토마토를 알맞게 색칠해요." },
+      { title: "토마토를 세어요", guide: "바구니 속 토마토가 몇 개인지 세어 써요." },
+      { title: "나의 토마토", guide: "내가 키우고 싶은 토마토를 그려요." },
+    ],
+    nuri: [
+      { area: "자연탐구", items: ["식물이 자라는 과정을 순서대로 안다.", "색과 크기의 변화를 관찰한다."] },
+      { area: "신체운동·건강", items: ["성장 과정을 신체로 표현한다.", "공을 던지고 받으며 신체를 조절한다."] },
+      { area: "예술경험", items: ["자연물을 활용해 찍기로 표현한다.", "축제의 즐거움을 놀이로 표현한다."] },
     ],
     physicalMaterials: [
       "말랑 스펀지 공 (토마토) 20개",
@@ -1922,12 +2323,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "도화지에 콕콕 찍어요.",
       "줄기와 잎을 그려 넣어요.",
       "나만의 토마토밭을 완성해요!",
-    ],
-    workbookSheets: [
-      { title: "자라는 순서", guide: "씨앗부터 토마토가 되기까지 순서대로 번호를 써요." },
-      { title: "색이 변해요", guide: "초록 토마토와 빨간 토마토를 알맞게 색칠해요." },
-      { title: "토마토를 세어요", guide: "바구니 속 토마토가 몇 개인지 세어 써요." },
-      { title: "나의 토마토", guide: "내가 키우고 싶은 토마토를 그려요." },
     ],
     kitItems: [
       "말랑 스펀지 공 20개",
@@ -1979,6 +2374,19 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "빨갛게 익었네 — 수확의 기쁨을 담은 노래",
       "토마토 축제 — 축제를 즐기는 노래",
     ],
+    homeKitItems: [
+      "미니 화분 1개",
+      "방울토마토 씨앗",
+      "흙",
+      "성장 관찰 카드 1장",
+      "사용 안내서",
+    ],
+    homeKitHow: [
+      "화분에 흙을 담고 씨앗을 심어요.",
+      "햇빛이 드는 곳에 두고 물을 줘요.",
+      "관찰 카드에 변화를 그려요.",
+      "사진을 원으로 보내주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -2005,12 +2413,27 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "세계의 축제와 할로윈",
     familyTitle: "가족에게 초대장을 보내요",
     teacherPoint: "할로윈을 무서운 놀이가 아니라 ‘ 세계의 축제 중 하나 ʼ 로 소개합니다. 18주 인도 홀리, 21주 스페인 토마토 축제를 함께 떠올리면 연결이 좋아요. 어두운 조명과 갑작스러운 소리는 피하고, 가면은 쓰기 싫어하면 손에 들고 참여해도 괜찮다고 미리 알려주세요. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[]",
+    homeKitName: "할로윈 파티 초대장 키트",
+    homeKitLead: "초대장 + 간단 변신 소품",
+    kidsnote: "오늘은 세계의 축제를 만나고 우리 반 할로윈 파티를 열었어요. 장식팀 · 간식팀 · 초대팀으로 나누어 교실을 꾸미는 동안 “여기에 더 걸자!ˮ 하며 서로 의견을 나누는 모습이 인상적이었습니다. 직접 꾸민 파티장에서 “트릭 오어 트릿!ˮ 을 외치며 친구들과 신나게 즐겼어요.",
+    crossWeek: "파티 장식 · 가면 → 교실 전시, 24주차 세계지도에 미국 깃발 부착 → 24주차 가져오기 · 우리 반 세계지도 — 미국 깃발을 붙여요",
     physicalSteps: [
       { title: "세계의 축제를 만나요", guide: "축제 사진 카드를 보며 인도 홀리, 스페인 토마토 축제, 미국 할로윈을 떠올려요." },
       { title: "파티 준비를 나눠요", guide: "장식팀 · 간식팀 · 초대팀으로 역할을 나누어 교실을 꾸며요." },
       { title: "변신하고 입장!", guide: "직접 만든 가면을 쓰거나 들고 파티장에 들어가요." },
       { title: "트릭 오어 트릿!", guide: "친구를 만나 “트릭 오어 트릿!ˮ 을 외치고 사탕 모형을 주고받아요." },
       { title: "다 함께 춤춰요", guide: "파티 음악에 맞춰 다 같이 춤추며 축제를 즐겨요." },
+    ],
+    workbookSheets: [
+      { title: "축제를 찾아라", guide: "여러 나라 축제 사진 중 할로윈을 찾아 ○ 해요." },
+      { title: "어느 나라 축제일까?", guide: "축제와 나라를 알맞게 연결해요. (홀리 - 인도, 토마토 - 스페인, 할로윈 - 미국)" },
+      { title: "파티에 필요한 것", guide: "파티를 열 때 필요한 물건을 찾아 ○ 해요." },
+      { title: "나의 파티 초대장", guide: "초대하고 싶은 사람을 정하고 초대장을 꾸며요." },
+    ],
+    nuri: [
+      { area: "예술경험", items: ["다양한 재료로 파티 장식을 만들어 표현한다.", "축제의 분위기를 음악과 움직임으로 즐긴다."] },
+      { area: "사회관계", items: ["역할을 나누어 함께 준비한다.", "친구를 초대하고 함께 즐긴다."] },
+      { area: "의사소통", items: ["초대의 말을 주고받는다.", "여러 나라 축제에 대해 이야기한다."] },
     ],
     physicalMaterials: [
       "세계 축제 사진 카드 6장",
@@ -2025,12 +2448,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "호박 · 유령 도안을 색칠하고 오려요.",
       "끈에 매달아 가랜드를 만들거나 랜턴을 조립해요.",
       "교실에 걸어 파티장을 완성해요!",
-    ],
-    workbookSheets: [
-      { title: "축제를 찾아라", guide: "여러 나라 축제 사진 중 할로윈을 찾아 ○ 해요." },
-      { title: "어느 나라 축제일까?", guide: "축제와 나라를 알맞게 연결해요. (홀리 - 인도, 토마토 - 스페인, 할로윈 - 미국)" },
-      { title: "파티에 필요한 것", guide: "파티를 열 때 필요한 물건을 찾아 ○ 해요." },
-      { title: "나의 파티 초대장", guide: "초대하고 싶은 사람을 정하고 초대장을 꾸며요." },
     ],
     kitItems: [
       "세계 축제 사진 카드 6장",
@@ -2082,6 +2499,18 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "호박 랜턴 — 잭오랜턴을 노래해요",
       "세계의 축제 — 여러 나라 축제를 소개하는 노래",
     ],
+    homeKitItems: [
+      "초대장 도안 2장",
+      "가면 도안 1장",
+      "장식 스티커",
+      "끈",
+      "사용 안내서",
+    ],
+    homeKitHow: [
+      "초대장을 꾸며 가족에게 전해요.",
+      "가족이 함께 변신해요.",
+      "사진을 찍어 보내주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -2108,11 +2537,26 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "크리스마스 준비",
     familyTitle: "가족 크리스마스 카드",
     teacherPoint: "선물의 크기나 개수를 비교하지 않도록, ‘ 무엇을 받았나 ʼ 보다 ‘ 누구에게 전하고 싶은가 ʼ 를 묻습니다. 가정의 종교 · 문화가 다를 수 있으니 참여 방식은 선택할 수 있게 안내해 주세요. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[]",
+    homeKitName: "가족 크리스마스 카드 키트",
+    homeKitLead: "카드 + 꾸미기 재료",
+    kidsnote: "오늘은 산타가 출발하는 나라로 여행을 떠났어요. 친구와 둘이 썰매를 끌고 선물을 배달하며 “고마워요!ˮ 인사를 주고받았습니다. 각자 만든 장식을 모아 우리 반 트리를 완성하고 다 같이 바라보며 기뻐했어요.",
+    crossWeek: "우리 반 트리 장식 → 학기말 가정 전달, 24주차 세계지도에 북유럽 깃발 부착 → 24주차 가져오기 · 우리 반 세계지도 — 핀란드 · 독일 깃발을 붙여요",
     physicalSteps: [
       { title: "선물을 골라요", guide: "누구에게 전할 선물인지 정하고 상자를 골라요." },
       { title: "썰매를 끌어요", guide: "친구와 둘이 썰매 (매트) 를 끌고 이동해요." },
       { title: "굴뚝에 넣어요", guide: "도착한 집의 굴뚝에 선물을 조심히 넣어요." },
       { title: "고마워요!", guide: "선물을 받은 친구가 “고마워요ˮ 하고 인사해요." },
+    ],
+    workbookSheets: [
+      { title: "크리스마스 물건 찾기", guide: "그림 속 크리스마스 물건을 찾아 ○ 해요." },
+      { title: "트리를 꾸며요", guide: "트리에 장식 스티커를 붙여요." },
+      { title: "선물 짝 찾기", guide: "선물과 받을 사람을 알맞게 연결해요." },
+      { title: "누구에게 선물할까?", guide: "선물하고 싶은 사람을 그리고 이유를 말해요." },
+    ],
+    nuri: [
+      { area: "사회관계", items: ["다른 사람에게 마음을 전하는 기쁨을 안다.", "친구와 협력하여 목표를 이룬다."] },
+      { area: "예술경험", items: ["다양한 재료로 장식을 만들어 표현한다.", "캐럴을 듣고 노래와 움직임으로 표현한다."] },
+      { area: "의사소통", items: ["고마운 마음을 말과 글로 전한다.", "카드의 내용을 이야기한다."] },
     ],
     physicalMaterials: [
       "선물 상자 10개",
@@ -2126,12 +2570,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "반짝이 재료로 꾸며요.",
       "이름과 소원을 적어요.",
       "우리 반 트리에 걸어 완성해요!",
-    ],
-    workbookSheets: [
-      { title: "크리스마스 물건 찾기", guide: "그림 속 크리스마스 물건을 찾아 ○ 해요." },
-      { title: "트리를 꾸며요", guide: "트리에 장식 스티커를 붙여요." },
-      { title: "선물 짝 찾기", guide: "선물과 받을 사람을 알맞게 연결해요." },
-      { title: "누구에게 선물할까?", guide: "선물하고 싶은 사람을 그리고 이유를 말해요." },
     ],
     kitItems: [
       "대형 트리 1개",
@@ -2182,6 +2620,17 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "우리 반 트리 — 함께 트리를 꾸미는 노래",
       "메리 크리스마스 — 인사를 나누는 노래",
     ],
+    homeKitItems: [
+      "카드 2장",
+      "반짝이 스티커",
+      "장식 재료",
+      "사용 안내서",
+    ],
+    homeKitHow: [
+      "카드를 꾸며요.",
+      "전하고 싶은 말을 적어요.",
+      "가족에게 전하고 사진을 보내주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -2208,12 +2657,28 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     workbookTitle: "나의 별, 우리의 지구",
     familyTitle: "우리 가족은 어떤 별에서 왔을까?",
     teacherPoint: "새로운 것을 더 가르치는 주차가 아니에요. 아이마다 다른 지구 조각이 모여 하나의 지구가 완성되는 과정을 눈으로 보게 하는 것이 핵심입니다. 조각의 완성도를 비교하지 말고 “하나라도 빠지면 지구가 완성되지 않아요ˮ 를 말해주세요. 관찰 포인트 OB 관찰 기록 입력 RP 성장 리포트 observation[] 활동 목표 WK 주간 개요 RP 성장 리포트 goals[]",
+    homeKitName: "부모님 편지 카드",
+    homeKitLead: "24주를 마무리하며 아이에게 전하는 편지",
+    kidsnote: "오늘은 “나는 웃음별에서 왔어요!ˮ 하고 각자의 별을 소개하며 친구를 만났어요. 친구와 나의 같은 점과 다른 점을 찾아보고, 저마다 다르게 꾸민 지구 조각을 모아 커다란 지구를 완성했습니다. 조각이 하나도 빠짐없이 모이자 “우리 지구다!ˮ 하고 환호하는 모습에서 24주의 성장이 그대로 보였어요.",
+    crossWeek: "우리 반 지구 (공동작품) + 완성된 세계지도 → 수료 전시, 가정 전달 23주차 → 17~23주차 나라 깃발 · 활동 사진 (우리 반 세계지도)",
     physicalSteps: [
       { title: "내 별 이름표를 달아요", guide: "“나는 ○○ 별에서 왔어요ˮ 이름표를 목에 걸어요. (웃음별, 달리기별, 그림별 …)" },
       { title: "별 친구를 만나요", guide: "음악이 멈추면 가까운 친구와 만나 서로의 별을 소개해요." },
       { title: "같은 점, 다른 점", guide: "만난 친구와 나의 같은 점 하나, 다른 점 하나를 찾아 말해요." },
       { title: "내 조각을 들고 모여요", guide: "각자 꾸민 지구 조각을 들고 가운데로 모여요." },
       { title: "우리 지구가 완성!", guide: "조각을 맞춰 대형 지구를 완성하고, 다 함께 손을 잡고 둘러서요." },
+    ],
+    workbookSheets: [
+      { title: "나는 어디 별에서 왔을까?", guide: "내가 온 별을 상상해 그리고 이름을 지어요." },
+      { title: "친구와 나", guide: "친구와 같은 점, 다른 점을 찾아 표시해요." },
+      { title: "모이면 지구가 돼요", guide: "흩어진 조각을 선으로 이어 지구를 완성해요." },
+      { title: "나의 세계여행", guide: "17~23주 중 가장 기억에 남는 나라를 그려요." },
+    ],
+    nuri: [
+      { area: "사회관계", items: ["나와 친구의 다름을 알고 존중한다.", "함께 하나의 결과물을 완성하며 소속감을 느낀다."] },
+      { area: "의사소통", items: ["자신을 소개하고 친구와 이야기를 주고받는다.", "같은 점과 다른 점을 말로 표현한다."] },
+      { area: "예술경험", items: ["상상한 것을 자기만의 색과 그림으로 표현한다.", "공동작품에 참여해 표현한다."] },
+      { area: "자연탐구", items: ["지구와 우주에 관심을 가진다.", "여러 나라 사람들이 함께 사는 것을 안다."] },
     ],
     physicalMaterials: [
       "별 이름표 30개",
@@ -2227,12 +2692,6 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "내가 좋아하는 색과 그림으로 자유롭게 꾸며요.",
       "이름과 “나는 ○○ 별에서 왔어요ˮ 를 적어요.",
       "친구들 조각과 맞춰 우리 반 지구를 완성해요!",
-    ],
-    workbookSheets: [
-      { title: "나는 어디 별에서 왔을까?", guide: "내가 온 별을 상상해 그리고 이름을 지어요." },
-      { title: "친구와 나", guide: "친구와 같은 점, 다른 점을 찾아 표시해요." },
-      { title: "모이면 지구가 돼요", guide: "흩어진 조각을 선으로 이어 지구를 완성해요." },
-      { title: "나의 세계여행", guide: "17~23주 중 가장 기억에 남는 나라를 그려요." },
     ],
     kitItems: [
       "지구 완성 보드 (대형) 1개",
@@ -2283,6 +2742,16 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "반짝반짝 나의 별 — 내 별을 노래해요",
       "모이면 지구가 돼요 — 조각이 모여 지구가 되는 노래",
       "두근두근 세계여행 — 8주 여행을 마무리하는 노래",
+    ],
+    homeKitItems: [
+      "편지 카드 1장",
+      "별 스티커",
+      "사용 안내서",
+    ],
+    homeKitHow: [
+      "24주 동안 자란 모습을 떠올려요.",
+      "아이에게 전하는 말을 적어요.",
+      "원으로 보내주세요.",
     ],
     mediaPending: true,
     missingInSource: [],
