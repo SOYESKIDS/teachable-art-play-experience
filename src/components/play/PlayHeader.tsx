@@ -69,6 +69,7 @@ export function PlayHeader() {
     <header
       className={cx(
         isPlayer ? "relative z-50" : "sticky top-0 z-50",
+        "print:hidden",
         "transition-[background-color,box-shadow] duration-200",
         scrolled || open ? "bg-pop-cream/95 shadow-[0_1px_0_rgba(27,37,71,0.08)] backdrop-blur-md" : "bg-pop-cream/80 backdrop-blur-sm",
       )}

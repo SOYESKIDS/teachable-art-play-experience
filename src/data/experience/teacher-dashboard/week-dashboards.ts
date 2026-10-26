@@ -2849,3 +2849,22 @@ export function pdfQuestions(weekNo: number): string[] {
   const text = [d?.activityTip, d?.teacherPoint, d?.physical2?.tip].filter(Boolean).join(" ");
   return [...new Set([...text.matchAll(/“([^”]{3,60}\?)”/g)].map((m) => m[1].trim()))];
 }
+
+/**
+ * 자료 원문을 일부러 고쳐 쓴 문장 — 화면은 이 문장을 「PDF 원문」이 아니라 「35분 체험 편집」으로 표시한다.
+ * ★ 원문 · 고친 까닭을 함께 남긴다. 여기 없는 문장이 원문과 다르면 테스트가 걸린다
+ *   (tests/experience-content.test.mjs 「12개 영역의 자료 문장은 모두 … 원문에 있다」).
+ */
+export const EDITED_LINES: readonly { weekNo: number; text: string; original: string; reason: string }[] = [
+  {
+    weekNo: 16,
+    text: "아이에게 전할 1분 영상편지를 준비해요.",
+    original: "아이 몰래 1분 영상편지를 촬영해요.",
+    reason: "교사 검토 — 공개 화면에 「몰래 촬영」 표현을 쓰지 않는다",
+  },
+];
+
+/** 이 주차 문장이 고쳐 쓴 문장인가 */
+export function isEditedLine(weekNo: number, text: string): boolean {
+  return EDITED_LINES.some((x) => x.weekNo === weekNo && x.text === text);
+}

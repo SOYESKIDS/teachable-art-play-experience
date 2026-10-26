@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { TeacherDashboard } from "@/components/play/TeacherDashboard";
+import { INTEGRATION_LABEL, SAFETY_ORIGIN, mediaStatus, preLessonChecks, weekGoals } from "@/data/experience/lesson-support";
 import { WeekSourcePanel } from "@/components/play/WeekSourcePanel";
 import { ConsultButton } from "@/components/play/ConsultButton";
 import { EmailInquiryButton } from "@/components/play/EmailInquiryButton";
@@ -30,6 +31,12 @@ import { PART_NAME_CANDIDATE_LABEL } from "@/lib/weeks/week-types";
  * ★ 누리과정 5개 영역과 SOYE KIDS 핵심경험은 다른 묶음으로 보인다 (섞어 쓰지 않는다).
  */
 export const dynamicParams = false;
+
+/** 앞뒤 주차 — 대시보드 주간 개요의 이동 단추 */
+function neighbor(n: number): { weekNo: number; title: string } | null {
+  const w = experienceWeek(n);
+  return w ? { weekNo: w.weekNo, title: w.title } : null;
+}
 
 export function generateStaticParams() {
   return EXPERIENCE_WEEKS.map((w) => ({ weekNo: String(w.weekNo) }));
@@ -227,7 +234,17 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
             </ul>
           </section>
 
-          <TeacherDashboard week={week} />
+          <TeacherDashboard
+            week={week}
+            support={{
+              pre: preLessonChecks(week),
+              media: mediaStatus(week),
+              goals: weekGoals(week),
+              prev: neighbor(week.weekNo - 1),
+              next: neighbor(week.weekNo + 1),
+              integration: INTEGRATION_LABEL[week.weekNo] ?? null,
+            }}
+          />
 
           <WeekSourcePanel weekNo={week.weekNo} />
 
@@ -260,7 +277,7 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
                   body: (
                     <div className="grid gap-3 text-[16px] leading-relaxed text-pop-ink sm:grid-cols-2">
                       <p>{b.homeConnection}</p>
-                      <ul className="grid gap-1.5 rounded-2xl bg-pop-pink-soft p-4 text-[15px]">{b.safety.map((x) => <li key={x}>· {x}</li>)}</ul>
+                      <div className="rounded-2xl bg-pop-pink-soft p-4 text-[15px]"><p className="mb-1.5 flex items-center gap-2 text-[13px] font-bold text-pop-pink-deep">안전 안내 <OriginTag origin={SAFETY_ORIGIN} /></p><ul className="grid gap-1.5">{b.safety.map((x) => <li key={x}>· {x}</li>)}</ul></div>
                     </div>
                   ),
                 },

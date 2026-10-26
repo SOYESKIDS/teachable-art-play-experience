@@ -6,9 +6,9 @@ import Link from "next/link";
 import { DemoNotice } from "@/components/play/Badges";
 import { PlayIcon, PopLink } from "@/components/play/PopButton";
 import { Sticker } from "@/components/play/Stickers";
-import { DEMO_REPORT } from "@/data/experience/report";
+import { DEMO_REPORT, GROWTH_INDICATORS, GROWTH_REPORT_SOURCE, REPORT_GUARDIAN_NOTES, REPORT_READING_NOTES, SUPPORT_LEGEND } from "@/data/experience/report";
 import { experienceWeek } from "@/data/experience/weeks";
-import { GROWTH_METRIC_GUIDE, GROWTH_METRIC_LABEL } from "@/lib/curriculum/taxonomies";
+import { GROWTH_METRIC_LABEL, SUPPORT_LEVEL_LABEL } from "@/lib/curriculum/taxonomies";
 
 export const metadata = {
   title: "성장 리포트 예시 (가상) | TeachAble Art Play",
@@ -66,6 +66,29 @@ export default function ExperienceReportPage() {
               <p className="mt-2 text-[17px] leading-relaxed text-pop-ink">{DEMO_REPORT.summary}</p>
             </section>
 
+            <section aria-labelledby="metrics-title" className="rounded-[28px] bg-pop-cream p-6">
+              <h2 id="metrics-title" className="font-display text-[22px] text-pop-ink">소예키즈 5대 성장지표</h2>
+              <p className="mt-1 text-[13px] font-semibold text-pop-ink-muted">지표 이름 · 정의는 「{GROWTH_REPORT_SOURCE}」 원문 그대로입니다.</p>
+              <ol className="mt-4 grid gap-2.5 sm:grid-cols-2">
+                {GROWTH_INDICATORS.map((g, i) => (
+                  <li key={g.code} className="rounded-2xl bg-white px-4 py-3">
+                    <p className="text-[12px] font-extrabold text-pop-ink-muted">지표 0{i + 1}</p>
+                    <p className="text-[17px] font-extrabold text-pop-ink">{g.name} <span className="text-[14px] font-semibold text-pop-ink-muted">· {g.question}</span></p>
+                    <p className="mt-0.5 text-[15px] leading-relaxed text-pop-ink">{g.definition}</p>
+                  </li>
+                ))}
+              </ol>
+              <h3 className="mt-5 text-[15px] font-extrabold text-pop-ink">도움 방식 네 가지</h3>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {SUPPORT_LEGEND.map((s) => (
+                  <li key={s.code} className="rounded-full bg-white px-3 py-1.5 text-[14px] text-pop-ink"><span className="font-extrabold">{s.name}</span> · {s.meaning}</li>
+                ))}
+              </ul>
+              <ul className="mt-3 grid gap-1 text-[14px] leading-relaxed text-pop-ink-muted">
+                {REPORT_READING_NOTES.map((x) => <li key={x}>· {x}</li>)}
+              </ul>
+            </section>
+
             <section aria-labelledby="moments-title">
               <h2 id="moments-title" className="font-display text-[26px] text-pop-ink">다섯 가지 관점으로 본 장면</h2>
               <ol className="mt-5 grid gap-4">
@@ -87,12 +110,55 @@ export default function ExperienceReportPage() {
                       {m.childVoice ? (
                         <p className="mt-3 inline-block rounded-2xl bg-white px-4 py-2 text-[15px] font-bold text-pop-ink">💬 “{m.childVoice}”</p>
                       ) : null}
-                      <p className="mt-3 text-[13px] text-pop-ink-muted">관점 설명 · {GROWTH_METRIC_GUIDE[m.metric]}</p>
+                      <p className="mt-3 flex flex-wrap items-center gap-2 text-[13px] text-pop-ink-muted">
+                        <span className="rounded-full bg-white px-2.5 py-0.5 font-extrabold text-pop-ink">도움 방식 · {SUPPORT_LEVEL_LABEL[m.support]}</span>
+                        <span>관찰 근거 · {m.evidence} (가상 장면)</span>
+                      </p>
+                      <p className="mt-1 text-[13px] text-pop-ink-muted">지표 정의 · {GROWTH_INDICATORS.find((g) => g.code === m.metric)?.definition}</p>
                       <Sticker kind="star" color={tone.color} className="absolute right-5 top-5 h-8 w-8" />
                     </li>
                   );
                 })}
               </ol>
+            </section>
+
+            <section aria-labelledby="flow-title" className="rounded-[28px] bg-white p-6 ring-1 ring-pop-ink/5">
+              <h2 id="flow-title" className="font-display text-[22px] text-pop-ink">어느 수업에서 본 장면인가요</h2>
+              <p className="mt-1 text-[14px] leading-relaxed text-pop-ink-muted">점은 그 주차 수업에서 장면을 기록했다는 뜻입니다. 잘함 · 못함의 표시가 아니며, 빈 칸은 그 주에 그 장면이 나오지 않았다는 뜻입니다.</p>
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full min-w-[420px] border-collapse text-[14px]">
+                  <caption className="sr-only">지표별로 장면을 기록한 주차 (가상 예시)</caption>
+                  <thead>
+                    <tr className="text-[13px] text-pop-ink-muted">
+                      <th scope="col" className="py-2 pr-3 text-left font-bold">지표</th>
+                      {[1, 2, 3, 4].map((n) => <th key={n} scope="col" className="w-16 py-2 font-bold">{n}주</th>)}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {GROWTH_INDICATORS.map((g) => (
+                      <tr key={g.code} className="border-t border-pop-ink/10">
+                        <th scope="row" className="py-2.5 pr-3 text-left font-bold text-pop-ink">{g.name}</th>
+                        {[1, 2, 3, 4].map((n) => {
+                          const hit = DEMO_REPORT.moments.some((m) => m.metric === g.code && m.week === n);
+                          return (
+                            <td key={n} className="py-2.5 text-center">
+                              {hit ? <span className="inline-block h-3.5 w-3.5 rounded-full bg-pop-lilac-deep" aria-label="장면 기록" role="img" /> : <span className="sr-only">기록 없음</span>}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section aria-labelledby="guardian-title" className="rounded-[28px] bg-pop-sky-soft p-6">
+              <h2 id="guardian-title" className="font-display text-[22px] text-pop-ink">보호자께 리포트를 드릴 때</h2>
+              <ul className="mt-2 grid gap-1.5 text-[15px] leading-relaxed text-pop-ink">
+                {REPORT_GUARDIAN_NOTES.map((x) => <li key={x}>· {x}</li>)}
+              </ul>
+              <p className="mt-2 text-[13px] text-pop-ink-muted">「{GROWTH_REPORT_SOURCE}」 원문 문장입니다.</p>
             </section>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -107,7 +173,7 @@ export default function ExperienceReportPage() {
             </div>
 
             <p className="rounded-2xl bg-pop-cream px-5 py-4 text-[14px] leading-relaxed text-pop-ink-muted">
-              이 리포트는 체험을 위한 가상 예시입니다. 실제 서비스의 리포트는 담당 선생님이 작성하고 원장님이 확인한 뒤, 보호자 동의 범위 안에서만 공유됩니다.
+              이 리포트는 체험을 위한 가상 예시입니다. 아이 · 반 · 장면 · 도움 방식은 모두 지어낸 것입니다. 실제 서비스의 리포트는 담당 선생님이 작성하고 원장님이 확인한 뒤, 보호자 동의 범위 안에서만 공유됩니다. 관찰 기록 · 검토 · 보호자 공유는 기관용 서비스의 기능이며, 이 체험 사이트에는 없습니다.
             </p>
           </div>
         </article>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ClassroomPlayer } from "@/components/play/classroom/ClassroomPlayer";
 import { EXPERIENCE_WEEKS, experienceWeek } from "@/data/experience/weeks";
+import { closingChecks, preLessonChecks } from "@/data/experience/lesson-support";
 
 /**
  * 공개 체험 · 교실 플레이어 (1~24주, 빌드 때 모두 생성).
@@ -31,7 +32,9 @@ export default async function ExperienceClassroomPage({ params }: PageProps<"/ex
   const { weekNo } = await params;
   const week = experienceWeek(Number(weekNo));
   if (!week) notFound();
-  const nextWeekNo = experienceWeek(week.weekNo + 1)?.weekNo ?? null;
+  const nextWeek = experienceWeek(week.weekNo + 1) ?? null;
+  const nextWeekNo = nextWeek?.weekNo ?? null;
+  const checks = { pre: preLessonChecks(week), closing: closingChecks(week, nextWeek) };
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 bg-pop-cream focus:outline-none">
@@ -43,7 +46,7 @@ export default async function ExperienceClassroomPage({ params }: PageProps<"/ex
           <span className="hidden md:inline">키보드 → 다음 · ← 이전 · F 전체 화면</span>
         </div>
         <h1 className="sr-only">{week.weekNo}주차 「{week.title}」 교실 플레이어 체험</h1>
-        <ClassroomPlayer week={week} nextWeekNo={nextWeekNo} />
+        <ClassroomPlayer week={week} nextWeekNo={nextWeekNo} checks={checks} />
       </div>
     </main>
   );

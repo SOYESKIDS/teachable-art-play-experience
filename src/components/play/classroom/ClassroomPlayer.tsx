@@ -16,6 +16,8 @@ import { CoverTitleNote, WeekArt } from "../WeekArt";
 import { OriginTag } from "../OriginTag";
 import { displayFallback } from "../display-font";
 import { LESSON_TIME } from "@/lib/weeks/lesson-time";
+import { MATERIALS_ORIGIN, SAFETY_ORIGIN, type CheckGroup } from "@/data/experience/lesson-labels";
+import { LessonChecks } from "../LessonChecks";
 
 /**
  * INTERACTIVE CLASSROOM PLAYER — 공개 체험용 수업 진행 화면.
@@ -97,7 +99,13 @@ function formatClock(totalSeconds: number) {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
-export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; nextWeekNo: number | null }) {
+/** 수업 전 · 수업 뒤 확인 목록 — 페이지(서버)가 만들어 넘긴다 (자료 PDF 데이터 전체를 화면 코드에 싣지 않는다) */
+export interface LessonCheckSet {
+  pre: readonly CheckGroup[];
+  closing: readonly CheckGroup[];
+}
+
+export function ClassroomPlayer({ week, nextWeekNo, checks }: { week: ExperienceWeek; nextWeekNo: number | null; checks: LessonCheckSet }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<Phase>({ kind: "intro" });
   const [view, setView] = useState<View>("classroom");
@@ -117,6 +125,8 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
     () => true,
   );
   const [elapsed, setElapsed] = useState(0);
+  // 이 단계에 머문 시간 — 단계가 바뀌면 0 부터. 계획 시간을 넘겨도 소리 · 깜빡임 없이 글자로만 알린다
+  const [stageElapsed, setStageElapsed] = useState(0);
   const [announce, setAnnounce] = useState("");
 
   const stages = week.stages;
@@ -152,7 +162,10 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
   // 진행 시간 — 수업 중에만 흐른다 (기록하지 않는다)
   useEffect(() => {
     if (phase.kind !== "stage") return;
-    const id = window.setInterval(() => setElapsed((s) => s + 1), 1000);
+    const id = window.setInterval(() => {
+      setElapsed((s) => s + 1);
+      setStageElapsed((s) => s + 1);
+    }, 1000);
     return () => window.clearInterval(id);
   }, [phase.kind]);
 
@@ -160,6 +173,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
     (next: Phase) => {
       setPhase(next);
       setSheet(null);
+      setStageElapsed(0);
       // 단계가 바뀌면 플레이어 머리로 맞춘다 — 진행 화면은 화면 높이에 맞춰 있으므로
       // 머리를 맞추면 그림 · 문장 · 아래 조작 막대가 한 화면에 모두 들어온다.
       // (머리말은 플레이어에서 고정되지 않아 위로 사라진다 → 가리는 것이 없다)
@@ -282,7 +296,14 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
             {phase.kind === "intro" ? "수업 준비" : phase.kind === "done" ? "수업 완료" : `${stageIndex + 1} / ${stages.length} 단계 · ${current?.title}`}
           </span>
           <span className="tabular">
-            {phase.kind === "stage" ? `진행 ${formatClock(elapsed)} · 계획 ${current?.minutes}분` : LESSON_TIME.label}
+            {phase.kind === "stage" && current ? (
+              <>
+                이 단계 {formatClock(stageElapsed)} / {current.minutes}분 · 전체 {formatClock(elapsed)}
+                {stageElapsed > current.minutes * 60 ? <span className="ml-1.5 text-pop-pink-deep">· 계획 시간 지남</span> : null}
+              </>
+            ) : (
+              LESSON_TIME.label
+            )}
           </span>
         </div>
         <div className="mt-2 flex gap-1.5" role="progressbar" aria-label="수업 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
@@ -300,9 +321,9 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
       {/* ── 본 화면 ───────────────────────────────────────────── */}
       <div className="mt-5">
         {phase.kind === "intro" ? (
-          <IntroScreen week={week} onStart={next} />
+          <IntroScreen week={week} onStart={next} checks={checks.pre} />
         ) : phase.kind === "done" ? (
-          <DoneScreen week={week} elapsed={elapsed} nextWeekNo={nextWeekNo} onRestart={restart} />
+          <DoneScreen week={week} elapsed={elapsed} nextWeekNo={nextWeekNo} onRestart={restart} checks={checks.closing} />
         ) : current ? (
           <div className={cx("grid gap-5", effectiveView === "split" && "lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]")}>
             {showClassroom ? (
@@ -404,7 +425,8 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
             </ol>
           ) : sheet === "materials" ? (
             <div className="grid gap-5">
-              <ul className="grid gap-2">
+              <ul className="grid gap-2" aria-label="준비물">
+                <li className="flex items-center gap-2 text-[14px] font-bold text-pop-ink-muted">준비물 <OriginTag origin={MATERIALS_ORIGIN} /></li>
                 {week.body.materials.map((m) => (
                   <li key={m} className="flex items-center gap-3 rounded-2xl bg-pop-yellow-soft px-4 py-3 text-[16px] font-semibold text-pop-ink">
                     <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-pop-orange" />
@@ -413,7 +435,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
                 ))}
               </ul>
               <div>
-                <p className="text-[14px] font-bold text-pop-pink-deep">안전 안내</p>
+                <p className="flex items-center gap-2 text-[14px] font-bold text-pop-pink-deep">안전 안내 <OriginTag origin={SAFETY_ORIGIN} /></p>
                 <ul className="mt-2 grid gap-1.5 text-[15px] leading-relaxed text-pop-ink">
                   {week.body.safety.map((s) => <li key={s}>· {s}</li>)}
                 </ul>
@@ -440,7 +462,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
   );
 }
 
-function IntroScreen({ week, onStart }: { week: ExperienceWeek; onStart: () => void }) {
+function IntroScreen({ week, onStart, checks }: { week: ExperienceWeek; onStart: () => void; checks: readonly CheckGroup[] }) {
   return (
     <section aria-label="수업 시작" className="grid animate-stage-in gap-6 overflow-hidden rounded-[36px] bg-white p-4 shadow-pop-lg sm:p-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:p-8">
       <WeekArt week={week} size="hero" priority className="aspect-[4/3] max-h-[72vh] w-full rounded-[28px]" />
@@ -457,7 +479,7 @@ function IntroScreen({ week, onStart }: { week: ExperienceWeek; onStart: () => v
         </div>
         <p className="text-[19px] font-medium leading-relaxed text-pop-ink">{week.coreMessage}</p>
         <div>
-          <p className="text-[14px] font-bold text-pop-ink-muted">오늘의 준비물</p>
+          <p className="flex items-center gap-2 text-[14px] font-bold text-pop-ink-muted">오늘의 준비물 <OriginTag origin={MATERIALS_ORIGIN} /></p>
           <ul className="mt-2 flex flex-wrap gap-2">
             {week.body.materials.map((m) => (
               <li key={m} className="rounded-full bg-pop-cream px-3 py-1.5 text-[14px] font-semibold text-pop-ink ring-1 ring-pop-ink/5">{m}</li>
@@ -469,6 +491,14 @@ function IntroScreen({ week, onStart }: { week: ExperienceWeek; onStart: () => v
           수업 시작
         </button>
         <ContentStatusBadge status={week.body.status} className="w-fit" />
+        {/* 수업 전 확인 — 접어 둔다. 아이들 앞(교실 화면)에서는 펼치지 않아도 된다 */}
+        <details className="group rounded-2xl bg-pop-cream ring-1 ring-pop-ink/5 open:bg-white">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-2 px-4 text-[15px] font-bold text-pop-ink [&::-webkit-details-marker]:hidden">
+            <span>수업 전 확인 · 교사용</span>
+            <span aria-hidden="true" className="text-[18px] text-pop-ink-muted transition-transform group-open:rotate-45">+</span>
+          </summary>
+          <LessonChecks groups={checks} className="px-3 pb-4" />
+        </details>
       </div>
     </section>
   );
@@ -543,7 +573,7 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
       ) : null}
       {stage.safety.length ? (
         <div className="mt-4 rounded-2xl border-2 border-pop-pink-deep/30 bg-pop-pink-soft px-4 py-3">
-          <p className="text-[13px] font-extrabold text-pop-pink-deep">안전 먼저</p>
+          <p className="flex items-center gap-2 text-[13px] font-extrabold text-pop-pink-deep">안전 먼저 <OriginTag origin={SAFETY_ORIGIN} /></p>
           <ul className="mt-1 grid gap-1 text-[15px] leading-relaxed text-pop-ink">{stage.safety.map((x) => <li key={x}>· {x}</li>)}</ul>
         </div>
       ) : null}
@@ -598,7 +628,7 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
             {week.teacherObservations.items.map((o) => <li key={o}>· {o}</li>)}
           </ul>
         </Fold>
-        <Fold title="안전 안내" badge={`${week.body.safety.length}`}>
+        <Fold title="안전 안내" badge={TEXT_ORIGIN_LABEL[SAFETY_ORIGIN]}>
           <ul className="grid gap-1 text-[15px] leading-relaxed text-pop-ink">
             {week.body.safety.map((x) => <li key={x}>· {x}</li>)}
           </ul>
@@ -608,7 +638,7 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
   );
 }
 
-function DoneScreen({ week, elapsed, nextWeekNo, onRestart }: { week: ExperienceWeek; elapsed: number; nextWeekNo: number | null; onRestart: () => void }) {
+function DoneScreen({ week, elapsed, nextWeekNo, onRestart, checks }: { week: ExperienceWeek; elapsed: number; nextWeekNo: number | null; onRestart: () => void; checks: readonly CheckGroup[] }) {
   const confetti = ["#ff4f8b", "#ffc928", "#22c3b5", "#4da3ff", "#9b7bff", "#ff8a3d"];
   return (
     <section aria-label="수업 완료" className="relative isolate animate-stage-in overflow-hidden rounded-[36px] bg-pop-yellow p-8 text-center shadow-pop-lg sm:p-14">
@@ -633,6 +663,11 @@ function DoneScreen({ week, elapsed, nextWeekNo, onRestart }: { week: Experience
         「{week.title}」 다섯 단계를 모두 마쳤어요. {elapsed > 0 ? `진행 시간 ${formatClock(elapsed)}.` : ""}
       </p>
       <p className="mx-auto mt-4 max-w-[40ch] rounded-2xl bg-white/80 px-4 py-3 text-[16px] font-semibold text-pop-ink">마무리 질문 · “{week.body.closingQuestion}”</p>
+      {/* 수업 마무리 확인 — 교사용. 정리 · 관찰 · 가정 안내 · 다음 주차 준비 · 확장활동 */}
+      <div className="mx-auto mt-6 max-w-[720px] rounded-[28px] bg-white p-5 text-left shadow-pop sm:p-6">
+        <p className={cx("font-display text-[20px] text-pop-ink", displayFallback("수업 마무리 확인 · 교사용"))}>수업 마무리 확인 · 교사용</p>
+        <LessonChecks groups={checks} className="mt-3" />
+      </div>
       <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
         <button type="button" onClick={onRestart} className={popButtonClass("white", "lg")}>처음부터 다시</button>
         <Link href="/experience/report" className={popButtonClass("ink", "lg")}>성장 리포트 예시 보기</Link>

@@ -412,3 +412,92 @@ test("표지 글씨가 자료의 그림책 제목과 다른 주차(3 · 7 · 8)�
   // 9~16주차 이름의 영상 썸네일(그림 속 내용은 1~8주차)은 어느 주차에도 걸지 않는다
   for (const w of EXPERIENCE_WEEKS) if (w.image) assert.match(w.image.src, /^\/images\/week-covers-web\/week-0[1-8]\.webp$/);
 });
+
+test("수업 전 · 마무리 확인 목록 — 24주 모두 빠진 묶음이 없고, 「PDF 원문」 항목은 원문에 있다", async () => {
+  const { preLessonChecks, closingChecks, SAFETY_ORIGIN } = await import("../src/data/experience/lesson-support.ts");
+  for (const w of EXPERIENCE_WEEKS) {
+    const next = EXPERIENCE_WEEKS.find((x) => x.weekNo === w.weekNo + 1) ?? null;
+    const pre = preLessonChecks(w);
+    const keys = pre.map((g) => g.key);
+    for (const k of ["goal", "materials", "space", "safety", "script", "media"]) assert.ok(keys.includes(k), `${w.weekNo}주 수업 전 ${k}`);
+    assert.equal(keys.includes("gather"), [8, 16, 24].includes(w.weekNo), `${w.weekNo}주 앞 주차 결과물`);
+    const close = closingChecks(w, next);
+    for (const k of ["share", "cleanup", "observe"]) assert.ok(close.some((g) => g.key === k), `${w.weekNo}주 마무리 ${k}`);
+    assert.equal(close.some((g) => g.key === "next"), true, `${w.weekNo}주 다음 주차 준비`);
+    for (const g of [...pre, ...close]) {
+      assert.ok(g.items.length > 0 && g.items.every((x) => x.text.trim()), `${w.weekNo}주 ${g.key} 비어 있음`);
+      for (const it of g.items) {
+        if (it.origin !== "source") continue;
+        // 「N주차 교구 · …」(다음 주차) · 「N주차 — …」(통합 주차 모으기)는 그 주차 원문에서 온 문장이다
+        const from = it.text.match(/^(\d+)주차 (?:교구 · |— )/)?.[1];
+        const body = it.text.replace(/^\d+주차 (?:교구 · |— )/, "");
+        const src = squashAll(sourceText(from ? Number(from) : w.weekNo));
+        const words = body.split(/\s+/).map(squashAll).filter((x) => x.length >= 2);
+        assert.ok(src.includes(squashAll(body)) || words.every((x) => src.includes(x)), `${w.weekNo}주 ${g.key} 「PDF 원문」인데 원문에 없다: ${it.text}`);
+      }
+    }
+    // 안전 문장을 원문으로 올리려면 모든 줄이 원문에 있어야 한다
+    if (SAFETY_ORIGIN === "source") for (const s of w.body.safety) assert.ok(squashAll(sourceText(w.weekNo)).includes(squashAll(s)), `${w.weekNo}주 안전 ${s}`);
+  }
+  assert.equal(SAFETY_ORIGIN, "proposal", "자료 PDF 에 안전 항목이 없다 — 교사용 제안으로 밝힌다");
+});
+
+test("미디어 보유 상태 — 실제 공개 파일(1~8주 표지)만 「있음」이고 음원 · 영상 · 워크북 · 사진은 있음이 아니다", async () => {
+  const { mediaStatus } = await import("../src/data/experience/lesson-support.ts");
+  for (const w of EXPERIENCE_WEEKS) {
+    const rows = mediaStatus(w);
+    assert.deepEqual(rows.map((r) => r.key), ["cover", "ebook", "audio", "video", "workbook", "kitPhoto", "example"]);
+    for (const r of rows) assert.equal(r.state === "ready", r.key === "cover" && w.image !== null, `${w.weekNo}주 ${r.key}`);
+  }
+});
+
+test("가상 성장 리포트 — 5대 지표는 공식 명칭이고, 장면마다 그 주차 PDF 의 활동 이름을 근거로 단다", async () => {
+  const { DEMO_REPORT, GROWTH_INDICATORS, SUPPORT_LEGEND } = await import("../src/data/experience/report.ts");
+  const { GROWTH_METRIC_CODES, GROWTH_METRIC_LABEL, SUPPORT_LEVEL_CODES } = await import("../src/lib/curriculum/taxonomies.ts");
+  const nospace = (s) => s.replace(/\s/g, "");
+  assert.deepEqual(GROWTH_INDICATORS.map((g) => g.code), [...GROWTH_METRIC_CODES]);
+  for (const g of GROWTH_INDICATORS) assert.equal(nospace(g.name), nospace(GROWTH_METRIC_LABEL[g.code]), g.code);
+  assert.deepEqual(SUPPORT_LEGEND.map((s) => s.code), [...SUPPORT_LEVEL_CODES]);
+  for (const m of DEMO_REPORT.moments) {
+    assert.ok(SUPPORT_LEVEL_CODES.includes(m.support), m.title);
+    assert.ok(m.evidence.startsWith(`${m.week}주차 `), `${m.title} 근거 주차`);
+    const name = m.evidence.match(/「(.+)」/)?.[1];
+    assert.ok(name, `${m.title} 근거 활동 이름`);
+    for (const part of name.split(" · ")) assert.ok(squashAll(sourceText(m.week)).includes(squashAll(part)), `${m.week}주 PDF 에 없는 활동: ${part}`);
+  }
+});
+
+test("인쇄용 수업 요약은 24주 모두 생성되고 검색 색인에서 뺀다", () => {
+  const page = readFileSync(join(ROOT, "src/app/experience/weeks/[weekNo]/print/page.tsx"), "utf8");
+  assert.match(page, /robots: \{ index: false/);
+  assert.match(page, /generateStaticParams/);
+  for (const part of ["preLessonChecks", "closingChecks", "familyTitle", "OriginTag"]) assert.ok(page.includes(part), part);
+});
+
+test("교사 대시보드 12개 영역의 자료 문장은 모두 그 주차 PDF 원문에 있다 (고쳐 쓴 문장이 원문으로 남지 않는다)", async () => {
+  const { EDITED_LINES, isEditedLine } = await import("../src/data/experience/teacher-dashboard/week-dashboards.ts");
+  // PDF 추출본은 작은따옴표를 ʼ(U+02BC)로 적은 곳이 있다
+  const sq = (s) => squashAll(s).replace(/ʼ/g, "");
+  for (const d of WEEK_DASHBOARDS) {
+    const src = sq(sourceText(d.weekNo));
+    const fields = {
+      story: [d.storybookTitle, d.storySummary, d.storyMessage], physical: [d.physicalTitle, ...d.physicalSteps.flatMap((s) => [s.title, s.guide])],
+      art: [d.artTitle, ...d.artSteps], workbook: d.workbookSheets.flatMap((s) => [s.title, s.guide]), kit: [...d.kitItems, ...d.orgItems],
+      family: [d.familyTitle, ...d.familyHow, ...d.familyTalk], homeKit: [d.homeKitName, ...d.homeKitItems], nuri: d.nuri.flatMap((x) => x.items),
+      media: d.media, point: [d.teacherPoint], observe: [...d.observations, ...d.goals], record: [d.kidsnote, ...d.parentNotice, d.crossWeek],
+    };
+    for (const [k, list] of Object.entries(fields)) {
+      for (const t of list.filter(Boolean)) {
+        if (isEditedLine(d.weekNo, t)) continue; // 고쳐 쓴 문장 — 아래에서 원문을 따로 확인한다
+        const words = t.split(/\s+/).map(sq).filter((x) => x.length >= 2);
+        assert.ok(src.includes(sq(t)) || (words.length > 0 && words.every((x) => src.includes(x))), `${d.weekNo}주 ${k} 원문에 없음: ${t}`);
+      }
+    }
+  }
+  // 고쳐 쓴 문장 — 고치기 전 원문은 PDF 에 있고, 고친 문장은 원문이 아니다
+  for (const e of EDITED_LINES) {
+    assert.ok(sq(sourceText(e.weekNo)).includes(sq(e.original)), `${e.weekNo}주 고치기 전 원문이 PDF 에 없다`);
+    assert.ok(!sq(sourceText(e.weekNo)).includes(sq(e.text)), `${e.weekNo}주 원문 그대로인데 편집으로 표시`);
+    assert.ok(e.reason.trim(), `${e.weekNo}주 고친 까닭`);
+  }
+});

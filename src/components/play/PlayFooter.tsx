@@ -17,7 +17,7 @@ const LINKS = [
 
 export function PlayFooter() {
   return (
-    <footer data-surface="dark" className="bg-pop-ink pb-10 pt-14 text-white/75 sm:pt-16">
+    <footer data-surface="dark" className="bg-pop-ink pb-10 pt-14 text-white/75 sm:pt-16 print:hidden">
       <div className="mx-auto max-w-[1320px] 2xl:max-w-[1520px] px-4 sm:px-6">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-[32ch]">

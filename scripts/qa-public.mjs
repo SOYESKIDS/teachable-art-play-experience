@@ -97,6 +97,47 @@ for (let n = 1; n <= 24; n++) {
 }
 page.drain();
 note(topicBad.length === 0, "24주 주제 일치 (상세 제목 = 플레이어 제목, 상세 그림책 = 대시보드 그림책 = 플레이어 그림책)", topicBad.join(" | "));
+// 2-2. 인쇄용 수업 요약 24개 — 200 · 검색 제외 · 출처 표시 · 가로 넘침 없음 · 인쇄 때 머리말 · 꼬리말 · 단추 숨김
+{
+  const bad = [];
+  await page.viewport(390, 844, true);
+  for (let n = 1; n <= 24; n++) {
+    page.requests = []; page.drain();
+    await page.goto(`${base}/experience/weeks/${n}/print`).catch(() => {});
+    await page.idle(300, 6000);
+    const m = await measure();
+    const extra = await page.eval(`({noindex:/noindex/.test(document.querySelector('meta[name=robots]')?.content??''),
+      origin:document.body.innerText.includes('PDF 원문'), table:!!document.querySelector('table'), family:document.body.innerText.includes('가족연계 안내문')})`);
+    await page.send("Emulation.setEmulatedMedia", { media: "print" });
+    // 실제로 그려지는지 본다 (숨긴 머리말 안의 단추도 display 값은 그대로라서 getClientRects 로 판정)
+    const pr = await page.eval(`(()=>{const v=(el)=>!!el&&el.getClientRects().length>0;return {header:v(document.querySelector('header')),footer:v(document.querySelector('footer')),button:[...document.querySelectorAll('button')].some(v)}})()`);
+    await page.send("Emulation.setEmulatedMedia", { media: "" });
+    const s = supa(); const d = page.drain();
+    if (m.status !== 200 || m.sw > m.vw || m.h1 !== 1 || m.forms || s.any || d.consoleErrors.length || !extra.noindex || !extra.origin || !extra.table || !extra.family || pr.header || pr.footer || pr.button) {
+      bad.push(`${n}:${JSON.stringify({ st: m.status, ox: m.sw > m.vw, ...extra, print: pr })}`);
+    }
+  }
+  note(bad.length === 0, "인쇄용 수업 요약 24개 (200 · noindex · 출처 표시 · 진행표 · 가족 안내문 · 인쇄 때 메뉴/단추 숨김 · 가로 넘침 없음)", bad.join(" "));
+}
+
+// 2-3. 교실 플레이어 — 시작 화면 「수업 전 확인」, 마무리 화면 「수업 마무리 확인」, 단계 시간 표시
+{
+  await page.viewport(1440, 900);
+  const bad = [];
+  for (const n of [1, 8, 16, 24]) {
+    await page.goto(`${base}/experience/classroom/${n}`).catch(() => {}); await page.eval("sessionStorage.clear()");
+    await page.goto(`${base}/experience/classroom/${n}`).catch(() => {}); await page.idle(400, 6000);
+    const intro = await page.eval(`document.body.innerText.includes('수업 전 확인')`);
+    await page.clickText("수업 시작", { exact: false }); await page.idle(400, 4000);
+    const timer = await page.eval(`/이 단계 \\d+:\\d\\d \\/ \\d+분/.test(document.body.innerText)`);
+    for (let i = 0; i < 5; i++) { await page.eval(`window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'}))`); await page.idle(200, 2000); }
+    const done = await page.eval(`({closing:document.body.innerText.includes('수업 마무리 확인'), note:document.body.innerText.includes('새로고침하면 사라집니다')})`);
+    if (!intro || !timer || !done.closing || !done.note) bad.push(`${n}:${JSON.stringify({ intro, timer, ...done })}`);
+  }
+  note(bad.length === 0, "플레이어 수업 전 확인 · 단계 시간 · 수업 마무리 확인 (1 · 8 · 16 · 24주)", bad.join(" "));
+  page.drain();
+}
+
 page.requests = []; page.drain();
 await page.goto(base + "/experience/weeks/25").catch(() => {});
 note((await measure()).status === 404, "없는 주차(25) 404");

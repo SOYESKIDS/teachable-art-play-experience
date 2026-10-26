@@ -1013,3 +1013,19 @@ h4 {
     animation: none !important;
   }
 }
+
+/* 인쇄용 수업 요약 (/experience/weeks/N/print) — A4. 머리말 · 꼬리말 · 단추는 print:hidden 으로 뺀다 */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 12mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  .play {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

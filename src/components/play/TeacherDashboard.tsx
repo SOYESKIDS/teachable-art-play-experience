@@ -5,11 +5,25 @@ import { cx } from "@/components/ui/cx";
 import { CoverTitleNote, WeekArt } from "@/components/play/WeekArt";
 import { OriginLegend, OriginTag } from "@/components/play/OriginTag";
 import { displayFallback } from "@/components/play/display-font";
-import { weekProposal } from "@/data/experience/teacher-dashboard/proposals";
+import { TEACHER_POINT_PROPOSALS, weekProposal } from "@/data/experience/teacher-dashboard/proposals";
 import Link from "next/link";
-import { gatherForWeek, pdfQuestions, weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
+import { gatherForWeek, isEditedLine, pdfQuestions, weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
 import { TEXT_ORIGIN_LABEL, type ExperienceWeek, type TextOrigin } from "@/data/experience/types";
 import { LESSON_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
+import { CHECK_STATE_NOTE, SAFETY_ORIGIN, type CheckGroup, type MediaRow } from "@/data/experience/lesson-labels";
+import { GROWTH_INDICATORS, REPORT_READING_NOTES } from "@/data/experience/report";
+import type { Sourced } from "@/data/experience/types";
+import { LessonChecks, MediaStatusTable } from "@/components/play/LessonChecks";
+
+/** 페이지(서버)가 만들어 넘기는 묶음 — 수업 확인 목록 · 미디어 상태 · 목표 · 앞뒤 주차 */
+export interface DashboardSupport {
+  pre: readonly CheckGroup[];
+  media: readonly MediaRow[];
+  goals: readonly Sourced[];
+  prev: { weekNo: number; title: string } | null;
+  next: { weekNo: number; title: string } | null;
+  integration: string | null;
+}
 
 /**
  * 교사용 수업 대시보드 — 읽기 전용.
@@ -229,6 +243,8 @@ function CheckList({ items }: { items: readonly string[] }) {
   const [done, setDone] = useState<readonly number[]>([]);
   if (items.length === 0) return <p className="text-[14px] text-pop-ink-muted">{NONE}</p>;
   return (
+    <>
+    <p className="mt-1 text-[12px] font-semibold text-pop-ink-muted">{CHECK_STATE_NOTE}</p>
     <ul className="mt-1.5 flex flex-col gap-1">
       {items.map((x, i) => {
         const on = done.includes(i);
@@ -254,6 +270,7 @@ function CheckList({ items }: { items: readonly string[] }) {
         );
       })}
     </ul>
+    </>
   );
 }
 
@@ -294,7 +311,7 @@ function CopyBlock({ lines }: { lines: readonly string[] }) {
   );
 }
 
-export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
+export function TeacherDashboard({ week, support }: { week: ExperienceWeek; support: DashboardSupport }) {
   const d = weekDashboard(week.weekNo);
   if (!d) return null;
   const proposal = weekProposal(week.weekNo);
@@ -341,11 +358,12 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
       <div className="mt-4 flex flex-wrap gap-2">
         <a href="#lesson-plan" className="inline-flex min-h-11 items-center rounded-full bg-pop-ink px-4 text-[14px] font-bold text-white">{LESSON_TIME.label} 진행 단계 보기</a>
         <Link href={`/experience/classroom/${week.weekNo}`} className="inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">교실 플레이어 열기</Link>
+        <Link href={`/experience/weeks/${week.weekNo}/print`} className="inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">인쇄용 수업 요약</Link>
       </div>
 
       {week.body.safety.length > 0 ? (
         <div className="mt-4 rounded-[24px] border-2 border-pop-pink-deep/30 bg-pop-pink-soft px-5 py-4">
-          <p className="text-[14px] font-extrabold text-pop-pink-deep">안전 먼저 — 수업 전에 확인해요</p>
+          <p className="flex flex-wrap items-center gap-2 text-[14px] font-extrabold text-pop-pink-deep">안전 먼저 — 수업 전에 확인해요 <OriginTag origin={SAFETY_ORIGIN} /></p>
           <ul className="mt-1.5 grid gap-1 text-[15px] leading-relaxed text-pop-ink">{week.body.safety.map((x) => <li key={x}>· {x}</li>)}</ul>
         </div>
       ) : null}
@@ -359,10 +377,20 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
           <li className="flex flex-wrap items-baseline gap-x-2"><span><strong className="font-bold">공간 · </strong>{week.prep.space.text}</span><OriginTag origin={week.prep.space.origin} /></li>
           <li className="flex flex-wrap items-baseline gap-x-2"><span><strong className="font-bold">정리 · </strong>{week.prep.cleanup.text}</span><OriginTag origin={week.prep.cleanup.origin} /></li>
         </ul>
+        <details className="group mt-3 rounded-2xl bg-pop-cream ring-1 ring-pop-ink/5 open:bg-white">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 px-4 text-[14px] font-bold text-pop-ink [&::-webkit-details-marker]:hidden">
+            <span>수업 시작 전 확인 체크리스트 (목표 · 교구 · 공간 · 안전 · 발문 · 미디어)</span>
+            <span aria-hidden="true" className="text-[18px] text-pop-ink-muted transition-transform group-open:rotate-45">+</span>
+          </summary>
+          <LessonChecks groups={support.pre} className="px-3 pb-4" />
+        </details>
       </div>
 
       <div id="dash-cw" className="mt-4 scroll-mt-28 rounded-[24px] bg-white px-5 py-4 ring-1 ring-pop-ink/5">
         <p className="text-[14px] font-extrabold text-pop-ink">주차 연계 산출물</p>
+        {support.integration ? (
+          <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-[14px] font-bold text-pop-ink"><span>{support.integration}</span><OriginTag origin="edited" /></p>
+        ) : null}
         <ul className="mt-2 grid gap-1.5 text-[14px] leading-relaxed text-pop-ink">
           <li className="flex flex-wrap items-baseline gap-x-2">
             <span><strong className="font-bold">이 주차 결과물 · </strong>{d.artTitle ?? NONE}</span>
@@ -384,6 +412,20 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
 
       <div className="mt-6 flex flex-col gap-3">
         <Fold no={1} title="주차 기본 정보와 교육 목표" count={d.goals.length || proposal?.goals.length}>
+          <div className="mb-4 grid gap-2 rounded-2xl border-2 bg-white p-4 sm:grid-cols-2" style={tone}>
+            <p className="text-[13px] font-extrabold text-pop-ink-muted sm:col-span-2">주간 개요</p>
+            <p><span className="text-[13px] font-bold text-pop-ink-muted">주차 · </span>{week.weekNo}주차 「{week.title}」</p>
+            <p><span className="text-[13px] font-bold text-pop-ink-muted">성장 키워드 · </span>#{week.growthKeyword}</p>
+            <p className="flex flex-wrap items-baseline gap-x-2 sm:col-span-2"><span><span className="text-[13px] font-bold text-pop-ink-muted">핵심 목표 · </span>{support.goals[0]?.text ?? NONE}</span>{support.goals[0] ? <OriginTag origin={support.goals[0].origin} /> : null}</p>
+            <p><span className="text-[13px] font-bold text-pop-ink-muted">대표 신체활동 · </span>{d.physicalTitle ?? NONE}</p>
+            <p><span className="text-[13px] font-bold text-pop-ink-muted">미술 · </span>{d.artTitle ?? NONE}</p>
+            <p><span className="text-[13px] font-bold text-pop-ink-muted">준비 · </span>교구 {d.kitItems.length}가지 · 원 준비물 {d.orgItems.length}가지 · 안전 {week.body.safety.length}가지</p>
+            <p><span className="text-[13px] font-bold text-pop-ink-muted">수업 시간 · </span>{LESSON_TIME.label} ({LESSON_TIME.breakdown})</p>
+            <p className="flex flex-wrap gap-2 pt-1 sm:col-span-2">
+              {support.prev ? <Link href={`/experience/weeks/${support.prev.weekNo}`} className="inline-flex min-h-11 items-center rounded-full bg-pop-cream px-4 text-[14px] font-bold text-pop-ink">← {support.prev.weekNo}주 「{support.prev.title}」</Link> : null}
+              {support.next ? <Link href={`/experience/weeks/${support.next.weekNo}`} className="inline-flex min-h-11 items-center rounded-full bg-pop-cream px-4 text-[14px] font-bold text-pop-ink">{support.next.weekNo}주 「{support.next.title}」 →</Link> : null}
+            </p>
+          </div>
           <dl>
             <Row label="핵심 주제" value={d.coreTheme} />
             <Row label="성장 키워드" value={d.keyword} />
@@ -574,13 +616,38 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
           {d.familyHow.length > 0 ? (
             <>
               <Head>활동 방법</Head>
-              <List items={d.familyHow} />
+              <ul className="mt-1.5 flex flex-col gap-1.5">
+                {d.familyHow.map((x) => (
+                  <li key={x} className="flex flex-wrap items-baseline gap-x-2">
+                    <span><span aria-hidden="true" className="text-pop-ink-muted">· </span>{x}</span>
+                    {isEditedLine(week.weekNo, x) ? <OriginTag origin="edited" /> : null}
+                  </li>
+                ))}
+              </ul>
             </>
           ) : null}
           {d.familyTalk.length > 0 ? (
             <>
               <Head>이렇게 이야기해 보세요</Head>
               <List items={d.familyTalk} />
+            </>
+          ) : null}
+          {d.familyTitle ? (
+            <>
+              <Head>학부모 안내 카드 미리보기 (자료 원문으로 만든 예시)</Head>
+              <div className="mt-2 max-w-[440px] overflow-hidden rounded-[24px] bg-white shadow-pop ring-1 ring-pop-ink/5">
+                <div className="px-5 py-3 text-white" style={{ backgroundColor: week.themeColor }}>
+                  <p className="text-[12px] font-bold opacity-90">{week.weekNo}주차 가정 연계 · {week.title}</p>
+                  <p className={cx("mt-0.5 font-display text-[20px]", displayFallback(d.familyTitle))}>{d.familyTitle}</p>
+                </div>
+                <div className="grid gap-2 px-5 py-4 text-[14px] leading-relaxed text-pop-ink">
+                  {d.familyHow.length ? <ol className="grid gap-1">{d.familyHow.map((x, i) => <li key={x}>{i + 1}. {x}</li>)}</ol> : null}
+                  {d.familyTalk.length ? <p className="rounded-xl bg-pop-cream px-3 py-2">💬 {d.familyTalk.map((x) => `“${x}”`).join(" ")}</p> : null}
+                  {d.homeKitName && (d.supportType ?? "homeKit") === "homeKit" ? <p className="text-[13px] text-pop-ink-muted">가정용 교구 · {d.homeKitName}</p> : null}
+                </div>
+              </div>
+              <p className="mt-2 text-[12px] text-pop-ink-muted">아이 이름 · 사진을 넣는 칸이 없습니다. 보내기 기능 없이 복사 · 인쇄만 됩니다.</p>
+              <CopyBlock lines={[d.familyTitle, ...d.familyHow.map((x, i) => `${i + 1}. ${x}`), ...d.familyTalk.map((x) => `“${x}”`)]} />
             </>
           ) : null}
         </Fold>
@@ -627,13 +694,9 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
         </Fold>
 
         <Fold no={10} title="동화책 음원과 뮤직비디오" count={d.media.length}>
-          <Head>그림책 표지</Head>
-          <p className="mt-1">
-            {week.image
-              ? "소예키즈 그림책 표지를 씁니다 (공개 사용 확인)."
-              : "표지 그림 준비 중 — 화면에는 자체 제작 그림을 씁니다."}
-          </p>
-          <Head>음원</Head>
+          <Head>미디어 보유 상태</Head>
+          <div className="mt-1.5"><MediaStatusTable rows={support.media} /></div>
+          <Head>음원 목록 (자료 원문)</Head>
           <List items={d.media} empty={NONE} />
           <p className="mt-3 rounded-2xl bg-pop-cream px-4 py-3 text-[14px] leading-relaxed text-pop-ink">
             음원 · 영상 파일은 <strong className="font-bold">자료 준비 중</strong>입니다. 자료에
@@ -646,10 +709,26 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
           <p className="mt-3 text-[13px] leading-relaxed text-pop-ink-muted">
             보기 예시입니다. 이 화면에는 원아 정보를 적거나 저장하는 자리가 없습니다.
           </p>
+          <Head>관찰할 때 (주간 성장리포트 원문)</Head>
+          <ul className="mt-1.5 grid gap-1 text-[14px] leading-relaxed">
+            {REPORT_READING_NOTES.slice(0, 3).map((x) => <li key={x} className="flex flex-wrap items-baseline gap-x-2"><span>· {x}</span><OriginTag origin="source" /></li>)}
+          </ul>
+          {d.kidsnote ? (
+            <>
+              <Head>행동 관찰 기록 예시 (자료의 성장기록 예시)</Head>
+              <p className="mt-1 rounded-2xl bg-pop-cream px-4 py-3 text-[14px] leading-relaxed">{d.kidsnote} <OriginTag origin="source" className="align-middle" /></p>
+            </>
+          ) : null}
           {d.teacherPoint ? (
             <>
               <Head>교사 운영 포인트</Head>
-              <p className="mt-1">{d.teacherPoint}</p>
+              <p className="mt-1">{d.teacherPoint} <OriginTag origin="source" className="align-middle" /></p>
+            </>
+          ) : TEACHER_POINT_PROPOSALS[week.weekNo] ? (
+            <>
+              <Head>교사 운영 포인트</Head>
+              <p className="mt-1">{TEACHER_POINT_PROPOSALS[week.weekNo]} <OriginTag origin="proposal" className="align-middle" /></p>
+              <p className="mt-1 text-[12px] text-pop-ink-muted">이 주차 자료에는 운영 포인트가 없어 교사용 제안을 적었습니다 (본사 검수 전).</p>
             </>
           ) : null}
         </Fold>
@@ -668,6 +747,15 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
               <CopyBlock lines={d.parentNotice} />
             </>
           ) : null}
+          <Head>소예키즈 5대 성장지표 (주간 성장리포트 원문)</Head>
+          <ul className="mt-1.5 grid gap-1.5 sm:grid-cols-2">
+            {GROWTH_INDICATORS.map((g) => (
+              <li key={g.code} className="rounded-2xl bg-pop-cream px-3.5 py-2.5 text-[14px] leading-relaxed">
+                <span className="font-bold text-pop-ink">{g.name}</span> <span className="text-pop-ink-muted">— {g.definition}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-1.5 text-[12px] text-pop-ink-muted">점수 · 등급이 아니라 그 활동에서 필요했던 도움 방식을 적는 지표입니다. 실제 기록 · 보호자 공유는 기관용 서비스에서만 합니다.</p>
           <Link href="/experience/report" className="mt-3 mr-2 inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">
             성장 리포트 예시 보기 (가상)
           </Link>
