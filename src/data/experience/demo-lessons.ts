@@ -258,7 +258,7 @@ export const DEMO_LESSONS: DemoLessonBody[] = [
     closingQuestion: "네 복주머니 안에는 어떤 마음이 들어 있나요?",
   },
   {
-    weekNo: 14, status: "adapted", motif: "snow", character: "ubi",
+    weekNo: 14, status: "adapted", motif: "snow", character: "bukgeuki",
     goal: "인공눈을 만지고 굴리며 몸의 흔적을 남기고, 차가운 겨울도 친구와 함께하면 신나는 추억이 된다는 것을 느껴요.",
     coreExperiences: ["눈 감각 탐색", "몸의 흔적 남기기", "함께 만들기"],
     nuriAreas: ["신체운동·건강", "자연탐구", "예술경험", "사회관계"], soyeCoreExperiences: [],
@@ -312,7 +312,7 @@ export const DEMO_LESSONS: DemoLessonBody[] = [
     closingQuestion: "봄·여름·가을·겨울 중 다시 가 보고 싶은 장면은 어디인가요?",
   },
   {
-    weekNo: 17, status: "adapted", motif: "water", character: "cat",
+    weekNo: 17, status: "adapted", motif: "water", character: "ella",
     goal: "물놀이 전 · 중 · 위급 상황의 안전 약속을 몸으로 익히고, 나만의 안전 튜브에 우리 반 약속을 담아요.",
     coreExperiences: ["안전 약속 익히기", "도움 요청하기", "약속 담아 만들기"],
     nuriAreas: ["신체운동·건강", "의사소통", "사회관계"], soyeCoreExperiences: [],
@@ -349,7 +349,7 @@ export const DEMO_LESSONS: DemoLessonBody[] = [
     closingQuestion: "오늘 만든 색 가운데 친구에게 소개하고 싶은 색은 어떤 색인가요?",
   },
   {
-    weekNo: 19, status: "adapted", motif: "drum", character: "maru",
+    weekNo: 19, status: "adapted", motif: "drum", character: "ubi",
     goal: "나라마다 다른 악기 소리를 듣고 구별하며, 소리의 빠르기에 맞춰 몸을 움직이고 친구와 함께 합주해요.",
     coreExperiences: ["소리 구별하기", "리듬에 맞춰 움직이기", "함께 합주하기"],
     nuriAreas: ["예술경험", "자연탐구", "신체운동·건강"], soyeCoreExperiences: [],
@@ -367,7 +367,7 @@ export const DEMO_LESSONS: DemoLessonBody[] = [
     closingQuestion: "친구들과 함께 연주했을 때 어떤 소리가 났나요?",
   },
   {
-    weekNo: 20, status: "adapted", motif: "feast", character: "ubi",
+    weekNo: 20, status: "adapted", motif: "feast", character: "bukgeuki",
     goal: "나라마다 다른 명절 인사를 몸으로 따라 해 보고, 인사는 달라도 마음을 전하는 마음은 같다는 것을 느껴요.",
     coreExperiences: ["명절 인사 익히기", "다른 문화 존중", "감사 전하기"],
     nuriAreas: ["사회관계", "의사소통", "예술경험"], soyeCoreExperiences: [],
@@ -385,7 +385,7 @@ export const DEMO_LESSONS: DemoLessonBody[] = [
     closingQuestion: "오늘 배운 인사 가운데 집에서 해 보고 싶은 인사는 무엇인가요?",
   },
   {
-    weekNo: 21, status: "adapted", motif: "tomato", character: "pupu",
+    weekNo: 21, status: "adapted", motif: "tomato", character: "cat",
     goal: "씨앗에서 열매가 되기까지의 과정을 몸으로 표현하고, 잘 익은 토마토로 축제 놀이를 하며 기다림 끝의 기쁨을 나눠요.",
     coreExperiences: ["성장 과정 표현", "기다림의 기쁨", "축제 놀이"],
     nuriAreas: ["자연탐구", "신체운동·건강", "예술경험"], soyeCoreExperiences: [],
@@ -403,7 +403,7 @@ export const DEMO_LESSONS: DemoLessonBody[] = [
     closingQuestion: "토마토가 익기를 기다리는 동안 어떤 마음이 들었을까요?",
   },
   {
-    weekNo: 22, status: "adapted", motif: "pumpkin", character: "cat",
+    weekNo: 22, status: "adapted", motif: "pumpkin", character: "maru",
     goal: "세계의 축제를 만나 보고, 역할을 나누어 우리 손으로 교실을 꾸며 할로윈 파티를 함께 준비하고 열어요.",
     coreExperiences: ["세계의 축제 만나기", "역할 나누기", "함께 준비하기"],
     nuriAreas: ["예술경험", "사회관계", "의사소통"], soyeCoreExperiences: [],
