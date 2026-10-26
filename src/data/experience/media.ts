@@ -21,10 +21,14 @@ import type { ExperienceImage } from "./types";
  * ── 사용권 ─────────────────────────────────────────────────────
  *
  * ★ 소예키즈가 준 자료로 다루되 **외부 공개 사용권 증빙은 아직 확인되지 않았다.**
- * ★ 그래서 사용권이 확인되기 전에는 화면에 싣지 않는다 (WEEK_MEDIA 가 비고, 1~8주차도
- *   자체 제작 SVG 로 그린다). 빌드 뒤 scripts/strip-unlicensed-media.mjs 가 배포 폴더(out/)
- *   에서 파일도 뺀다 — 주소를 알아도 받을 수 없다.
- * ★ 사용권 증빙을 받으면 LICENSE_STATUS 를 "confirmed" 로 바꾸는 것만으로 다시 실린다.
+ * ★ 그래서 사용권이 확인되기 전에는 **파일 자체를 저장소에 두지 않는다.**
+ *   Vercel 은 public/ 을 그대로 내보낸다 — 화면이 싣지 않아도 public/ 에 있으면 주소로 받힌다
+ *   (2026-10-26 Preview 에서 실제로 200 이었다. 빌드 뒤 out/ 을 지우는 방식은 효과가 없었다).
+ *   파생본 8장 · SHA256 은 프로젝트 밖 `_백업_체험사이트자료/화면용파생본8장_week-covers-web/` 에 있다.
+ * ★ 사용권 증빙을 받은 뒤 다시 싣는 절차 (docs/images/week-cover-mapping.md §8):
+ *   ① 백업 폴더의 8장을 public/images/week-covers-web/ 로 복사하고 SHA256 을 대조한다
+ *   ② LICENSE_STATUS 를 "confirmed" 로 바꾼다 ③ npm test (public 허용 목록이 함께 바뀐다)
+ *   ④ Preview 에서 8장 200 · 화면 표시를 확인한 뒤 출시한다.
  */
 
 export type LicenseStatus = "unconfirmed" | "confirmed";

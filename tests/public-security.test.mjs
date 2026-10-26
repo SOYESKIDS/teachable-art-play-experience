@@ -66,43 +66,37 @@ test("비밀값처럼 보이는 문자열이 저장소에 없다", () => {
 });
 
 // ★ 손으로 적은 고정 목록이다. 새 파일이 public 에 들어오면 그대로 걸린다.
-const ALLOWED_PUBLIC_FILES = [
-  "public/images/site/brand/soyeskids-logo-primary.png",
-  "public/images/week-covers-web/week-01.webp",
-  "public/images/week-covers-web/week-02.webp",
-  "public/images/week-covers-web/week-03.webp",
-  "public/images/week-covers-web/week-04.webp",
-  "public/images/week-covers-web/week-05.webp",
-  "public/images/week-covers-web/week-06.webp",
-  "public/images/week-covers-web/week-07.webp",
-  "public/images/week-covers-web/week-08.webp",
-];
+// ★ Vercel 은 public/ 을 그대로 내보낸다. 화면이 쓰지 않는 파일도 주소만 알면 받힌다 —
+//   그래서 public/ 에 있는 것 = 공개되는 것으로 본다 (빌드 결과물 out/ 이 아니라 public/ 을 검사한다).
+const LOGO = "public/images/site/brand/soyeskids-logo-primary.png";
+const { LICENSE_STATUS, WEEK_IMAGE_FILES, WEEK_COVER_REGISTRY, WEEK_MEDIA } = await import("../src/data/experience/media.ts");
+const ALLOWED_PUBLIC_FILES = LICENSE_STATUS === "confirmed" ? [LOGO, ...WEEK_IMAGE_FILES] : [LOGO];
 
-test("배포 폴더(public)에는 로고와 승인된 주차 표지 8장만 있다", () => {
-  assert.equal(ALLOWED_PUBLIC_FILES.length, 9, "로고 1 + 표지 8");
-  // zip · pdf · 동영상 · 문서 · 임의 업로드 파일이 들어오면 여기서 걸린다
+test("public 에는 로고(와 사용권이 확인된 표지)만 있다 — zip · pdf · 원본 · 문서가 없다", () => {
+  // zip · pdf · 동영상 · 문서 · 임의 업로드 파일 · 사용권 미확인 표지가 들어오면 여기서 걸린다
   assert.deepEqual(files("public", /./).map(rel).sort(), [...ALLOWED_PUBLIC_FILES].sort());
+  for (const f of files("public", /./)) assert.doesNotMatch(rel(f), /\.(zip|pdf|psd|ai|docx?|xlsx?|pptx?|hwp|mp4|mov|png\.bak)$/i, rel(f));
 });
 
-test("허용 목록과 media.ts 등록이 어긋나지 않는다", async () => {
-  const { WEEK_IMAGE_FILES, WEEK_COVER_REGISTRY } = await import("../src/data/experience/media.ts");
-  assert.deepEqual([...WEEK_IMAGE_FILES].sort(),
-    ALLOWED_PUBLIC_FILES.filter((f) => f.includes("week-covers-web")).sort());
-  // 그림 속 내용이 확인된 1~8주차만 등록한다. 나머지는 자체 제작 SVG 를 쓴다
-  assert.deepEqual(Object.keys(WEEK_COVER_REGISTRY).map(Number).sort((a, b) => a - b),
-    Array.from({ length: 8 }, (_, i) => i + 1));
-});
-
-test("사용권이 확인되기 전에는 표지를 화면에도 배포본(out/)에도 싣지 않는다", async () => {
-  const { LICENSE_STATUS, WEEK_MEDIA } = await import("../src/data/experience/media.ts");
-  if (LICENSE_STATUS === "confirmed") return;
-  assert.deepEqual(Object.keys(WEEK_MEDIA), [], "화면이 사용권 미확인 표지를 싣는다");
-  const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
-  assert.equal(pkg.scripts.postbuild, "node scripts/strip-unlicensed-media.mjs", "빌드 뒤 표지를 빼는 단계가 없다");
-  // 빌드한 결과물이 있으면 그 안에도 없어야 한다
-  if (existsSync(join(ROOT, "out"))) {
-    assert.deepEqual(files("out", /week-covers-web/).map(rel), [], "배포본에 사용권 미확인 표지가 남아 있다");
+test("사용권이 확인되기 전에는 표지 파일이 public 에 없고 화면도 싣지 않는다 (배포 주소는 404)", () => {
+  // 그림 속 내용이 확인된 1~8주차만 등록부에 둔다. 나머지는 자체 제작 SVG 를 쓴다
+  assert.deepEqual(Object.keys(WEEK_COVER_REGISTRY).map(Number).sort((a, b) => a - b), Array.from({ length: 8 }, (_, i) => i + 1));
+  assert.deepEqual(Object.values(WEEK_COVER_REGISTRY).map((x) => `public${x.src}`).sort(), [...WEEK_IMAGE_FILES].sort());
+  if (LICENSE_STATUS === "confirmed") {
+    for (const f of WEEK_IMAGE_FILES) assert.ok(existsSync(join(ROOT, f)), `${f} — 사용권 확인 뒤에는 파일이 있어야 한다`);
+    return;
   }
+  assert.deepEqual(Object.keys(WEEK_MEDIA), [], "화면이 사용권 미확인 표지를 싣는다");
+  for (const f of WEEK_IMAGE_FILES) assert.ok(!existsSync(join(ROOT, f)), `${f} — public 에 있으면 Vercel 이 그대로 내보낸다`);
+  assert.ok(!existsSync(join(ROOT, "public/images/week-covers-web")), "표지 폴더가 public 에 남아 있다");
+  // 효과가 없던 빌드 뒤 정리 단계(out/ 만 지움)에 기대지 않는다
+  const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
+  assert.equal(pkg.scripts.postbuild, undefined);
+});
+
+test("배포 QA 가 표지 주소 404 를 실제 배포에서 확인한다", () => {
+  const qa = readFileSync(join(ROOT, "scripts/qa-public.mjs"), "utf8");
+  assert.match(qa, /week-covers-web\/week-0/, "qa-public.mjs 에 표지 주소 검사가 없다");
 });
 
 test("public 의 그림은 실제 이미지 파일이다 (확장자와 내용이 같다)", () => {
