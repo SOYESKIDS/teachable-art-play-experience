@@ -153,7 +153,7 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
             </Block>
           </div>
 
-          <h2 className="mt-14 font-display text-[30px] text-pop-ink sm:text-[36px]">{LESSON_TIME.label}</h2>
+          <h2 id="lesson-plan" className="mt-14 scroll-mt-28 font-display text-[30px] text-pop-ink sm:text-[36px]">{LESSON_TIME.label}</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-pop-ink-muted">
             다섯 단계({LESSON_TIME.breakdown})로 한 회차가 끝나요. 아래 선택 확장활동은 하지 않아도 됩니다.
           </p>
@@ -163,7 +163,16 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
                 <p className="text-[13px] font-bold text-pop-ink-muted">{i + 1}단계 · 약 {s.minutes}분</p>
                 <h3 className="mt-1 font-display text-[21px] text-pop-ink">{s.title}</h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-pop-ink">{s.guide}</p>
+                <details className="group mt-3 rounded-2xl bg-white/70 px-3 py-2">
+                  <summary className="flex min-h-9 cursor-pointer list-none items-center justify-between text-[13px] font-bold text-pop-ink [&::-webkit-details-marker]:hidden">
+                    진행 순서 {s.steps.length} · {TEXT_ORIGIN_LABEL[s.stepsOrigin]}
+                    <span aria-hidden="true" className="text-pop-ink-muted transition-transform group-open:rotate-45">+</span>
+                  </summary>
+                  <ol className="mt-1 grid gap-1 pb-1 text-[13px] leading-relaxed text-pop-ink">{s.steps.map((x, j) => <li key={x}>{j + 1}. {x}</li>)}</ol>
+                  {s.materials.length ? <p className="mt-1 text-[12px] text-pop-ink-muted">준비물 · {s.materials.join(" · ")}</p> : null}
+                </details>
                 <p className="mt-auto pt-4 text-[14px] font-semibold leading-relaxed text-pop-ink-muted">“{s.teacherQuestion}”</p>
+                {s.transition ? <p className="mt-2 text-[12px] leading-relaxed text-pop-ink-muted">다음 단계로 (교사용 제안) · “{s.transition}”</p> : null}
               </li>
             ))}
           </ol>

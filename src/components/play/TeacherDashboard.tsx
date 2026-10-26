@@ -4,7 +4,8 @@ import { useState } from "react";
 import { cx } from "@/components/ui/cx";
 import { displayFallback } from "@/components/play/display-font";
 import { weekProposal } from "@/data/experience/teacher-dashboard/proposals";
-import { weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
+import Link from "next/link";
+import { gatherForWeek, weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
 import { TEXT_ORIGIN_LABEL, type ExperienceWeek, type TextOrigin } from "@/data/experience/types";
 import { LESSON_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
 
@@ -30,6 +31,12 @@ import { LESSON_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
  */
 
 const NONE = "자료에서 확인하지 못했습니다.";
+
+const SUPPORT_LABEL = {
+  homeKit: "가정용 교구 (가정에서 쓰는 것)",
+  teacherPrint: "교사용 출력 자료 (교실 게시용)",
+  teacherPrep: "교사 사전 준비",
+} as const;
 
 const ORIGIN_TONE: Record<TextOrigin, string> = {
   source: "bg-pop-mint-soft text-pop-mint-deep",
@@ -249,6 +256,10 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
   const d = weekDashboard(week.weekNo);
   if (!d) return null;
   const proposal = weekProposal(week.weekNo);
+  // 통합 주차(8 · 16 · 24) — 앞 주차 자료의 「주차 연계」 원문을 모은다
+  const gather = gatherForWeek(week.weekNo);
+  const moveStage = week.stages.find((s) => s.key === "move");
+  const makeStage = week.stages.find((s) => s.key === "make");
 
   const tone = { borderColor: `${week.themeColor}55` };
 
@@ -287,6 +298,26 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
           { area: 11, label: "관찰 포인트", title: `관찰 문항 ${week.teacherObservations.items.length}개`, detail: TEXT_ORIGIN_LABEL[week.teacherObservations.origin] },
         ]}
       />
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <a href="#lesson-plan" className="inline-flex min-h-11 items-center rounded-full bg-pop-ink px-4 text-[14px] font-bold text-white">{LESSON_TIME.label} 진행 단계 보기</a>
+        <Link href={`/experience/classroom/${week.weekNo}`} className="inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">교실 플레이어 열기</Link>
+      </div>
+
+      {week.body.safety.length > 0 ? (
+        <div className="mt-4 rounded-[24px] border-2 border-pop-pink-deep/30 bg-pop-pink-soft px-5 py-4">
+          <p className="text-[14px] font-extrabold text-pop-pink-deep">안전 먼저 — 수업 전에 확인해요</p>
+          <ul className="mt-1.5 grid gap-1 text-[15px] leading-relaxed text-pop-ink">{week.body.safety.map((x) => <li key={x}>· {x}</li>)}</ul>
+        </div>
+      ) : null}
+
+      {gather.length > 0 ? (
+        <div className="mt-4 rounded-[24px] bg-white px-5 py-4 ring-1 ring-pop-ink/5">
+          <p className="text-[14px] font-extrabold text-pop-ink">앞 주차에서 모아 올 것 · 수업 전 체크</p>
+          <p className="mt-0.5 text-[13px] text-pop-ink-muted">각 주차 자료의 「주차 연계」 원문입니다. 이 주차는 앞선 결과물을 모아 완성하는 통합 주차예요.</p>
+          <CheckList items={gather} />
+        </div>
+      ) : null}
 
       <div className="mt-6 flex flex-col gap-3">
         <Fold no={1} title="주차 기본 정보와 교육 목표" count={d.goals.length || proposal?.goals.length}>
@@ -364,6 +395,17 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
               진행 팁 · {d.activityTip}
             </p>
           ) : null}
+          {d.physical2 ? (
+            <div className="mt-5 rounded-2xl bg-pop-cream p-4">
+              <p className="text-[13px] font-bold text-pop-ink-muted">두 번째 대표활동 (자료 원문)</p>
+              <p className={cx("mt-1 font-display text-[19px] text-pop-ink", displayFallback(d.physical2.title))}>{d.physical2.title}</p>
+              <p className="mt-1">{d.physical2.lead}</p>
+              <ol className="mt-2 flex flex-col gap-1.5">
+                {d.physical2.steps.map((s, i) => <li key={s.title}><span className="font-bold">{i + 1}. {s.title}</span> — {s.guide}</li>)}
+              </ol>
+              {d.physical2.tip ? <p className="mt-2 text-[14px] text-pop-ink-muted">진행 팁 · {d.physical2.tip}</p> : null}
+            </div>
+          ) : null}
           <Head>이 사이트의 {LESSON_TIME.label}</Head>
           <ol className="mt-1.5 flex flex-col gap-1.5">
             {week.stages.map((s, i) => (
@@ -423,7 +465,17 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
             </>
           ) : null}
           <Head>활동 준비물 체크리스트</Head>
-          <CheckList items={d.physicalMaterials} />
+          <CheckList items={moveStage?.materials ?? d.physicalMaterials} />
+          <Head>언제 쓰나요 · 교구 사용 시점</Head>
+          <dl className="mt-1.5 grid gap-2 text-[14px]">
+            {[moveStage, makeStage].map((s) => (s && s.materials.length ? (
+              <div key={s.key} className="rounded-2xl bg-pop-cream px-3.5 py-2.5">
+                <dt className="font-bold text-pop-ink">{s.title} · 약 {s.minutes}분</dt>
+                <dd className="mt-0.5 text-pop-ink-muted">{s.materials.join(" · ")}</dd>
+              </div>
+            ) : null))}
+          </dl>
+          <p className="mt-1.5 text-[12px] text-pop-ink-muted">자료의 구성품을 수업 단계에 나눠 보인 것입니다. 수업 전에 한 번 확인해 주세요.</p>
           {week.body.safety.length > 0 ? (
             <>
               <Head>안전 주의사항</Head>
@@ -452,17 +504,24 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
           ) : null}
         </Fold>
 
-        <Fold no={8} title="가정용 교구" count={d.homeKitItems.length}>
+        <Fold no={8} title="가정용 교구 · 교사 지원자료" count={d.homeKitItems.length || d.homeKitHow.length}>
+          <p className="mb-2 inline-flex rounded-full bg-pop-cream px-3 py-1 text-[12px] font-bold text-pop-ink-muted">
+            {SUPPORT_LABEL[d.supportType ?? "homeKit"]}
+          </p>
           {d.homeKitName ? (
             <>
               <p className={cx("font-display text-[19px] text-pop-ink", displayFallback(d.homeKitName))}>{d.homeKitName}</p>
               {d.homeKitLead ? <p className="mt-1">{d.homeKitLead}</p> : null}
-              <Head>구성품</Head>
-              <List items={d.homeKitItems} empty={NONE} />
+              {d.homeKitItems.length > 0 ? (
+                <>
+                  <Head>구성품</Head>
+                  <List items={d.homeKitItems} />
+                </>
+              ) : null}
               {d.homeKitHow.length > 0 ? (
                 <>
-                  <Head>활동 방법</Head>
-                  <List items={d.homeKitHow} />
+                  <Head>{d.supportType === "teacherPrep" ? "교사 사전 준비 체크" : "활동 방법"}</Head>
+                  {d.supportType === "teacherPrep" ? <CheckList items={d.homeKitHow} /> : <List items={d.homeKitHow} />}
                 </>
               ) : null}
             </>
@@ -527,6 +586,11 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
               <Head>다음 주차로 이어지는 것</Head>
               <p className="mt-1">{d.crossWeek}</p>
             </>
+          ) : null}
+          {week.weekNo < 24 ? (
+            <Link href={`/experience/weeks/${week.weekNo + 1}`} className="mt-3 inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">
+              다음 주차 {week.weekNo + 1}주 보기 →
+            </Link>
           ) : null}
         </Fold>
       </div>

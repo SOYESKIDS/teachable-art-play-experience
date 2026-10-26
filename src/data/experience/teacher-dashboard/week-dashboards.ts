@@ -35,6 +35,8 @@ export interface WeekDashboard {
   physicalLead: string | null;
   physicalSteps: readonly DashStep[];
   physicalMaterials: readonly string[];
+  /** 두 번째 대표활동 (자료 physical[1] — 7 · 9주차에만 있다) */
+  physical2?: { title: string; lead: string; steps: readonly DashStep[]; materials: readonly string[]; coreExperience: string | null; tip: string | null };
   coreExperience: string | null;
   activityTip: string | null;
   artTitle: string | null;
@@ -47,7 +49,9 @@ export interface WeekDashboard {
   familyTitle: string | null;
   familyHow: readonly string[];
   familyTalk: readonly string[];
-  /** 가정용 교구 (가정에서 쓰는 것) */
+  /** 지원자료 유형 (자료 support[0].type) — 없으면 가정용 교구 */
+  supportType?: "homeKit" | "teacherPrint" | "teacherPrep";
+  /** 가정용 교구 (가정에서 쓰는 것) — supportType 에 따라 교사용 출력 자료 · 교사 사전 준비 */
   homeKitName: string | null;
   homeKitLead: string | null;
   homeKitItems: readonly string[];
@@ -375,8 +379,8 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     physicalLead: "우리 친구들이 만든 마라카스로 씨앗 음악에 맞춰 신나게 흔들고 춤춰요!",
     coreExperience: null,
     activityTip: "다양한 리듬과 움직임으로 음악을 온몸으로 표현해요!",
-    artTitle: null,
-    artLead: null,
+    artTitle: "씨앗 소리 마라카스 만들기",
+    artLead: "여러 씨앗을 직접 선택해 담고 통을 꾸며서 나만의 마라카스를 만들어요!",
     workbookTitle: null,
     familyTitle: "우리 가족 ‘씨앗 성장 이야기’",
     teacherPoint: null,
@@ -479,8 +483,8 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     physicalLead: "다 같이 동글게 동글게 빙글빙글 노래를 부르며 즐겨요!",
     coreExperience: null,
     activityTip: "색깔을 바꿀 때마다 친구들과 웃으며 이야기 나누고, 자연스럽게 이동하며 신체를 즐겁게 움직여요!",
-    artTitle: null,
-    artLead: null,
+    artTitle: "나만의 꽃 만들기",
+    artLead: "다양한 재료로 나만의 특별한 꽃을 만들어요!",
     workbookTitle: null,
     familyTitle: "우리 가족 꽃 이야기",
     teacherPoint: null,
@@ -581,8 +585,8 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     physicalLead: "비와 햇살이 되어 친구를 찾아가요.",
     coreExperience: null,
     activityTip: "비와 햇살이 되어 친구를 찾아가 도움을 주고받으며 함께하는 즐거움을 경험해요.",
-    artTitle: null,
-    artLead: null,
+    artTitle: "우리들의 비밀기지 만들기",
+    artLead: "친구들과 힘을 모아 진짜 비밀기지를 만들어요!",
     workbookTitle: null,
     familyTitle: "나와 함께 자라는 우리 가족",
     teacherPoint: null,
@@ -691,11 +695,12 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     physicalLead: "친구들이 꽃이 되어 나비에게 꽃가루를 붙여주고, 나비가 날아다니며 꽃가루를 퍼뜨려요! · 교구 키트 활용",
     coreExperience: null,
     activityTip: null,
-    artTitle: null,
-    artLead: null,
+    artTitle: "데칼코마니 나비",
+    artLead: "물감을 찍고 접어 나만의 멋진 나비를 만들어요!",
     workbookTitle: null,
     familyTitle: "우리 선생님은 나비? 벌?",
     teacherPoint: null,
+    supportType: "teacherPrint",
     homeKitName: "선생님 얼굴을 붙여요! (교실 게시용)",
     homeKitLead: "나비 도안 · 벌 도안",
     kidsnote: "오늘은 나비와 벌이 되어 신체놀이를 즐겼어요. 친구들에게 꽃가루를 붙여주고, 조심히 꿀을 모으며 자연의 고마움과 기다림의 의미를 경험하는 모습이 인상적이었어요. 가족과 함께 선생님을 떠올리며 ‘OO 선생님은 나비 같아’라고 이야기한 내용을 공유해 주셔서, 아이가 선생님을 따뜻하게 바라보는 마음을 느낄 수 있었습니다.",
@@ -718,7 +723,8 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       { area: "의사소통", items: ["경험한 것을 말로 표현하기 동화의 내용에 관심 가지기"] },
       { area: "예술경험", items: ["다양한 미술재료로 표현하기 노래와 움직임으로 표현하기"] },
     ],
-    physicalMaterials: [],
+    physicalMaterials: [],    physical2: {"title":"윙윙! 꿀을 모아요! (벌놀이)","lead":"꽃에서 꿀을 모아 우리 반 꿀통으로 가져와요! 친구들과 함께 모으면 꿀통이 점점 가득 차요! · 교구 키트 활용","steps":[{"title":"꽃을 찾아가요!","guide":"꿀이 있는 곳으로 날아가요."},{"title":"꿀을 모아요!","guide":"꽃에서 작은 국자로 컵으로 꿀을 떠요."},{"title":"꿀통에 넣어요!","guide":"조심히 날아와 우리 반 꿀통에 꿀을 넣어요."}],"materials":["꽃 모양 바구니 / 매트","미니 국자 · 계량컵","꿀통 (투명 용기)","나비 · 벌 머리띠 (선택)"],"coreExperience":null,"tip":null},
+
     artSteps: [
       "종이에 물감을 짜요.",
       "반으로 접어요.",
@@ -801,11 +807,12 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     physicalLead: "지금까지 만든 자연 친구들을 들고 이동하며 우리 반 숲을 완성해요!",
     coreExperience: null,
     activityTip: "아이들이 자신의 작품을 직접 들고 이동하며 붙일 수 있도록 공간을 충분히 확보해주세요. 친구들과 함께 만들어 가는 과정에서 협력하고 성취감을",
-    artTitle: null,
-    artLead: null,
+    artTitle: "모이면 숲이 되는 우리",
+    artLead: "지금까지 만든 모든 것을 모아 우리 반 숲을 완성해요!",
     workbookTitle: null,
     familyTitle: "우리 반 숲을 이야기해요!",
     teacherPoint: null,
+    supportType: "teacherPrep",
     homeKitName: "아이들이 쉽게 붙일 수 있도록 준비해요!",
     homeKitLead: "교사 사전 준비 안내",
     kidsnote: "8주차에는 그동안의 활동을 모아 우리 반의 숲을 완성하는 과정을 경험했습니다. 친구들과 함께 자신의 작품을 들고 이동하여 현수막에 붙이며 하나의 큰 숲을 만들어가는 모습이 인상적이었습니다. “함께해서 더 멋진 숲이 되었어요!” 라는 말과 함께 공동체의 즐거움을 느끼는 시간이었습니다.",
@@ -886,7 +893,12 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "우리의 숲",
     ],
     homeKitItems: [],
-    homeKitHow: [],
+    homeKitHow: [
+      "4~7주차 완성품을 종류별로 정리하기",
+      "뒷면에 양면테이프 부착하기",
+      "대형 현수막 설치하기",
+      "활동 과정 영상 촬영하기",
+    ],
     mediaPending: true,
     missingInSource: [
       "준비물",
@@ -941,7 +953,8 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "봄바람 스카프 또는 얇은 보자기 (원 보유)",
       "스카프 바구니",
       "빠른 곡 · 느린 곡 봄 노래 음원",
-    ],
+    ],    physical2: {"title":"봄바람이 불어옵니다","lead":"“봄바람이 불어옵니다, 분홍색 옷을 입은 사람에게!” 해당되는 친구들이 자리를 바꿔요! · 교구 키트 활용","steps":[{"title":"둥글게 앉아요","guide":"방석에 둥글게 앉고 술래 한 명이 가운데 서요."},{"title":"봄바람이 불어옵니다!","guide":"술래가 “분홍색 옷을 입은 사람에게!”처럼 조건을 외쳐요."},{"title":"자리를 바꿔요","guide":"해당되는 친구들이 일어나 다른 자리로 옮겨요."},{"title":"새 술래가 되어요","guide":"자리를 못 찾은 친구가 새 술래가 되어 다시 외쳐요."}],"materials":["방석 또는 의자 (원 보유)"],"coreExperience":"조건을 듣고 판단해 움직이며 친구와 어울리는 경험","tip":"조건은 봄과 연결해 주세요. “꽃을 좋아하는 사람에게!”, “오늘 웃은 사람에게!” 같은 식이면 웃음이 터져요. 준비물도 정리할 것도 없어서 자투리 시간에 바로 할 수 있어요."},
+
     artSteps: [
       "에어캡 (뽁뽁이)에 분홍 물감을 발라요.",
       "도화지에 콕콕 찍으면 벚꽃 송이가 피어나요.",
@@ -2815,4 +2828,13 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
 
 export function weekDashboard(weekNo: number): WeekDashboard | null {
   return WEEK_DASHBOARDS.find((w) => w.weekNo === weekNo) ?? null;
+}
+
+/**
+ * 통합 주차(8 · 16 · 24)에서 모아 올 것 — 앞선 주차 자료의 「주차 연계」가 이 주차를 가리키는 것 (원문).
+ * 예: 4주차 「씨앗 · 새싹 (8주차 숲 부착물) → 8주차」 → 8주차 준비 체크리스트의 한 줄.
+ */
+export function gatherForWeek(weekNo: number): string[] {
+  return WEEK_DASHBOARDS.filter((x) => x.weekNo < weekNo && (x.crossWeek ?? "").includes(`→ ${weekNo}주차`))
+    .map((x) => `${x.weekNo}주차 — ${(x.crossWeek ?? "").split("→")[0].trim()}`);
 }

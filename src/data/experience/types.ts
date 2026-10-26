@@ -123,6 +123,22 @@ export interface ClassStage {
   /** 교사 발문 */
   teacherQuestion: string;
   minutes: number;
+  /** 진행 순서 — 아이가 하는 일 (자료 PDF 단계가 있으면 원문) */
+  steps: readonly string[];
+  /** steps 의 출처 */
+  stepsOrigin: TextOrigin;
+  /** 이 단계에서 쓰는 도구 · 재료 */
+  materials: readonly string[];
+  /** 이 단계의 안전 주의 */
+  safety: readonly string[];
+  /** 자료의 진행 팁 (원문) */
+  tip: string | null;
+  /** 다음 단계로 넘어가는 말 — 교사용 제안 (마지막 단계는 null) */
+  transition: string | null;
+  /** 감각이 예민하거나 움직임 · 말하기가 어려운 유아의 대체 참여 — 교사용 제안 */
+  inclusion: string;
+  /** 연령별 난이도 조절 — 교사용 제안 (신체 · 예술 단계만) */
+  levels: string | null;
 }
 
 /** 공식 지도 메타 — week-index.ts 에서 그대로 가져온다 */

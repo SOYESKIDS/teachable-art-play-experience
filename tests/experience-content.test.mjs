@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 import { EXPERIENCE_WEEKS, EXPERIENCE_PARTS, parseDurationMinutes, STAGE_ORDER } from "../src/data/experience/weeks.ts";
 import { officialPlan } from "../src/data/experience/official-plan.ts";
 import { LESSON_STAGE_MINUTES, LESSON_TIME } from "../src/lib/weeks/lesson-time.ts";
-import { WEEK_DASHBOARDS } from "../src/data/experience/teacher-dashboard/week-dashboards.ts";
+import { WEEK_DASHBOARDS, gatherForWeek } from "../src/data/experience/teacher-dashboard/week-dashboards.ts";
 import { WEEK_PROPOSALS } from "../src/data/experience/teacher-dashboard/proposals.ts";
 import { PARTS } from "../src/lib/weeks/week-types.ts";
 import { DEMO_LESSONS } from "../src/data/experience/demo-lessons.ts";
@@ -153,7 +153,13 @@ test("1~24주 — 목록 · 상세 · 교실 플레이어 · 교사 대시보드
     // 대표 활동 · 미술이 자료의 활동과 같은 활동이다
     const site = `${w.activitySummary} ${w.body.movement} ${w.outcome ?? ""} ${w.body.art}`;
     assert.ok(tokens(d.physicalTitle).some((t) => site.includes(t)), `${at} 대표 활동: 자료 「${d.physicalTitle}」 · 사이트 「${w.activitySummary}」`);
-    if (d.artTitle) assert.ok(tokens(d.artTitle).some((t) => site.includes(t)), `${at} 미술: 자료 「${d.artTitle}」`);
+    if (d.artTitle) {
+      const tk = tokens(d.artTitle);
+      // 일반어만 남는 제목(「나만의 꽃 만들기」)은 「만들기」를 뺀 제목 전체로 비교한다
+      assert.ok(tk.length ? tk.some((t) => site.includes(t)) : site.includes(d.artTitle.replace(/\s*만들기$/, "")), `${at} 미술: 자료 「${d.artTitle}」`);
+    }
+    // 두 번째 대표활동(7 · 9주차)도 수업 본문에 있다
+    if (d.physical2) assert.ok(tokens(d.physical2.title).some((t) => site.includes(t)) || site.includes("자리를 바꿔") || site.includes("꿀"), `${at} 두 번째 활동: 「${d.physical2.title}」`);
     // PART 이름도 자료와 같다
     const part = PARTS.find((p) => p.partNo === w.partNo);
     assert.ok(d.part.endsWith(part.title), `${at} PART: 자료 「${d.part}」 · 사이트 「${part.title}」`);
@@ -274,4 +280,36 @@ test("캐릭터 사진은 그대로 없고, 주차 표지는 사용권이 확인
     Array.from({ length: 8 }, (_, i) => i + 1));
   assert.deepEqual(Object.keys(WEEK_MEDIA).length, published ? 8 : 0);
   for (const p of EXPERIENCE_PARTS) assert.equal("image" in p, false, `PART ${p.partNo}`);
+});
+
+test("35분 단계마다 진행 순서 · 준비물 · 전환 멘트 · 대체 참여가 있고, 자료 단계가 있으면 원문이다", () => {
+  for (const w of EXPERIENCE_WEEKS) {
+    const d = WEEK_DASHBOARDS.find((x) => x.weekNo === w.weekNo);
+    for (const s of w.stages) {
+      const at = `${w.weekNo}주 ${s.title}`;
+      assert.ok(s.steps.length >= 1 && s.steps.every((x) => x.trim()), `${at} 진행 순서`);
+      assert.ok(s.inclusion.trim(), `${at} 대체 참여`);
+      assert.equal(s.transition === null, s.key === "share", `${at} 전환 멘트는 마지막 단계만 없다`);
+      if (s.transition) assert.doesNotMatch(s.transition, /정답|무슨 색/, at);
+    }
+    const move = w.stages.find((s) => s.key === "move"), make = w.stages.find((s) => s.key === "make");
+    assert.equal(move.stepsOrigin, d.physicalSteps.length ? "source" : "proposal", `${w.weekNo}주 신체 단계 출처`);
+    for (const p of d.physicalSteps) assert.ok(move.steps.some((x) => x.startsWith(p.title)), `${w.weekNo}주 신체 단계 원문 ${p.title}`);
+    assert.equal(make.stepsOrigin, d.artSteps.length ? "source" : "proposal", `${w.weekNo}주 예술 단계 출처`);
+    assert.ok(move.materials.length >= 1, `${w.weekNo}주 신체 단계 준비물`);
+  }
+});
+
+test("2차 원문 대조 — 두 번째 대표활동(7 · 9주) · 미술 제목(4~8주) · 지원자료 유형(7 · 8주) · 통합 주차 모으기", () => {
+  const D = (n) => WEEK_DASHBOARDS.find((x) => x.weekNo === n);
+  assert.match(D(7).physical2?.title ?? "", /꿀을 모아요/);
+  assert.match(D(9).physical2?.title ?? "", /봄바람이 불어옵니다/);
+  for (const n of [1, 2, 3, 4, 5, 6, 7, 8]) assert.ok(D(n).artTitle, `${n}주 미술 제목`);
+  assert.equal(D(7).supportType, "teacherPrint");
+  assert.equal(D(8).supportType, "teacherPrep");
+  assert.equal(D(8).homeKitHow.length, 4, "8주 교사 사전 준비 4단계");
+  const weeksOf = (n) => gatherForWeek(n).map((x) => Number(x.split("주차")[0]));
+  assert.deepEqual(weeksOf(8), [4, 5, 6, 7], "8주차는 4~7주차 결과물을 모은다");
+  assert.deepEqual(weeksOf(16), [9, 10, 11, 12, 13, 14, 15]);
+  assert.deepEqual(weeksOf(24), [17, 18, 19, 20, 21, 22, 23]);
 });

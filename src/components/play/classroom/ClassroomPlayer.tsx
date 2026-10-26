@@ -516,6 +516,45 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
         <p className="text-[13px] font-bold text-pop-sky-deep">교사 발문</p>
         <p className="mt-1 text-[20px] font-bold leading-relaxed text-pop-ink">“{stage.teacherQuestion}”</p>
       </div>
+
+      {/* 진행 순서 — 아이가 하는 일. 자료 PDF 단계가 있으면 원문이다 */}
+      <div className="mt-5">
+        <p className="flex flex-wrap items-center gap-2 text-[13px] font-bold text-pop-ink-muted">
+          진행 순서 · 아이가 하는 일
+          <span className={cx("rounded-full px-2 py-0.5 text-[11px] font-extrabold", stage.stepsOrigin === "source" ? "bg-pop-mint-soft text-pop-mint-deep" : "bg-pop-yellow-soft text-pop-ink")}>
+            {TEXT_ORIGIN_LABEL[stage.stepsOrigin]}
+          </span>
+        </p>
+        <ol className="mt-2 grid gap-1.5">
+          {stage.steps.map((s, i) => (
+            <li key={s} className="flex gap-2.5 text-[16px] leading-relaxed text-pop-ink">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pop-cream text-[12px] font-extrabold text-pop-ink-muted">{i + 1}</span>
+              <span>{s}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      {stage.materials.length ? (
+        <div className="mt-4">
+          <p className="text-[13px] font-bold text-pop-ink-muted">이 단계 준비물</p>
+          <ul className="mt-1.5 flex flex-wrap gap-1.5">
+            {stage.materials.map((m) => <li key={m} className="rounded-full bg-pop-cream px-3 py-1 text-[14px] font-semibold text-pop-ink">{m}</li>)}
+          </ul>
+        </div>
+      ) : null}
+      {stage.safety.length ? (
+        <div className="mt-4 rounded-2xl border-2 border-pop-pink-deep/30 bg-pop-pink-soft px-4 py-3">
+          <p className="text-[13px] font-extrabold text-pop-pink-deep">안전 먼저</p>
+          <ul className="mt-1 grid gap-1 text-[15px] leading-relaxed text-pop-ink">{stage.safety.map((x) => <li key={x}>· {x}</li>)}</ul>
+        </div>
+      ) : null}
+      {stage.tip ? <p className="mt-3 rounded-2xl bg-pop-mint-soft px-4 py-3 text-[14px] leading-relaxed text-pop-ink">진행 팁 (자료 원문) · {stage.tip}</p> : null}
+      <div className="mt-4 grid gap-2 rounded-2xl bg-pop-yellow-soft/60 px-4 py-3 text-[14px] leading-relaxed text-pop-ink">
+        <p className="text-[12px] font-extrabold text-pop-ink-muted">교사용 제안 · 본사 검수 전</p>
+        <p><span className="font-bold">함께 참여하기 · </span>{stage.inclusion}</p>
+        {stage.levels ? <p><span className="font-bold">연령별 조절 · </span>{stage.levels}</p> : null}
+        {stage.transition ? <p><span className="font-bold">다음 단계로 · </span>“{stage.transition}”</p> : null}
+      </div>
       {/*
         선택 확장활동 — 교사 화면에만 둔다. 교실 화면(아이들이 보는 쪽)에는 띄우지 않는다.
         ★ 기본 수업 완료를 막지 않는다. 접힌 채로 두고 필요할 때만 연다.

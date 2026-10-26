@@ -73,6 +73,8 @@ function buildStages(body: DemoLessonBody, meta: OfficialWeekMeta, plan: Officia
     share: body.closingQuestion,
   };
   const minutes: Record<StageKey, number> = { ...LESSON_STAGE_MINUTES, explore: 0 };
+  const d = weekDashboard(body.weekNo);
+  const detail = stageDetail(body, meta, d);
   return CORE_STAGE_ORDER.map((key) => ({
     key,
     title: STAGE_LABEL[key],
@@ -80,7 +82,87 @@ function buildStages(body: DemoLessonBody, meta: OfficialWeekMeta, plan: Officia
     guide: guide[key],
     teacherQuestion: question[key],
     minutes: minutes[key],
+    ...detail[key],
   }));
+}
+
+type StageDetail = Pick<ClassStage, "steps" | "stepsOrigin" | "materials" | "safety" | "tip" | "transition" | "inclusion" | "levels">;
+
+/**
+ * 단계마다 교사가 실제로 보는 것 — 진행 순서 · 준비물 · 안전 · 전환 멘트 · 대체 참여 · 난이도.
+ *
+ * ★ 진행 순서 · 준비물 · 진행 팁은 자료 PDF 문장을 그대로 쓴다 (stepsOrigin = source).
+ *   자료에 단계가 없으면 체험 구성 문장을 한 줄로 두고 교사용 제안으로 표시한다.
+ * ★ 전환 멘트 · 대체 참여 · 연령별 조절은 자료에 없는 **교사용 제안**이다. 화면이 그렇게 표시한다.
+ *   주차의 그림책 · 활동 이름만 끼워 넣고, 새 활동을 지어내지 않는다.
+ */
+function stageDetail(body: DemoLessonBody, meta: OfficialWeekMeta, d: WeekDashboard | null): Record<StageKey, StageDetail> {
+  const book = `《${meta.storybook}》`;
+  const moveSteps = [
+    ...(d?.physicalSteps ?? []).map((s) => (s.guide ? `${s.title} — ${s.guide}` : s.title)),
+    ...(d?.physical2 ? [`이어서 「${d.physical2.title}」`, ...d.physical2.steps.map((s) => `${s.title} — ${s.guide}`)] : []),
+  ];
+  const moveMaterials = [...(d?.physicalMaterials ?? []), ...(d?.physical2?.materials ?? [])];
+  const near = (a: string, b: string) => a.split(/[\s·,/()]+/).some((w) => w.length >= 2 && b.includes(w));
+  const makeMaterials = [...(d?.kitItems ?? []).filter((k) => !moveMaterials.some((m) => near(k, m))), ...(d?.orgItems ?? [])];
+  const artName = d?.artTitle ?? meta.outcome ?? "오늘의 작품";
+  const physName = d?.physicalTitle ?? "오늘의 놀이";
+  return {
+    open: {
+      steps: [`그림책 표지를 함께 보며 오늘의 주제 「${meta.coreMessage}」를 떠올려요.`, `“${body.teacherQuestions[0]}”에 생각을 말하거나 손짓으로 답해요.`],
+      stepsOrigin: "proposal",
+      materials: [body.materials[0]],
+      safety: [],
+      tip: null,
+      transition: `이제 ${book} 그림책 속으로 들어가 볼까요?`,
+      inclusion: "말로 답하기 어려운 친구는 손짓 · 표정 · 그림 카드로 고르게 해요.",
+      levels: null,
+    },
+    story: {
+      steps: [
+        `${book} 함께 보기${d?.storySummary ? ` — ${d.storySummary}` : ""}`,
+        `핵심 메시지 — ${d?.storyMessage ?? meta.coreMessage}`,
+      ],
+      stepsOrigin: d?.storySummary ? "source" : "proposal",
+      materials: [body.materials[0]],
+      safety: [],
+      tip: null,
+      transition: `그림책 속 친구처럼 이제 우리 몸으로 해 볼까요? 「${physName}」!`,
+      inclusion: "소리 · 화면 자극이 큰 친구는 편한 자리에서 보게 하고, 책장을 넘기는 역할을 맡길 수 있어요.",
+      levels: null,
+    },
+    move: {
+      steps: moveSteps.length ? moveSteps : [body.movement],
+      stepsOrigin: moveSteps.length ? "source" : "proposal",
+      materials: moveMaterials.length ? moveMaterials : body.materials.slice(1),
+      safety: body.safety,
+      tip: d?.activityTip ?? d?.physical2?.tip ?? null,
+      transition: `몸으로 느낀 것을 이제 손으로 표현해 볼까요? 「${artName}」`,
+      inclusion: "움직임이 어렵거나 감각이 예민한 친구는 자리에서 손 · 상체로 함께하거나, 신호를 주는 역할로 참여해요.",
+      levels: "만 4세: 선생님이 한 단계씩 먼저 보여 주고 따라 해요 · 만 6~7세: 규칙과 순서를 아이들이 함께 정해요.",
+    },
+    explore: { steps: [], stepsOrigin: "proposal", materials: [], safety: [], tip: null, transition: null, inclusion: "", levels: null },
+    make: {
+      steps: d?.artSteps.length ? [...d.artSteps] : [body.art],
+      stepsOrigin: d?.artSteps.length ? "source" : "proposal",
+      materials: makeMaterials.length ? makeMaterials : body.materials.slice(1),
+      safety: body.safety.slice(-1),
+      tip: null,
+      transition: "만든 것을 친구들에게 보여 주며 이야기 나눠 볼까요?",
+      inclusion: "소근육이 어려운 친구는 큰 재료를 쓰고 선생님과 함께 붙이거나, 색 · 자리를 고르는 것으로 참여해요.",
+      levels: "만 4세: 자르기 · 붙이기 재료를 미리 준비해 두어요 · 만 6~7세: 재료와 방법을 스스로 골라요.",
+    },
+    share: {
+      steps: [`마무리 질문 — “${body.closingQuestion}”`, d?.familyTitle ? `가정연계 안내 — ${d.familyTitle}` : body.homeConnection],
+      stepsOrigin: d?.familyTitle ? "source" : "proposal",
+      materials: [],
+      safety: [],
+      tip: null,
+      transition: null,
+      inclusion: "발표가 부담스러운 친구는 작품을 들어 보이거나 한 낱말로 말해도 충분해요.",
+      levels: null,
+    },
+  };
 }
 
 /**
@@ -109,6 +191,17 @@ function buildPdfExtensions(body: DemoLessonBody, d: WeekDashboard): OptionalExt
       activity: `${d.workbookTitle ? `「${d.workbookTitle}」 ` : ""}${d.workbookSheets.length}장 — ${d.workbookSheets.map((s) => s.title).join(" · ")}`,
       teacherPrompt: body.teacherQuestions[1] ?? null,
       linkToCore: STAGE_LABEL.share,
+    });
+  }
+  if (d.physical2) {
+    out.push({
+      ...base,
+      key: "move-pdf-2",
+      title: "추가 신체놀이",
+      activity: `${d.physical2.title} — ${d.physical2.steps.map((s) => s.guide).join(" ")}`,
+      materials: d.physical2.materials.length ? [...d.physical2.materials] : body.materials,
+      teacherPrompt: body.teacherQuestions[1] ?? null,
+      linkToCore: STAGE_LABEL.move,
     });
   }
   if (d.artTitle && d.artSteps.length > 0) {
