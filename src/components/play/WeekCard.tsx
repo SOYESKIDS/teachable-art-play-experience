@@ -40,6 +40,9 @@ export function WeekCard({ week, priority = false }: { week: ExperienceWeek; pri
         <h3 className={cx("font-display text-[22px] leading-snug text-pop-ink", displayFallback(week.title))}>{week.title}</h3>
         <p className="text-[13px] font-bold text-pop-ink-muted">그림책 《{week.storybook}》</p>
         <p className="line-clamp-2 text-[14px] leading-relaxed text-pop-ink-muted">{week.coreMessage}</p>
+        <p className="line-clamp-1 rounded-xl px-2.5 py-1.5 text-[13px] font-semibold text-pop-ink" style={{ backgroundColor: `${week.themeColor}14` }}>
+          <span className="font-bold text-pop-ink-muted">대표 활동 · </span>{week.activitySummary}
+        </p>
         <span className="mt-auto inline-flex items-center gap-1.5 pt-2 text-[15px] font-bold text-pop-pink-deep">
           수업 보기
           <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />

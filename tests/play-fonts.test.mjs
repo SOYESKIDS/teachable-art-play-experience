@@ -98,7 +98,7 @@ test("둥근 제목 글꼴 — 고정 이름은 모두 그리고, 못 그리는 
   }
 
   // 자료 문장을 제목 글꼴로 그리는 자리는 모두 displayFallback 을 거친다
-  const DYNAMIC = /\{(week|w|prev|next)\.title\}|\.childLine\}|\{d\.\w+\}/;
+  const DYNAMIC = /\{(week|w|prev|next)\.(title|storybook)\}|\.childLine\}|\{d\.\w+\}/;
   const offenders = [];
   for (const file of SOURCES.flatMap(walk).filter((f) => f.endsWith(".tsx"))) {
     for (const line of readFileSync(file, "utf8").split("\n")) {

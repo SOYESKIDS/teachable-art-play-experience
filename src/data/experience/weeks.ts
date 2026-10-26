@@ -5,6 +5,7 @@ import { DEMO_LESSONS } from "./demo-lessons";
 import { WEEK_MEDIA } from "./media";
 import { officialPlan, type OfficialWeekPlan } from "./official-plan";
 import { weekDashboard, type WeekDashboard } from "./teacher-dashboard/week-dashboards";
+import { weekProposal } from "./teacher-dashboard/proposals";
 import {
   CORE_STAGE_ORDER,
   STAGE_LABEL,
@@ -217,6 +218,19 @@ function officialMeta(weekNo: number): OfficialWeekMeta {
   };
 }
 
+/**
+ * 교사용 관찰 문항 — 자료 원문 우선, 자료가 「미작성」인 칸만 교사용 제안.
+ * ★ 화면 세 곳(대시보드 · 주차 상세 · 교실 플레이어)이 이 하나를 쓴다. 같은 주차에 관찰 목록이
+ *   두 가지로 보이면 교사는 어느 것을 기록해야 할지 모른다.
+ */
+function teacherObservations(weekNo: number): ExperienceWeek["teacherObservations"] {
+  const source = weekDashboard(weekNo)?.observations ?? [];
+  if (source.length > 0) return { items: source, origin: "source" };
+  const proposal = weekProposal(weekNo)?.observations ?? [];
+  if (proposal.length > 0) return { items: proposal, origin: "proposal" };
+  return { items: [], origin: "review" };
+}
+
 export const EXPERIENCE_WEEKS: ExperienceWeek[] = DEMO_LESSONS.map((body) => {
   const meta = officialMeta(body.weekNo);
   const plan = officialPlan(body.weekNo);
@@ -241,6 +255,7 @@ export const EXPERIENCE_WEEKS: ExperienceWeek[] = DEMO_LESSONS.map((body) => {
     extensions: buildExtensions(body, plan),
     duration,
     image: WEEK_MEDIA[body.weekNo] ?? null,
+    teacherObservations: teacherObservations(body.weekNo),
     totalMinutes,
   };
 }).sort((a, b) => a.weekNo - b.weekNo);

@@ -39,9 +39,10 @@ export interface WeekSourceEntry {
 }
 
 const MEDIA = "영상 · 음원 파일이 아직 없습니다";
-const NO_MEDIA_LIST = "음원 목록이 자료에 없습니다";
 const DRAFT = "자료가 초안이라 본사 검수가 필요합니다";
-const PROPOSAL = "자료에 빈 관찰 문항 · 목표를 교사용 제안으로 채웠습니다 (검수 전)";
+const PROPOSAL = "자료에 「미작성」으로 비어 있는 관찰 문항 · 목표를 교사용 제안으로 채웠습니다 (검수 전)";
+const SOURCE_FILLED = "추출에서 빠졌던 관찰 문항 · 활동 목표 원문을 자료에서 다시 옮겼습니다";
+const MEDIA_FILLED = "추출에서 빠졌던 음원 목록을 자료에서 다시 옮겼습니다";
 const TIME = "수업 시간을 기본 수업 35분 하나로 통일했습니다 (자료 표기는 출처로 보존)";
 const SPLIT = "주차 제목과 그림책 제목을 나눠 적었습니다";
 const BOOK = "그림책 이름을 자료 기준으로 맞췄습니다";
@@ -51,20 +52,20 @@ const PART3 = "PART 이름을 자료 기준 「두근두근 세계여행」(개�
 export const WEEK_SOURCES: readonly WeekSourceEntry[] = [
   { weekNo: 1, state: "confirmed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, PROPOSAL], resolved: [TIME] },
   { weekNo: 2, state: "confirmed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, PROPOSAL], resolved: [TIME] },
-  { weekNo: 3, state: "confirmed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, PROPOSAL], resolved: [TIME] },
+  { weekNo: 3, state: "confirmed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, PROPOSAL], resolved: [SOURCE_FILLED, TIME] },
   { weekNo: 4, state: "confirmed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, PROPOSAL], resolved: [SPLIT, TIME] },
-  { weekNo: 5, state: "confirmed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, NO_MEDIA_LIST], resolved: [TIME] },
-  { weekNo: 6, state: "confirmed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, NO_MEDIA_LIST], resolved: [TIME] },
-  { weekNo: 7, state: "confirmed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, NO_MEDIA_LIST, PROPOSAL], resolved: [SPLIT, TIME] },
-  { weekNo: 8, state: "confirmed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, NO_MEDIA_LIST], resolved: [SPLIT, TIME] },
+  { weekNo: 5, state: "confirmed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, "자료의 음원 목록이 4주차와 같습니다 — 곡 목록 확인 필요"], resolved: [MEDIA_FILLED, TIME] },
+  { weekNo: 6, state: "confirmed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA], resolved: [MEDIA_FILLED, TIME] },
+  { weekNo: 7, state: "confirmed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA], resolved: [SPLIT, SOURCE_FILLED, MEDIA_FILLED, TIME] },
+  { weekNo: 8, state: "confirmed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA], resolved: [SPLIT, MEDIA_FILLED, TIME] },
   { weekNo: 9, state: "mixed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT], resolved: [BOOK, "대표 활동(봄바람 스카프) · 미술을 자료 기준으로 맞췄습니다", TIME] },
   { weekNo: 10, state: "mixed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT], resolved: [BOOK, TIME] },
   { weekNo: 11, state: "mixed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT], resolved: [BOOK, "성장 키워드를 자료 기준 「새로운 경험」으로 맞췄습니다", TIME] },
-  { weekNo: 12, state: "mixed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT, PROPOSAL], resolved: [BOOK, TIME] },
-  { weekNo: 13, state: "mixed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT, PROPOSAL, "미술활동 제목이 자료에서 깨져 있어 설명 문장 「복을 담은 복주머니」로 적었습니다"], resolved: [BOOK, "대표 활동을 자료 기준 「달빛 강강술래」로 맞췄습니다", TIME] },
+  { weekNo: 12, state: "mixed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT], resolved: [BOOK, SOURCE_FILLED, TIME] },
+  { weekNo: 13, state: "mixed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT, "미술활동 제목이 자료에서 깨져 있어 설명 문장 「복을 담은 복주머니」로 적었습니다"], resolved: [BOOK, "대표 활동을 자료 기준 「달빛 강강술래」로 맞췄습니다", SOURCE_FILLED, TIME] },
   { weekNo: 14, state: "mixed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT], resolved: [TOPIC, TIME] },
-  { weekNo: 15, state: "mixed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT, PROPOSAL], resolved: [BOOK, "대표 활동(마음배지) · 결과물(온기벨)을 자료 기준으로 맞췄습니다", TIME] },
-  { weekNo: 16, state: "mixed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT, PROPOSAL], resolved: [BOOK, TIME] },
+  { weekNo: 15, state: "mixed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT], resolved: [SOURCE_FILLED, BOOK, "대표 활동(마음배지) · 결과물(온기벨)을 자료 기준으로 맞췄습니다", TIME] },
+  { weekNo: 16, state: "mixed", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT], resolved: [BOOK, SOURCE_FILLED, TIME] },
   { weekNo: 17, state: "draft", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT], resolved: [TOPIC, PART3, TIME] },
   { weekNo: 18, state: "draft", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT], resolved: [TOPIC, PART3, "자료 제목은 그대로 두고 발문을 정답 없이 보이는 변화를 말하게 다듬었습니다", TIME] },
   { weekNo: 19, state: "draft", inDevPack: true, assetSlotsOnly: true, open: [MEDIA, DRAFT], resolved: [TOPIC, PART3, TIME] },

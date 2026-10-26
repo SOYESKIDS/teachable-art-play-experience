@@ -84,7 +84,7 @@ function Fold({
   children: React.ReactNode;
 }) {
   return (
-    <details className="group rounded-[24px] bg-pop-cream ring-1 ring-pop-ink/5 open:bg-white open:shadow-pop">
+    <details id={`dash-area-${no}`} className="group scroll-mt-28 rounded-[24px] bg-pop-cream ring-1 ring-pop-ink/5 open:bg-white open:shadow-pop">
       <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 py-2 text-[17px] font-bold text-pop-ink">
         <span className="flex items-center gap-2.5">
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-pop-ink text-[13px] font-extrabold text-white">
@@ -136,6 +136,42 @@ function List({ items, empty }: { items: readonly string[]; empty?: string }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+/**
+ * 수업 준비 한눈에 — 열두 영역 가운데 수업 전에 꼭 보는 일곱 가지를 한 줄씩.
+ *
+ * ★ 누르면 그 영역을 펼치고 그 자리로 간다. 긴 자료를 처음부터 읽지 않아도 된다.
+ * ★ 새 내용을 만들지 않는다 — 아래 영역에 이미 있는 자료 문장 · 개수만 보인다.
+ */
+function PrepSummary({ tiles }: { tiles: readonly { area: number; label: string; title: string; detail: string }[] }) {
+  function open(area: number) {
+    const el = document.getElementById(`dash-area-${area}`);
+    if (el instanceof HTMLDetailsElement) {
+      el.open = true;
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+  return (
+    <div className="mt-5 rounded-[28px] bg-white p-4 ring-1 ring-pop-ink/5 sm:p-5">
+      <p className="text-[14px] font-extrabold text-pop-ink">수업 준비 한눈에</p>
+      <ul className="mt-3 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
+        {tiles.map((t) => (
+          <li key={t.label}>
+            <button
+              type="button"
+              onClick={() => open(t.area)}
+              className="flex h-full min-h-[76px] w-full flex-col items-start gap-0.5 rounded-2xl bg-pop-cream px-4 py-3 text-left ring-1 ring-pop-ink/5 transition-colors hover:bg-pop-yellow-soft"
+            >
+              <span className="text-[12px] font-bold text-pop-ink-muted">{t.label}</span>
+              <span className="line-clamp-2 text-[15px] font-bold leading-snug text-pop-ink">{t.title}</span>
+              <span className="text-[12px] font-semibold text-pop-ink-muted">{t.detail}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -239,6 +275,19 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
         </p>
       ) : null}
 
+      <PrepSummary
+        tiles={[
+          { area: 2, label: "그림책", title: d.storybookTitle ? `《${d.storybookTitle}》` : NONE, detail: d.storySummary ? "줄거리 · 핵심 메시지" : "그림책 정보" },
+          { area: 3, label: "대표 신체활동", title: d.physicalTitle ?? NONE, detail: d.physicalSteps.length ? `진행 ${d.physicalSteps.length}단계` : "단계 자료 없음" },
+          { area: 4, label: "미술", title: d.artTitle ?? week.outcome ?? NONE, detail: d.artSteps.length ? `만드는 순서 ${d.artSteps.length}단계` : "만드는 순서는 체험 구성 참고" },
+          { area: 5, label: "워크북", title: d.workbookTitle ?? "워크북", detail: d.workbookSheets.length ? `${d.workbookSheets.length}장 · 선택 확장활동` : NONE },
+          { area: 6, label: "준비물", title: (d.physicalMaterials.length ? d.physicalMaterials : d.kitItems).slice(0, 2).join(" · ") || NONE, detail: `체크리스트 ${d.physicalMaterials.length}가지 · 키트 ${d.kitItems.length}가지` },
+          { area: 7, label: "가정연계", title: d.familyTitle ?? NONE, detail: d.familyHow.length ? `방법 ${d.familyHow.length}단계` : "방법 자료 없음" },
+          { area: 2, label: "교사 발문", title: `“${week.body.teacherQuestions[0]}”`, detail: `발문 ${week.body.teacherQuestions.length}개 + 마무리 질문` },
+          { area: 11, label: "관찰 포인트", title: `관찰 문항 ${week.teacherObservations.items.length}개`, detail: TEXT_ORIGIN_LABEL[week.teacherObservations.origin] },
+        ]}
+      />
+
       <div className="mt-6 flex flex-col gap-3">
         <Fold no={1} title="주차 기본 정보와 교육 목표" count={d.goals.length || proposal?.goals.length}>
           <dl>
@@ -276,8 +325,13 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
               {d.storyMessage}
             </p>
           ) : null}
-          <Head>교사 발문</Head>
+          <Head>교사 발문 (수업 단계 순서)</Head>
           <List items={week.body.teacherQuestions} empty={NONE} />
+          <Head>마무리 질문</Head>
+          <p className="mt-1.5">“{week.body.closingQuestion}”</p>
+          <p className="mt-2 text-[13px] leading-relaxed text-pop-ink-muted">
+            정답을 묻지 않고, 아이가 본 것 · 한 것을 자기 말로 하게 돕는 질문입니다. 교실 플레이어 교사 화면에 같은 순서로 나옵니다.
+          </p>
         </Fold>
 
         <Fold no={3} title="대표 신체활동과 단계별 진행" count={d.physicalSteps.length}>

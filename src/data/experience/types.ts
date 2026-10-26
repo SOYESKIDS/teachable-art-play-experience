@@ -14,7 +14,8 @@ export type ExperienceContentStatus = "official" | "adapted" | "demo_draft";
 
 export const CONTENT_STATUS_LABEL: Record<ExperienceContentStatus, string> = {
   official: "공식 교육과정",
-  adapted: "공식 가이드 기반 체험 구성 · 검수 전",
+  // 1~8 · 10~12 · 16주차는 이전 공식 가이드, 9 · 13~15 · 17~24주차는 자료 PDF 가 근거다 — 둘을 함께 부르는 말
+  adapted: "근거 자료 기반 체험 구성 · 검수 전",
   demo_draft: "체험용 구성 · 정식 교안 확정 전",
 };
 
@@ -181,6 +182,11 @@ export interface ExperienceWeek extends OfficialWeekMeta {
   extensions: OptionalExtension[];
   duration: LessonDuration;
   image: ExperienceImage | null;
+  /**
+   * 교사용 관찰 문항 — 대시보드 · 주차 상세 · 교실 플레이어가 같은 목록을 쓴다.
+   * 자료 원문이 있으면 원문(source), 자료가 「미작성」이면 교사용 제안(proposal).
+   */
+  teacherObservations: { items: readonly string[]; origin: TextOrigin };
   /** 기본 수업 합계. duration.coreMinutes 와 같다 */
   totalMinutes: number;
 }

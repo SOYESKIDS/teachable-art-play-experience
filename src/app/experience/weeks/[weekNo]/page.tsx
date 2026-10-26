@@ -14,6 +14,7 @@ import { cx } from "@/components/ui/cx";
 import { displayFallback } from "@/components/play/display-font";
 import { curriculumBadge } from "@/data/experience/teacher-dashboard/source-register";
 import { EXPERIENCE_WEEKS, experiencePart, experienceWeek } from "@/data/experience/weeks";
+import { TEXT_ORIGIN_LABEL } from "@/data/experience/types";
 import { LESSON_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
 import { PART_NAME_CANDIDATE_LABEL } from "@/lib/weeks/week-types";
 
@@ -238,8 +239,9 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
                   body: <ul className="grid gap-2 text-[17px] font-semibold leading-relaxed text-pop-ink">{[...b.teacherQuestions, b.closingQuestion].map((q) => <li key={q}>“{q}”</li>)}</ul>,
                 },
                 {
-                  title: "관찰 포인트",
-                  body: <ul className="grid gap-2 text-[16px] leading-relaxed text-pop-ink">{b.observationPoints.map((o) => <li key={o}>· {o}</li>)}</ul>,
+                  // 대시보드 · 교실 플레이어와 같은 목록 (자료 원문 우선)
+                  title: `관찰 포인트 ${week.teacherObservations.items.length}개 · ${TEXT_ORIGIN_LABEL[week.teacherObservations.origin]}`,
+                  body: <ul className="grid gap-2 text-[16px] leading-relaxed text-pop-ink">{week.teacherObservations.items.map((o) => <li key={o}>· {o}</li>)}</ul>,
                 },
                 {
                   title: "가정연계 · 안전 안내",

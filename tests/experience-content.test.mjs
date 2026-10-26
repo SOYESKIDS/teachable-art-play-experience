@@ -175,6 +175,33 @@ test("교사 발문 · 교실 문장은 정답을 묻지 않는다 (보이는 �
   }
 });
 
+test("관찰 문항 · 활동 목표 · 음원 — 저장소의 자료 원문 텍스트와 대조한다 (원문 우선 · 「미작성」 칸만 제안)", () => {
+  const DEV = join(ROOT, "docs/curriculum-upgrade/TAP_Curriculum_Development_Pack/TeachAble_24Week_Dashboard_DevPack/source_text");
+  const EXTRA = join(ROOT, "docs/curriculum-upgrade/dashboard-source-21-24");
+  const squash = (s) => s.normalize("NFC").replace(/[\s?.!,·ˮ”“"'‘’ʼ]/g, "");
+  for (const d of WEEK_DASHBOARDS) {
+    const file = d.weekNo <= 20 ? join(DEV, `week-${String(d.weekNo).padStart(2, "0")}.txt`) : join(EXTRA, `week-${d.weekNo}.txt`);
+    const raw = readFileSync(file, "utf8");
+    const src = squash(raw);
+    const at = `${d.weekNo}주`;
+    // 대시보드 문장은 원문에 그대로 있다
+    for (const o of [...d.observations, ...d.goals]) assert.ok(src.includes(squash(o)), `${at} 원문에 없는 문장: ${o}`);
+    for (const m of d.media) assert.ok(src.includes(squash(m.split(" — ")[0])), `${at} 원문에 없는 음원: ${m}`);
+    // 자료가 「미작성」이라고 적지 않은 칸은 비어 있으면 안 된다 (추출 누락)
+    const obsMissing = /관찰\s*문항\s*미작성/.test(raw), goalMissing = /활동\s*목표\s*미작성/.test(raw);
+    assert.equal(d.observations.length === 0, obsMissing, `${at} 관찰: 원문 ${obsMissing ? "미작성" : "있음"} · 대시보드 ${d.observations.length}개`);
+    assert.equal(d.goals.length === 0, goalMissing, `${at} 목표: 원문 ${goalMissing ? "미작성" : "있음"} · 대시보드 ${d.goals.length}개`);
+    const p = WEEK_PROPOSALS.find((x) => x.weekNo === d.weekNo);
+    assert.equal((p?.observations.length ?? 0) > 0, obsMissing, `${at} 관찰 제안은 「미작성」 칸에만`);
+    assert.equal((p?.goals.length ?? 0) > 0, goalMissing, `${at} 목표 제안은 「미작성」 칸에만`);
+    // 음원 곡 수가 자료와 같다
+    const songs = raw.match(/동화책\s*음원\s*\(\s*(\d)\s*곡\s*\)/)?.[1];
+    if (songs) assert.equal(d.media.length, Number(songs), `${at} 음원 곡 수`);
+    // PDF 추출 찌꺼기가 없다
+    assert.doesNotMatch(JSON.stringify(d), /\d+px|w\d+\.[a-z]+\.[a-z]+\.\d|kidsnoteExample|observation\[\]|goals\[\]|support\[|＋|미작성 —| (LS|MD|WK|PR|CW|FM|OB|RP) [가-힣]/, `${at} 추출 찌꺼기`);
+  }
+});
+
 test("관찰 문항 · 활동 목표 — 자료가 비면 교사용 제안으로 채우고, 원문이 있으면 제안을 두지 않는다", () => {
   for (const d of WEEK_DASHBOARDS) {
     const p = WEEK_PROPOSALS.find((x) => x.weekNo === d.weekNo);

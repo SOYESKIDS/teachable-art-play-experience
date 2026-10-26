@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { cx } from "@/components/ui/cx";
-import type { ClassStage, ExperienceWeek, StageKey } from "@/data/experience/types";
+import { TEXT_ORIGIN_LABEL, type ClassStage, type ExperienceWeek, type StageKey } from "@/data/experience/types";
 import { ContentStatusBadge, DemoNotice } from "../Badges";
 import { ArrowRight, PlayIcon, popButtonClass } from "../PopButton";
 import { ConsultButton } from "../ConsultButton";
@@ -555,9 +555,9 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
             </dl>
           </Fold>
         ) : null}
-        <Fold title="관찰 포인트" defaultOpen={observeOpen}>
+        <Fold title="관찰 포인트" badge={TEXT_ORIGIN_LABEL[week.teacherObservations.origin]} defaultOpen={observeOpen}>
           <ul className="grid gap-1 text-[15px] leading-relaxed text-pop-ink">
-            {week.body.observationPoints.map((o) => <li key={o}>· {o}</li>)}
+            {week.teacherObservations.items.map((o) => <li key={o}>· {o}</li>)}
           </ul>
         </Fold>
         <Fold title="안전 안내" badge={`${week.body.safety.length}`}>

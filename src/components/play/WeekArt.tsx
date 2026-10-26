@@ -5,6 +5,7 @@ import type { ExperienceWeek } from "@/data/experience/types";
 import { Buddy } from "./Doodles";
 import { Motif } from "./Motif";
 import { Sticker } from "./Stickers";
+import { displayFallback } from "./display-font";
 
 /**
  * 주차 대표 그림.
@@ -52,8 +53,47 @@ export function WeekArt({
     );
   }
 
+  // 큰 그림 — 그림책 표지처럼 그린다 (책등 · 회차 · 그림책 제목 · 주제 그림).
+  // ★ 사용권이 확인된 표지가 없어도 「그림책 수업」이라는 인상이 남게 한다. 전부 자체 제작이다
+  //   (CSS · SVG 주제 그림 · 글자). 사용권 미확인 표지 그림을 흉내 내 베끼지 않는다.
+  if (!character && hero) {
+    const ep = `EP.${String(week.weekNo).padStart(2, "0")}`;
+    return (
+      <div
+        className={cx("relative isolate overflow-hidden", className)}
+        style={{ background: `linear-gradient(160deg, #fffaf0 0%, ${week.themeColor}26 55%, ${week.themeColor}40 100%)` }}
+        role="img"
+        aria-label={`${week.weekNo}주차 그림책 《${week.storybook}》 표지 그림`}
+      >
+        <div aria-hidden="true" className="dots absolute inset-0 opacity-50" />
+        {/* 책등 */}
+        <div aria-hidden="true" className="absolute inset-y-0 left-0 w-[4.5%]" style={{ backgroundColor: week.themeColor }}>
+          <div className="absolute inset-y-0 right-[22%] w-[10%] bg-white/35" />
+        </div>
+        <svg aria-hidden="true" viewBox="0 0 400 120" preserveAspectRatio="none" className="absolute inset-x-0 bottom-0 h-[26%] w-full">
+          <path d="M0 40c60-30 120-30 180 0s140 30 220-6V120H0z" fill={week.themeColor} opacity="0.20" />
+          <path d="M0 70c80-26 150-20 210 4s120 22 190-8V120H0z" fill={week.themeColor} opacity="0.30" />
+        </svg>
+        <div aria-hidden="true" className="absolute inset-0 flex flex-col items-center px-[9%] pt-[7%]">
+          {/* 회차 배지는 오른쪽 위 — 주차 번호 스티커가 왼쪽 위에 겹쳐 붙는 화면이 있다 */}
+          <span className="self-end rounded-full px-3 py-1 font-display text-[15px] leading-none text-white shadow-pop sm:text-[18px]" style={{ backgroundColor: week.themeColor }}>
+            {ep}
+          </span>
+          <p className={cx("mt-[3%] max-w-[16ch] text-center font-display text-[26px] leading-[1.15] text-pop-ink sm:text-[38px] xl:text-[44px]", displayFallback(week.storybook))}>
+            {week.storybook}
+          </p>
+        </div>
+        <div aria-hidden="true" className="absolute left-1/2 top-[64%] aspect-square h-[50%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/75" />
+        <Motif motif={week.body.motif} color={week.themeColor} className="absolute left-1/2 top-[64%] h-[38%] w-auto -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_6px_0_rgba(27,37,71,0.10)]" />
+        <Buddy character={week.body.character} className="absolute bottom-[5%] left-[8%] w-[20%] max-w-[170px]" />
+        <Sticker kind="sparkle" color="#ffc928" className="absolute right-[9%] top-[44%] h-9 w-9" />
+        <Sticker kind="star" color="#ff4f8b" tilt={-12} className="absolute bottom-[12%] right-[10%] h-8 w-8" />
+      </div>
+    );
+  }
+
   // 캐릭터가 꺼져 있으면 주제 그림을 크게 — 카드는 구도 4가지를 주차 번호로 돌려 쓴다.
-  // 한 줄(4장)에 서로 다른 구도가 오도록 weekNo % 4. 큰 그림(hero)은 가운데 구도 하나.
+  // 한 줄(4장)에 서로 다른 구도가 오도록 weekNo % 4.
   if (!character) {
     const layout = hero ? 0 : week.weekNo % 4;
     const flip = !hero && week.weekNo % 2 === 0;
