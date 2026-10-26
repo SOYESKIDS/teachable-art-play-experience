@@ -62,26 +62,46 @@ export interface OptionalExtension {
   safetyNote: string | null;
   /** 기본 수업의 어느 단계에서 이어지는지 */
   linkToCore: string;
-  /** 원본 가이드 출처 */
+  /** 원본 출처 (이전 공식 가이드 또는 자료 PDF) */
   source: string;
   sourceStatus: "verified" | "pending_review";
 }
 
-/** 기본 수업 시간 — 공식 원본을 지우지 않고 나란히 둔다 */
+/**
+ * 교사용 문장의 출처 상태 — 대시보드가 항목마다 배지로 보인다.
+ *
+ *   source   — 자료 PDF 에 적힌 문장 그대로 (공식 원문)
+ *   proposal — 자료가 비어 있어 교사용으로 새로 쓴 제안 (본사 검수 전)
+ *   review   — 자료에도 제안에도 없어 검수가 필요한 자리
+ */
+export type TextOrigin = "source" | "proposal" | "review";
+
+export const TEXT_ORIGIN_LABEL: Record<TextOrigin, string> = {
+  source: "공식 원문",
+  proposal: "교사용 제안",
+  review: "검수 필요",
+};
+
+/**
+ * 수업 시간 — 운영 기준 하나 + 출처 기록.
+ *
+ * ★ 화면이 「오늘 수업 시간」으로 말하는 값은 coreMinutes 하나다 (lesson-time.ts).
+ * ★ 원본 표기 두 가지는 지우지 않고 출처 기록으로만 들고 있다.
+ */
 export interface LessonDuration {
-  coreMin: number;
-  coreMax: number;
-  /** 이 주차 기본 수업 단계 합 (30~40 사이) */
-  coreRecommended: number;
-  /** 공식 가이드의 원래 권장 시간 — 바꾸지 않고 보존한다 */
-  originalDurationLabel: string;
-  sourceStatus: "verified" | "pending_review";
+  /** 기본 수업 단계 합 — 24주 모두 LESSON_TIME.totalMinutes (35) */
+  coreMinutes: number;
+  /** 자료 PDF 의 시간 원문 (예: CORE 45분) */
+  pdfDurationLabel: string;
+  /** 이전 공식 가이드의 권장 시간 원문. 그 가이드가 지금과 다른 수업이면 null */
+  legacyGuideDurationLabel: string | null;
 }
 
 export type MotifKey =
   | "school" | "medal" | "heart" | "seed" | "flower" | "house" | "butterfly" | "forest"
   | "blossom" | "bug" | "plane" | "leaf" | "moon" | "chat" | "bell" | "seasons"
-  | "paint" | "water" | "drum" | "tomato" | "balloon" | "pumpkin" | "gift" | "globe";
+  | "paint" | "water" | "drum" | "tomato" | "balloon" | "pumpkin" | "gift" | "globe"
+  | "snow" | "feast";
 
 export type CharacterKey = "pupu" | "bukgeuki" | "cat" | "maru" | "ubi" | "ella";
 
@@ -108,10 +128,12 @@ export interface ClassStage {
 export interface OfficialWeekMeta {
   weekNo: number;
   partNo: 1 | 2 | 3;
+  /** 주차 제목 */
   title: string;
+  /** 그림책 제목 — 주차 제목과 다를 수 있다 */
+  storybook: string;
   growthKeyword: string;
   coreMessage: string;
-  durationLabel: string;
   activitySummary: string;
   /** 공식 지도에 비어 있으면 null — 화면은 대체하지 않고 "정리 중"으로 둔다 */
   outcome: string | null;
@@ -153,13 +175,13 @@ export interface DemoLessonBody {
 
 export interface ExperienceWeek extends OfficialWeekMeta {
   body: DemoLessonBody;
-  /** 기본 수업 다섯 단계 (합 = duration.coreRecommended) */
+  /** 기본 수업 다섯 단계 (합 = duration.coreMinutes) */
   stages: ClassStage[];
   /** 선택 확장활동 — 기본 수업 뒤에 고르는 것 */
   extensions: OptionalExtension[];
   duration: LessonDuration;
   image: ExperienceImage | null;
-  /** 기본 수업 합계. duration.coreRecommended 와 같다 */
+  /** 기본 수업 합계. duration.coreMinutes 와 같다 */
   totalMinutes: number;
 }
 

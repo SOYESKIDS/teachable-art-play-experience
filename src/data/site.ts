@@ -3,6 +3,15 @@
  *
  * ★ 이 사이트는 아무것도 저장하지 않는다. 도입 문의는 전화 · 이메일 · 기존 영업 사이트로 받는다.
  */
+
+/**
+ * 사이트 주소 — 단일 설정. 메타데이터(canonical · OG) · robots · sitemap · 공유 링크가 모두 이 값을 읽는다.
+ *
+ * ★ 지금 Production 도메인(Vercel 프로젝트 teachable-art-play-experience)이다. 자체 도메인을 연결하면
+ *   이 한 줄만 바꾼다.
+ * ★ 환경변수로 두지 않는다 — 정적 export 라 빌드 때 값이 박히고, 공개 소스에는 환경변수를 읽는
+ *   자리를 두지 않는다 (tests/public-security.test.mjs). Preview 배포도 canonical 은 이 주소를 가리킨다.
+ */
 export const SITE_URL = "https://teachable-art-play-experience.vercel.app";
 
 export const CONTACT = {

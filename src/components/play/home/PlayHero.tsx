@@ -37,7 +37,8 @@ export function PlayHero() {
             외부 강사 없이 <strong className="whitespace-nowrap font-bold text-pop-ink">담임선생님이</strong> 교실 플레이어로 진행해요.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <PopLink href="/experience/weeks" tone="yellow" size="xl">
+            {/* 주 버튼(체험)은 분홍 하나 — 24주 둘러보기는 보조 버튼 */}
+            <PopLink href="/experience/weeks" tone="white" size="xl">
               24주 수업 만나기
               <ArrowRight />
             </PopLink>

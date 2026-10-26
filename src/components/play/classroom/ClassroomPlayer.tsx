@@ -13,6 +13,8 @@ import { Buddy } from "../Doodles";
 import { Motif } from "../Motif";
 import { Sticker } from "../Stickers";
 import { WeekArt } from "../WeekArt";
+import { displayFallback } from "../display-font";
+import { LESSON_TIME } from "@/lib/weeks/lesson-time";
 
 /**
  * INTERACTIVE CLASSROOM PLAYER — 공개 체험용 수업 진행 화면.
@@ -233,7 +235,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
           <span className="inline-flex h-11 items-center rounded-full px-4 font-display text-[18px] text-white" style={{ backgroundColor: week.themeColor }}>
             {week.weekNo}주차
           </span>
-          <span className="font-display text-[20px] text-pop-ink sm:text-[22px]">{week.title}</span>
+          <span className={cx("font-display text-[20px] text-pop-ink sm:text-[22px]", displayFallback(week.title))}>{week.title}</span>
           <DemoNotice compact />
         </div>
         <div className="flex flex-wrap items-center gap-2" role="toolbar" aria-label="수업 도구">
@@ -279,7 +281,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
             {phase.kind === "intro" ? "수업 준비" : phase.kind === "done" ? "수업 완료" : `${stageIndex + 1} / ${stages.length} 단계 · ${current?.title}`}
           </span>
           <span className="tabular">
-            {phase.kind === "stage" ? `진행 ${formatClock(elapsed)} · 계획 ${current?.minutes}분` : `기본 수업 ${week.totalMinutes}분`}
+            {phase.kind === "stage" ? `진행 ${formatClock(elapsed)} · 계획 ${current?.minutes}분` : LESSON_TIME.label}
           </span>
         </div>
         <div className="mt-2 flex gap-1.5" role="progressbar" aria-label="수업 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
@@ -317,7 +319,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
                   </p>
                 </div>
                 <div className="flex flex-1 items-center justify-center px-6 pb-28 text-center sm:px-10 [@media(max-height:700px)]:pb-14">
-                  <p className={cx("max-w-[18ch] font-display leading-[1.15] text-pop-ink", effectiveView === "split" ? "text-[40px] sm:text-[52px]" : isFullscreen ? "text-[clamp(56px,6.4vw,124px)]" : "text-[44px] sm:text-[64px] lg:text-[76px] [@media(max-height:700px)]:text-[36px]")}>
+                  <p className={cx("max-w-[18ch] font-display leading-[1.15] text-pop-ink", displayFallback(current.childLine), effectiveView === "split" ? "text-[40px] sm:text-[52px]" : isFullscreen ? "text-[clamp(56px,6.4vw,124px)]" : "text-[44px] sm:text-[64px] lg:text-[76px] [@media(max-height:700px)]:text-[36px]")}>
                     {current.childLine}
                   </p>
                 </div>
@@ -444,10 +446,13 @@ function IntroScreen({ week, onStart }: { week: ExperienceWeek; onStart: () => v
       <div className="flex flex-col justify-center gap-5 p-2">
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full bg-pop-yellow-soft px-3 py-1 text-[14px] font-bold text-pop-ink">#{week.growthKeyword}</span>
-          <span className="rounded-full bg-pop-sky-soft px-3 py-1 text-[14px] font-bold text-pop-sky-deep">기본 수업 {week.totalMinutes}분</span>
+          <span className="rounded-full bg-pop-sky-soft px-3 py-1 text-[14px] font-bold text-pop-sky-deep">{LESSON_TIME.label}</span>
           <span className="rounded-full bg-pop-cream px-3 py-1 text-[14px] font-bold text-pop-ink-muted">선택 확장활동 별도</span>
         </div>
-        <h2 className="font-display text-[40px] leading-tight text-pop-ink sm:text-[52px]">《{week.title}》</h2>
+        <div>
+          <h2 className={cx("font-display text-[40px] leading-tight text-pop-ink sm:text-[52px]", displayFallback(week.title))}>{week.title}</h2>
+          <p className="mt-1 text-[17px] font-bold text-pop-ink-muted">그림책 《{week.storybook}》</p>
+        </div>
         <p className="text-[19px] font-medium leading-relaxed text-pop-ink">{week.coreMessage}</p>
         <div>
           <p className="text-[14px] font-bold text-pop-ink-muted">오늘의 준비물</p>
@@ -488,7 +493,7 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
     story: [{ label: "그림책 활동", text: week.body.story }],
     move: [{ label: "신체표현", text: week.body.movement }, { label: "음악 · 리듬", text: week.body.music }],
     explore: [{ label: "탐색", text: week.body.explore }],
-    make: [{ label: "미술 활동", text: week.body.art }, { label: "결과물", text: week.outcome ?? `${week.activitySummary} (공식 결과물 정리 중)` }],
+    make: [{ label: "미술 활동", text: week.body.art }, { label: "결과물", text: week.outcome ?? `${week.activitySummary} (결과물 정리 중)` }],
     share: [{ label: "가정연계", text: week.body.homeConnection }],
   };
   const details = extra[stage.key].filter((x) => x.text !== stage.guide);
@@ -587,7 +592,7 @@ function DoneScreen({ week, elapsed, nextWeekNo, onRestart }: { week: Experience
       <Sticker kind="star" color="#ff4f8b" className="mx-auto h-20 w-20 animate-pop-in" />
       <h2 className="mt-4 font-display text-[40px] leading-tight text-pop-ink sm:text-[56px]">오늘 수업 완료!</h2>
       <p className="mx-auto mt-3 max-w-[36ch] text-[19px] font-medium leading-relaxed text-pop-ink">
-        《{week.title}》 다섯 단계를 모두 마쳤어요. {elapsed > 0 ? `진행 시간 ${formatClock(elapsed)}.` : ""}
+        「{week.title}」 다섯 단계를 모두 마쳤어요. {elapsed > 0 ? `진행 시간 ${formatClock(elapsed)}.` : ""}
       </p>
       <p className="mx-auto mt-4 max-w-[40ch] rounded-2xl bg-white/80 px-4 py-3 text-[16px] font-semibold text-pop-ink">마무리 질문 · “{week.body.closingQuestion}”</p>
       <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">

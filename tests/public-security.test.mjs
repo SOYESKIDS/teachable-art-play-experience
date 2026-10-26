@@ -85,12 +85,24 @@ test("배포 폴더(public)에는 로고와 승인된 주차 표지 8장만 있�
 });
 
 test("허용 목록과 media.ts 등록이 어긋나지 않는다", async () => {
-  const { WEEK_IMAGE_FILES, WEEK_MEDIA } = await import("../src/data/experience/media.ts");
+  const { WEEK_IMAGE_FILES, WEEK_COVER_REGISTRY } = await import("../src/data/experience/media.ts");
   assert.deepEqual([...WEEK_IMAGE_FILES].sort(),
     ALLOWED_PUBLIC_FILES.filter((f) => f.includes("week-covers-web")).sort());
   // 그림 속 내용이 확인된 1~8주차만 등록한다. 나머지는 자체 제작 SVG 를 쓴다
-  assert.deepEqual(Object.keys(WEEK_MEDIA).map(Number).sort((a, b) => a - b),
+  assert.deepEqual(Object.keys(WEEK_COVER_REGISTRY).map(Number).sort((a, b) => a - b),
     Array.from({ length: 8 }, (_, i) => i + 1));
+});
+
+test("사용권이 확인되기 전에는 표지를 화면에도 배포본(out/)에도 싣지 않는다", async () => {
+  const { LICENSE_STATUS, WEEK_MEDIA } = await import("../src/data/experience/media.ts");
+  if (LICENSE_STATUS === "confirmed") return;
+  assert.deepEqual(Object.keys(WEEK_MEDIA), [], "화면이 사용권 미확인 표지를 싣는다");
+  const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
+  assert.equal(pkg.scripts.postbuild, "node scripts/strip-unlicensed-media.mjs", "빌드 뒤 표지를 빼는 단계가 없다");
+  // 빌드한 결과물이 있으면 그 안에도 없어야 한다
+  if (existsSync(join(ROOT, "out"))) {
+    assert.deepEqual(files("out", /week-covers-web/).map(rel), [], "배포본에 사용권 미확인 표지가 남아 있다");
+  }
 });
 
 test("public 의 그림은 실제 이미지 파일이다 (확장자와 내용이 같다)", () => {

@@ -925,6 +925,16 @@ h4 {
   font-family: var(--font-sans);
 }
 
+/*
+ * 제목 글꼴로 다 그릴 수 없는 제목 — 문장 전체를 본문 글꼴 굵은체로 (display-font.ts).
+ * 글자마다 글꼴이 섞여 한 줄이 갈라져 보이지 않게 한다.
+ */
+.play .display-fallback {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
 .play :is(h1, h2, h3) {
   letter-spacing: -0.01em;
   text-wrap: balance;

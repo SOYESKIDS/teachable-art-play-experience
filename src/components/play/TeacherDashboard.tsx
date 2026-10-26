@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { cx } from "@/components/ui/cx";
+import { displayFallback } from "@/components/play/display-font";
+import { weekProposal } from "@/data/experience/teacher-dashboard/proposals";
 import { weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
-import type { ExperienceWeek } from "@/data/experience/types";
+import { TEXT_ORIGIN_LABEL, type ExperienceWeek, type TextOrigin } from "@/data/experience/types";
+import { LESSON_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
 
 /**
  * 교사용 수업 대시보드 — 읽기 전용.
@@ -20,11 +24,53 @@ import type { ExperienceWeek } from "@/data/experience/types";
  * ★ 음원 · 영상은 실제 파일이 없다. 눌러도 열리지 않는 재생 단추를 두지 않고
  *   「자료 준비 중」으로 적는다.
  * ★ 원아 정보를 넣거나 저장하는 자리를 만들지 않는다. 관찰 문장은 예시다.
- * ★ 자료의 수업시간(CORE 45분)과 사이트의 기본 35분을 나란히 보여 준다.
- *   어느 하나로 덮어쓰지 않는다.
+ * ★ 운영 시간은 LESSON_TIME(기본 수업) 하나다. 자료의 CORE 표기는 출처 기록으로만 적는다.
+ * ★ 관찰 문항 · 활동 목표는 문장마다 출처 상태를 밝힌다 —
+ *   공식 원문(자료 PDF) · 교사용 제안(proposals.ts, 검수 전) · 검수 필요(둘 다 없음).
  */
 
 const NONE = "자료에서 확인하지 못했습니다.";
+
+const ORIGIN_TONE: Record<TextOrigin, string> = {
+  source: "bg-pop-mint-soft text-pop-mint-deep",
+  proposal: "bg-pop-yellow-soft text-pop-ink",
+  review: "bg-pop-pink-soft text-pop-pink-deep",
+};
+
+function OriginBadge({ origin }: { origin: TextOrigin }) {
+  return (
+    <span className={cx("inline-flex rounded-full px-2.5 py-0.5 text-[12px] font-bold", ORIGIN_TONE[origin])}>
+      {TEXT_ORIGIN_LABEL[origin]}
+    </span>
+  );
+}
+
+/**
+ * 출처 상태가 붙는 목록 — 자료 원문이 있으면 원문, 없으면 교사용 제안, 둘 다 없으면 검수 필요.
+ */
+function OriginList({ label, source, proposal }: { label: string; source: readonly string[]; proposal: readonly string[] }) {
+  const origin: TextOrigin = source.length > 0 ? "source" : proposal.length > 0 ? "proposal" : "review";
+  const items = origin === "source" ? source : proposal;
+  return (
+    <>
+      <div className="mt-4 flex flex-wrap items-center gap-2 first:mt-0">
+        <p className="text-[13px] font-bold text-pop-ink-muted">{label}</p>
+        <OriginBadge origin={origin} />
+      </div>
+      {origin === "review" ? (
+        <p className="mt-1.5 text-[14px] text-pop-ink-muted">{NONE} 본사 검수 때 채울 자리입니다.</p>
+      ) : (
+        <List items={items} />
+      )}
+      {origin === "proposal" ? (
+        <p className="mt-2 text-[13px] leading-relaxed text-pop-ink-muted">
+          자료에 비어 있어 같은 주차 수업 장면을 바탕으로 교사용 제안을 적었습니다. 본사 검수 전이며,
+          아이를 평가하는 기준이 아니라 수업 중 볼 수 있는 행동입니다.
+        </p>
+      ) : null}
+    </>
+  );
+}
 
 function Fold({
   no,
@@ -166,6 +212,7 @@ function CopyBlock({ lines }: { lines: readonly string[] }) {
 export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
   const d = weekDashboard(week.weekNo);
   if (!d) return null;
+  const proposal = weekProposal(week.weekNo);
 
   const tone = { borderColor: `${week.themeColor}55` };
 
@@ -179,6 +226,13 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
         <strong className="font-bold text-pop-ink">공식 교안으로 확정된 내용이 아닙니다.</strong>
       </p>
 
+      <p className="mt-3 flex flex-wrap items-center gap-2 text-[13px] text-pop-ink-muted">
+        <span className="font-bold">문장 출처 표시</span>
+        <OriginBadge origin="source" /> 자료 PDF 문장
+        <OriginBadge origin="proposal" /> 빈 곳을 채운 제안
+        <OriginBadge origin="review" /> 아직 비어 있음
+      </p>
+
       {d.missingInSource.length > 0 ? (
         <p className="mt-3 rounded-2xl border-2 bg-pop-cream px-4 py-3 text-[14px] leading-relaxed text-pop-ink" style={tone}>
           이 주차 자료에는 {d.missingInSource.join(" · ")}이(가) 비어 있습니다. 검수가 필요합니다.
@@ -186,7 +240,7 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
       ) : null}
 
       <div className="mt-6 flex flex-col gap-3">
-        <Fold no={1} title="주차 기본 정보와 교육 목표" count={d.goals.length}>
+        <Fold no={1} title="주차 기본 정보와 교육 목표" count={d.goals.length || proposal?.goals.length}>
           <dl>
             <Row label="핵심 주제" value={d.coreTheme} />
             <Row label="성장 키워드" value={d.keyword} />
@@ -196,26 +250,23 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
             <Row label="대상 연령" value={d.ageRange} />
             <Row label="자료 출처" value={d.dataSource} />
           </dl>
-          <Head>교육 목표</Head>
-          <List items={d.goals} empty={NONE} />
+          <OriginList label="교육 목표" source={d.goals} proposal={proposal?.goals ?? []} />
           <div className="mt-4 rounded-2xl border-2 bg-white px-4 py-3" style={tone}>
             <p className="text-[13px] font-bold text-pop-ink-muted">수업 시간</p>
             <p className="mt-1">
-              이 사이트에서 운영하는 <strong className="font-bold">기본 수업 {week.totalMinutes}분</strong> +
+              운영 기준 <strong className="font-bold">{LESSON_TIME.label}</strong> ({LESSON_TIME.breakdown}) +
               선택 확장활동
             </p>
-            {d.pdfDuration ? (
-              <p className="mt-1 text-[14px] text-pop-ink-muted">자료 원본 표기 · {d.pdfDuration}</p>
-            ) : null}
             <p className="mt-1 text-[14px] text-pop-ink-muted">
-              원본 표기는 지우지 않고 함께 적었습니다. 운영 기준은 {week.totalMinutes}분입니다.
+              자료 표기 「{week.duration.pdfDurationLabel}」
+              {week.duration.legacyGuideDurationLabel ? ` · 이전 가이드 「${week.duration.legacyGuideDurationLabel}」` : ""} — {SOURCE_TIME_NOTE}.
             </p>
           </div>
         </Fold>
 
         <Fold no={2} title="그림책">
           {d.storybookTitle ? (
-            <p className="font-display text-[20px] text-pop-ink">《{d.storybookTitle}》</p>
+            <p className={cx("font-display text-[20px] text-pop-ink", displayFallback(d.storybookTitle))}>《{d.storybookTitle}》</p>
           ) : (
             <p className="text-[14px] text-pop-ink-muted">{NONE}</p>
           )}
@@ -232,7 +283,7 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
         <Fold no={3} title="대표 신체활동과 단계별 진행" count={d.physicalSteps.length}>
           {d.physicalTitle ? (
             <>
-              <p className="font-display text-[19px] text-pop-ink">{d.physicalTitle}</p>
+              <p className={cx("font-display text-[19px] text-pop-ink", displayFallback(d.physicalTitle))}>{d.physicalTitle}</p>
               {d.physicalLead ? <p className="mt-1">{d.physicalLead}</p> : null}
             </>
           ) : (
@@ -259,7 +310,7 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
               진행 팁 · {d.activityTip}
             </p>
           ) : null}
-          <Head>이 사이트의 기본 수업 {week.totalMinutes}분</Head>
+          <Head>이 사이트의 {LESSON_TIME.label}</Head>
           <ol className="mt-1.5 flex flex-col gap-1.5">
             {week.stages.map((s, i) => (
               <li key={s.key} className="flex gap-2">
@@ -275,7 +326,7 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
         <Fold no={4} title="미술활동과 만드는 순서" count={d.artSteps.length}>
           {d.artTitle ? (
             <>
-              <p className="font-display text-[19px] text-pop-ink">{d.artTitle}</p>
+              <p className={cx("font-display text-[19px] text-pop-ink", displayFallback(d.artTitle))}>{d.artTitle}</p>
               {d.artLead ? <p className="mt-1">{d.artLead}</p> : null}
               <Head>만드는 순서</Head>
               <List items={d.artSteps} empty={NONE} />
@@ -287,7 +338,7 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
 
         <Fold no={5} title="워크북" count={d.workbookSheets.length}>
           {d.workbookTitle ? (
-            <p className="font-display text-[19px] text-pop-ink">{d.workbookTitle}</p>
+            <p className={cx("font-display text-[19px] text-pop-ink", displayFallback(d.workbookTitle))}>{d.workbookTitle}</p>
           ) : null}
           {d.workbookSheets.length > 0 ? (
             <ul className="mt-2 flex flex-col gap-2">
@@ -304,7 +355,7 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
             <p className="text-[14px] text-pop-ink-muted">{NONE}</p>
           )}
           <p className="mt-3 text-[14px] leading-relaxed text-pop-ink-muted">
-            워크북은 선택 확장활동입니다. 기본 수업 {week.totalMinutes}분 안에 넣지 않습니다.
+            워크북은 선택 확장활동입니다. {LESSON_TIME.label} 안에 넣지 않습니다.
           </p>
         </Fold>
 
@@ -329,7 +380,7 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
 
         <Fold no={7} title="가족연계 활동" count={d.familyHow.length}>
           {d.familyTitle ? (
-            <p className="font-display text-[19px] text-pop-ink">{d.familyTitle}</p>
+            <p className={cx("font-display text-[19px] text-pop-ink", displayFallback(d.familyTitle))}>{d.familyTitle}</p>
           ) : (
             <p className="text-[14px] text-pop-ink-muted">{NONE}</p>
           )}
@@ -350,7 +401,7 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
         <Fold no={8} title="가정용 교구" count={d.homeKitItems.length}>
           {d.homeKitName ? (
             <>
-              <p className="font-display text-[19px] text-pop-ink">{d.homeKitName}</p>
+              <p className={cx("font-display text-[19px] text-pop-ink", displayFallback(d.homeKitName))}>{d.homeKitName}</p>
               {d.homeKitLead ? <p className="mt-1">{d.homeKitLead}</p> : null}
               <Head>구성품</Head>
               <List items={d.homeKitItems} empty={NONE} />
@@ -390,8 +441,8 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
           </p>
         </Fold>
 
-        <Fold no={11} title="관찰 포인트" count={d.observations.length}>
-          <List items={d.observations} empty={NONE} />
+        <Fold no={11} title="관찰 포인트" count={d.observations.length || proposal?.observations.length}>
+          <OriginList label="관찰 문항" source={d.observations} proposal={proposal?.observations ?? []} />
           <p className="mt-3 text-[13px] leading-relaxed text-pop-ink-muted">
             보기 예시입니다. 이 화면에는 원아 정보를 적거나 저장하는 자리가 없습니다.
           </p>

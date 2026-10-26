@@ -380,13 +380,12 @@ export interface WeekScene {
 export interface WeekSummary {
   weekNo: number;
   partNo: PartNo;
-  /** 수업명 = 그림책 제목 */
+  /** 자료 PDF 의 주차 제목 */
   title: string;
+  /** 자료 PDF 의 그림책 제목 — 주차 제목과 다를 수 있다 */
   storybook: string;
   growthKeyword: string;
   coreMessage: string;
-  /** 원문 표기 그대로 */
-  durationLabel: string;
   /** 대표 신체활동 → 미술 (수업 지도 한 줄 요약) */
   activitySummary: string;
   /** 결과물 */
@@ -513,9 +512,12 @@ export interface PartMeta {
   title: string;
   weekFrom: number;
   weekTo: number;
-  /** 파트 이름이 공식 가이드에 없으면 true */
+  /** 파트 이름이 아직 개편 후보이면 true — 화면은 PART_NAME_CANDIDATE_LABEL 을 붙인다 */
   nameProvisional: boolean;
 }
+
+/** 확정 전 파트 이름 옆에 붙이는 말 */
+export const PART_NAME_CANDIDATE_LABEL = "개편 후보";
 
 export const PARTS: PartMeta[] = [
   { partNo: 1, title: "씨앗과 숲", weekFrom: 1, weekTo: 8, nameProvisional: false },
@@ -526,8 +528,9 @@ export const PARTS: PartMeta[] = [
     weekTo: 16,
     nameProvisional: false,
   },
-  // ★ 공식 가이드에 17~24주 파트명이 없다. 확정 전까지 임시 표기임을 밝힌다.
-  { partNo: 3, title: "세계의 축제", weekFrom: 17, weekTo: 24, nameProvisional: true },
+  // ★ 17~24주 자료 PDF 의 파트 이름. 본사 확정 전이라 「개편 후보」로 밝힌다.
+  //   (이전 표기 「세계의 축제」는 docs/curriculum/snapshots/2026-10-26-before-pdf-sync/parts.json)
+  { partNo: 3, title: "두근두근 세계여행", weekFrom: 17, weekTo: 24, nameProvisional: true },
 ];
 
 export function partOf(weekNo: number): PartMeta {

@@ -1,12 +1,10 @@
 import { WEEK_INDEX } from "@/lib/weeks/week-index";
+import { LESSON_STAGE_MINUTES, LESSON_TIME, PDF_DURATION_LABEL } from "@/lib/weeks/lesson-time";
 import { PARTS } from "@/lib/weeks/week-types";
 import { DEMO_LESSONS } from "./demo-lessons";
 import { WEEK_MEDIA } from "./media";
 import { officialPlan, type OfficialWeekPlan } from "./official-plan";
-import {
-  CORE_MIN_MINUTES,
-  CORE_MAX_MINUTES,
-} from "./official-plan";
+import { weekDashboard, type WeekDashboard } from "./teacher-dashboard/week-dashboards";
 import {
   CORE_STAGE_ORDER,
   STAGE_LABEL,
@@ -21,10 +19,11 @@ import {
 } from "./types";
 
 /**
- * 공개 체험 24주 — 공식 지도 메타 + 체험용 본문.
+ * 공개 체험 24주 — 수업 지도 메타 + 체험용 본문.
  *
- * ★ 공식 값(주차명 · 성장 키워드 · 핵심 메시지 · 수업 시간 · 대표 활동 · 결과물 · 색)은
+ * ★ 지도 값(주차 제목 · 그림책 · 성장 키워드 · 핵심 메시지 · 대표 활동 · 결과물 · 색)은
  *   week-index.ts 에서 읽기만 한다. 여기서 고치지 않는다.
+ * ★ 수업 시간은 lesson-time.ts 의 기본 수업 35분(5 + 7 + 13 + 7 + 3) 하나다.
  * ★ week-index.ts 는 정적 데이터 파일이다 — DB · Supabase 를 부르지 않는다.
  *   (tests/experience-isolation.test.mjs 가 이 폴더의 import 를 검사한다)
  */
@@ -43,16 +42,10 @@ export function parseDurationMinutes(label: string): number {
 /**
  * 기본 수업 다섯 단계를 만든다.
  *
- * ── 무엇이 달라졌나 ──────────────────────────────────────────────
- *
- * 전에는 총시간을 고정 가중치로 나눠 단계별 분을 **계산**했다. 공식 가이드의
- * 분이 아니었다. 이제는 official-plan.ts 가 주차마다 정한 값을 그대로 쓴다.
- * 그 값은 공식 시간표에서 어느 활동이 길었는지를 보고 줄인 것이다.
- *
- * ★ 합은 언제나 30~40분 안이다 (권장 35분). 화면이 말하는 시간과 단계 합이
- *   어긋나면 교사가 수업 중에 시간을 잘못 잡는다.
- * ★ 「이야기 열기」 문장은 공식 가이드의 도입 제목을 쓴다. 가이드에 도입이
- *   없는 17~24주차는 공식 지도의 핵심 메시지로 대신하고 임시 편성으로 적는다.
+ * ★ 단계별 분은 24주 모두 lesson-time.ts 의 5 + 7 + 13 + 7 + 3분이다. 화면이 말하는
+ *   시간과 단계 합이 어긋나면 교사가 수업 중에 시간을 잘못 잡는다.
+ * ★ 「이야기 열기」 안내는 이전 공식 가이드의 도입 제목을 쓴다 — 그 가이드가 지금과
+ *   같은 수업일 때만. 아니면 핵심 메시지로 대신하고 임시 문장이라고 밝힌다.
  */
 function buildStages(body: DemoLessonBody, meta: OfficialWeekMeta, plan: OfficialWeekPlan): ClassStage[] {
   // 공식 도입 제목은 제목 글꼴 서브셋이 못 그리는 주차가 많아 큰 글씨로 쓰지 않는다.
@@ -60,9 +53,9 @@ function buildStages(body: DemoLessonBody, meta: OfficialWeekMeta, plan: Officia
   const openLine = "오늘은 무엇을 만날까요?";
   const childLine: Record<StageKey, string> = { ...body.childLines, open: openLine };
   const guide: Record<StageKey, string> = {
-    open: plan.introTitle
+    open: plan.matchesCurrentLesson && plan.introTitle
       ? `공식 가이드 도입 — ${plan.introTitle}`
-      : `${meta.coreMessage} (도입이 공식 가이드에 없어 임시로 만든 문장입니다)`,
+      : `${meta.coreMessage} (도입 문장이 자료에 없어 핵심 메시지로 대신합니다)`,
     story: body.story,
     // explore 를 버리지 않는다 — 몸·감각 탐색 한 단계로 함께 묶는다
     move: `${body.movement} ${body.explore}`,
@@ -78,7 +71,7 @@ function buildStages(body: DemoLessonBody, meta: OfficialWeekMeta, plan: Officia
     make: body.teacherQuestions[2] ?? body.teacherQuestions[0],
     share: body.closingQuestion,
   };
-  const minutes: Record<StageKey, number> = { ...plan.core, explore: 0 };
+  const minutes: Record<StageKey, number> = { ...LESSON_STAGE_MINUTES, explore: 0 };
   return CORE_STAGE_ORDER.map((key) => ({
     key,
     title: STAGE_LABEL[key],
@@ -90,15 +83,71 @@ function buildStages(body: DemoLessonBody, meta: OfficialWeekMeta, plan: Officia
 }
 
 /**
+ * 자료 PDF 로 바뀐 주차의 선택 확장활동 — 워크북 · 작품 완성 · 가정연계.
+ *
+ * ★ 자료에 단계별 시간이 없다. 모르는 시간을 숫자로 적지 않고 「검수 필요」로 둔다.
+ * ★ 활동 이름은 자료의 워크북 · 미술 · 가족연계 제목을 그대로 쓴다.
+ */
+function buildPdfExtensions(body: DemoLessonBody, d: WeekDashboard): OptionalExtension[] {
+  const src = `주차 대시보드 자료 PDF ${d.weekNo}주차`;
+  const note = "자료에 단계별 시간이 없습니다 · 검수 필요";
+  const base = {
+    estimatedMinutes: null,
+    minutesNote: note,
+    materials: body.materials,
+    safetyNote: body.safety[0] ?? null,
+    source: src,
+    sourceStatus: "pending_review" as const,
+  };
+  const out: OptionalExtension[] = [];
+  if (d.workbookSheets.length > 0) {
+    out.push({
+      ...base,
+      key: "workbook-pdf",
+      title: "워크북 심화",
+      activity: `${d.workbookTitle ? `「${d.workbookTitle}」 ` : ""}${d.workbookSheets.length}장 — ${d.workbookSheets.map((s) => s.title).join(" · ")}`,
+      teacherPrompt: body.teacherQuestions[1] ?? null,
+      linkToCore: STAGE_LABEL.share,
+    });
+  }
+  if (d.artTitle && d.artSteps.length > 0) {
+    out.push({
+      ...base,
+      key: "art-pdf",
+      title: "작품 세부 완성",
+      activity: `${d.artTitle} — ${d.artSteps.join(" ")}`,
+      teacherPrompt: body.teacherQuestions[2] ?? null,
+      linkToCore: STAGE_LABEL.make,
+    });
+  }
+  out.push({
+    ...base,
+    key: "home",
+    title: "가정연계",
+    activity: d.familyTitle ? `${d.familyTitle} — ${body.homeConnection}` : body.homeConnection,
+    minutesNote: "원에서 쓰는 시간은 자료에 없습니다 · 검수 필요",
+    teacherPrompt: body.closingQuestion,
+    linkToCore: STAGE_LABEL.share,
+  });
+  return out;
+}
+
+/**
  * 선택 확장활동을 만든다.
  *
- * ★ 공식 시간표에서 기본 수업 밖으로 나간 단계를 그대로 쓴다. 시간도 가이드의
- *   분이다. 공식 시간표가 없는 17~24주차는 분을 비우고 「검수 필요」로 둔다 —
- *   모르는 시간을 숫자로 적지 않는다.
+ * ★ 이전 공식 가이드가 지금과 같은 수업이면 그 시간표에서 기본 수업 밖으로 나간
+ *   단계를 그대로 쓴다. 시간도 가이드의 분이다.
+ * ★ 자료 PDF 로 수업이 바뀐 주차(matchesCurrentLesson = false)는 자료의 워크북 ·
+ *   미술 · 가족연계로 만든다 (buildPdfExtensions).
  * ★ 가정연계는 어느 주차에나 있지만 원에서 쓰는 시간이 가이드에 없다. 그래서
  *   분을 비운다.
  */
 function buildExtensions(body: DemoLessonBody, plan: OfficialWeekPlan): OptionalExtension[] {
+  if (!plan.matchesCurrentLesson) {
+    const d = weekDashboard(plan.weekNo);
+    if (!d) throw new Error(`week-dashboards 에 ${plan.weekNo}주차가 없다`);
+    return buildPdfExtensions(body, d);
+  }
   const verified = plan.sourceStatus === "verified";
   const src = `공식 교사용 수업가이드 ${plan.weekNo}주차`;
   const out: OptionalExtension[] = plan.extensionSources.map((e) => ({
@@ -159,9 +208,9 @@ function officialMeta(weekNo: number): OfficialWeekMeta {
     weekNo: w.weekNo,
     partNo: w.partNo as 1 | 2 | 3,
     title: w.title,
+    storybook: w.storybook,
     growthKeyword: w.growthKeyword,
     coreMessage: w.coreMessage,
-    durationLabel: w.durationLabel,
     activitySummary: w.activitySummary,
     outcome: w.outcome && w.outcome.trim() !== "" ? w.outcome : null,
     themeColor: w.themeColor,
@@ -176,12 +225,13 @@ export const EXPERIENCE_WEEKS: ExperienceWeek[] = DEMO_LESSONS.map((body) => {
   const stages = buildStages(body, meta, plan);
   // 화면이 말하는 시간과 단계 합이 어긋나면 교사가 수업 중에 시간을 잘못 잡는다
   const totalMinutes = stages.reduce((sum, st) => sum + st.minutes, 0);
+  if (totalMinutes !== LESSON_TIME.totalMinutes) {
+    throw new Error(`${body.weekNo}주차 단계 합 ${totalMinutes}분이 ${LESSON_TIME.label}과 다르다`);
+  }
   const duration: LessonDuration = {
-    coreMin: CORE_MIN_MINUTES,
-    coreMax: CORE_MAX_MINUTES,
-    coreRecommended: totalMinutes,
-    originalDurationLabel: meta.durationLabel,
-    sourceStatus: plan.sourceStatus,
+    coreMinutes: totalMinutes,
+    pdfDurationLabel: weekDashboard(body.weekNo)?.pdfDuration ?? PDF_DURATION_LABEL,
+    legacyGuideDurationLabel: plan.matchesCurrentLesson ? plan.durationLabel : null,
   };
 
   return {
@@ -203,7 +253,7 @@ export function weeksInPart(partNo: number): ExperienceWeek[] {
   return EXPERIENCE_WEEKS.filter((w) => w.partNo === partNo);
 }
 
-/** 대표 체험 주차 — 4주차 《소예의 씨앗》 */
+/** 대표 체험 주차 — 4주차 「씨앗과 새싹」 · 그림책 《소예의 씨앗》 */
 export const FEATURED_WEEK_NO = 4;
 
 const PART_COPY: Record<1 | 2 | 3, Omit<ExperiencePart, "partNo" | "title" | "nameProvisional" | "weekFrom" | "weekTo">> = {
@@ -221,7 +271,7 @@ const PART_COPY: Record<1 | 2 | 3, Omit<ExperiencePart, "partNo" | "title" | "na
   },
   3: {
     tagline: "세상과 어울려요",
-    description: "색 · 물 · 소리 · 하늘, 그리고 세계의 축제로 넓어지는 마지막 여덟 번의 탐험.",
+    description: "물놀이 안전 약속에서 출발해 색 · 소리 · 명절 · 축제를 지나, 서로 다른 우리가 하나의 지구가 되는 마지막 여덟 번의 세계여행.",
     tone: "pink",
     character: "ella",
   },

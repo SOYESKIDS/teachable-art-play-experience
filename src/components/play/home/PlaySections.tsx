@@ -8,6 +8,8 @@ import { ArrowRight, PlayIcon, PopLink } from "../PopButton";
 import { Sticker, type StickerKind } from "../Stickers";
 import type { MotifKey } from "@/data/experience/types";
 import { WeekArt } from "../WeekArt";
+import { displayFallback } from "../display-font";
+import { PART_NAME_CANDIDATE_LABEL } from "@/lib/weeks/week-types";
 
 const TONE = {
   mint: { bg: "bg-pop-mint-soft", text: "text-pop-mint-deep", dot: "#22c3b5", solid: "bg-pop-mint" },
@@ -73,7 +75,7 @@ export function AdventureMap() {
                     </p>
                     <h3 className="mt-2 font-display text-[28px] leading-tight text-pop-ink">
                       {part.title}
-                      {part.nameProvisional ? <span className="ml-2 align-middle text-[14px] font-sans font-bold text-pop-ink-muted">(가칭)</span> : null}
+                      {part.nameProvisional ? <span className="ml-2 align-middle text-[14px] font-sans font-bold text-pop-ink-muted">({PART_NAME_CANDIDATE_LABEL})</span> : null}
                     </h3>
                     <p className="mt-3 text-[16px] leading-relaxed text-pop-ink-muted">{part.description}</p>
                     <ul className="mt-5 flex flex-wrap gap-1" aria-label={`PART ${part.partNo} 주차`}>
@@ -200,7 +202,8 @@ export function TryFeatured() {
         </div>
         <div className="order-1 lg:order-2">
           <p className="inline-flex rounded-full bg-white px-4 py-1.5 text-[13px] font-bold text-pop-mint-deep">미리 체험해 보기 · {week.weekNo}주차</p>
-          <h2 id="try-title" className="mt-4 font-display text-[40px] leading-tight text-pop-ink sm:text-[56px]">《{week.title}》</h2>
+          <h2 id="try-title" className={cx("mt-4 font-display text-[40px] leading-tight text-pop-ink sm:text-[56px]", displayFallback(week.title))}>{week.title}</h2>
+          <p className="mt-2 text-[18px] font-bold text-pop-ink-muted">그림책 《{week.storybook}》</p>
           <p className="mt-4 max-w-[36ch] text-[19px] font-medium leading-relaxed text-pop-ink">{week.coreMessage}</p>
           <ul className="mt-6 flex flex-wrap gap-2">
             {week.stages.map((s) => (
@@ -208,7 +211,7 @@ export function TryFeatured() {
             ))}
           </ul>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <PopLink href={`/experience/classroom/${week.weekNo}`} tone="ink" size="xl">
+            <PopLink href={`/experience/classroom/${week.weekNo}`} tone="pink" size="xl">
               <PlayIcon />
               체험 시작
             </PopLink>
@@ -262,7 +265,7 @@ export function PlayerPreview() {
               <div className="h-2 bg-white"><div className="h-full w-2/5 rounded-r-full bg-pop-pink" /></div>
               <div className="relative grid min-h-[300px] place-items-center px-6 py-10 sm:min-h-[380px]" style={{ background: `radial-gradient(90% 80% at 50% 30%, ${week.themeColor}33, #fffaf0)` }}>
                 <Buddy character={week.body.character} sizes="160px" className="absolute bottom-2 left-6 w-[20%] max-w-[140px]" />
-                <p className="max-w-[16ch] text-center font-display text-[34px] leading-tight text-pop-ink sm:text-[46px]">{stage.childLine}</p>
+                <p className={cx("max-w-[16ch] text-center font-display text-[34px] leading-tight text-pop-ink sm:text-[46px]", displayFallback(stage.childLine))}>{stage.childLine}</p>
               </div>
               <div className="flex items-center justify-between gap-3 bg-white px-5 py-4">
                 <span className="rounded-full bg-pop-cream px-5 py-3 text-[14px] font-bold text-pop-ink">← 이전</span>

@@ -21,15 +21,25 @@ import type { ExperienceImage } from "./types";
  * ── 사용권 ─────────────────────────────────────────────────────
  *
  * ★ 소예키즈가 준 자료로 다루되 **외부 공개 사용권 증빙은 아직 확인되지 않았다.**
+ * ★ 그래서 사용권이 확인되기 전에는 화면에 싣지 않는다 (WEEK_MEDIA 가 비고, 1~8주차도
+ *   자체 제작 SVG 로 그린다). 빌드 뒤 scripts/strip-unlicensed-media.mjs 가 배포 폴더(out/)
+ *   에서 파일도 뺀다 — 주소를 알아도 받을 수 없다.
+ * ★ 사용권 증빙을 받으면 LICENSE_STATUS 를 "confirmed" 로 바꾸는 것만으로 다시 실린다.
  */
 
+export type LicenseStatus = "unconfirmed" | "confirmed";
+
 /** 공개 사용권 확인 상태 — 확인되면 "confirmed" 로 바꾼다 */
-export const LICENSE_STATUS = "unconfirmed" as const;
+export const LICENSE_STATUS: LicenseStatus = "unconfirmed";
+
+export function coversPublished(status: LicenseStatus): boolean {
+  return status === "confirmed";
+}
 
 export const MEDIA: Record<string, ExperienceImage> = {};
 
-/** 주차 전용 그림 — 내용이 확인된 1~8주차만 */
-export const WEEK_MEDIA: Partial<Record<number, ExperienceImage>> = {
+/** 내용이 확인된 1~8주차 표지 등록부 — 사용권과 관계없이 그대로 둔다 */
+export const WEEK_COVER_REGISTRY: Partial<Record<number, ExperienceImage>> = {
   1: {
     src: "/images/week-covers-web/week-01.webp",
     alt: "1주차 그림책 표지",
@@ -79,6 +89,11 @@ export const WEEK_MEDIA: Partial<Record<number, ExperienceImage>> = {
     height: 1097,
   },
 };
+
+/** 화면이 실제로 싣는 주차 표지 — 사용권이 확인되기 전에는 비어 있다 */
+export const WEEK_MEDIA: Partial<Record<number, ExperienceImage>> = coversPublished(LICENSE_STATUS)
+  ? WEEK_COVER_REGISTRY
+  : {};
 
 /** 보안 테스트가 대조하는 실제 배포 파일 목록 */
 export const WEEK_IMAGE_FILES: readonly string[] = [

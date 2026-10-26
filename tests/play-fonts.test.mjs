@@ -77,18 +77,37 @@ test("루트 layout 은 Google 글꼴을 싣지 않는다 (자체 서브셋만)"
   assert.doesNotMatch(layout, /next\/font\/google/);
 });
 
-test("둥근 제목 글꼴 목록이 주차명 · 교실 문장 · 단계 이름 글자를 모두 담는다", () => {
+test("둥근 제목 글꼴 — 고정 이름은 모두 그리고, 못 그리는 주차 제목 · 교실 문장은 문장 전체를 본문 글꼴로 대체한다", async () => {
   const path = join(FONT_DIR, "display-glyphs.txt");
   assert.ok(existsSync(path), "node scripts/collect-play-display-glyphs.mjs 로 만든다");
   const display = new Set(readFileSync(path, "utf8"));
   const sans = new Set(readFileSync(join(FONT_DIR, "play-glyphs.txt"), "utf8"));
-  const texts = [
-    ...EXPERIENCE_WEEKS.flatMap((w) => [w.title, `${w.weekNo}주차`, `《${w.title}》`, ...w.stages.flatMap((s) => [s.title, s.childLine])]),
-    ...EXPERIENCE_PARTS.map((p) => p.title),
-    ...Object.values(STAGE_LABEL),
-  ];
-  const missing = [...new Set(texts.join(""))].filter((c) => c.trim() && !display.has(c));
-  assert.deepEqual(missing, [], "글자 목록을 다시 모으고 서브셋을 다시 만드세요 (scripts/collect-play-display-glyphs.mjs)");
+  // 화면이 읽는 글자 목록(display-glyphs.ts)이 서브셋 목록과 같아야 한다
+  const { DISPLAY_GLYPHS } = await import("../src/fonts/play/display-glyphs.ts");
+  assert.deepEqual([...new Set(DISPLAY_GLYPHS)].sort(), [...display].filter((c) => c !== "\n" && c !== "\r").sort(),
+    "node scripts/write-display-glyph-module.mjs 로 다시 만드세요");
+  const { fitsDisplayFont, displayFallback } = await import("../src/components/play/display-font.ts");
+
+  // PART 이름 · 단계 이름 · 「N주차」는 제목 글꼴 안에서만 쓴다 (대체 없이 그대로 그린다)
+  const fixed = [...EXPERIENCE_PARTS.map((p) => p.title), ...Object.values(STAGE_LABEL), ...EXPERIENCE_WEEKS.map((w) => `${w.weekNo}주차`)];
+  assert.deepEqual(fixed.filter((t) => !fitsDisplayFont(t)), [], "고정 이름이 제목 글꼴 밖 글자를 쓴다");
+
+  // 주차 제목 · 그림책 · 교실 문장은 자료 문장이라 제목 글꼴에 없는 글자가 있다 — 대체 클래스가 붙는다
+  for (const t of EXPERIENCE_WEEKS.flatMap((w) => [w.title, w.storybook, ...w.stages.map((s) => s.childLine)])) {
+    assert.equal(displayFallback(t), fitsDisplayFont(t) ? "" : "display-fallback", t);
+  }
+
+  // 자료 문장을 제목 글꼴로 그리는 자리는 모두 displayFallback 을 거친다
+  const DYNAMIC = /\{(week|w|prev|next)\.title\}|\.childLine\}|\{d\.\w+\}/;
+  const offenders = [];
+  for (const file of SOURCES.flatMap(walk).filter((f) => f.endsWith(".tsx"))) {
+    for (const line of readFileSync(file, "utf8").split("\n")) {
+      if (line.includes("font-display") && DYNAMIC.test(line) && !line.includes("displayFallback(")) offenders.push(`${relative(ROOT, file)}: ${line.trim().slice(0, 90)}`);
+    }
+  }
+  assert.deepEqual(offenders, [], "제목 글꼴로 자료 문장을 그리는데 대체 처리가 없다");
+  // 대체 스타일이 있다
+  assert.match(readFileSync(join(ROOT, "src", "app", "globals.css"), "utf8"), /\.play \.display-fallback\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
   // 제목 글꼴 글자는 본문 서브셋에도 있어야 한다 (빠진 글자의 대체 글꼴)
   assert.deepEqual([...display].filter((c) => !sans.has(c)), []);
 });

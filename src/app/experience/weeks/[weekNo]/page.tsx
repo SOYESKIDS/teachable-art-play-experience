@@ -11,14 +11,20 @@ import { ArrowRight, PlayIcon, PopLink } from "@/components/play/PopButton";
 import { Sticker } from "@/components/play/Stickers";
 import { WeekArt } from "@/components/play/WeekArt";
 import { cx } from "@/components/ui/cx";
+import { displayFallback } from "@/components/play/display-font";
+import { curriculumBadge } from "@/data/experience/teacher-dashboard/source-register";
 import { EXPERIENCE_WEEKS, experiencePart, experienceWeek } from "@/data/experience/weeks";
+import { LESSON_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
+import { PART_NAME_CANDIDATE_LABEL } from "@/lib/weeks/week-types";
 
 /**
  * 공개 체험 · 주차 상세 (1~24주, 빌드 때 모두 생성).
  *
- * ★ 공식 값과 체험용 구성을 화면에서 나눠 보인다.
- *   위쪽 「공식 교육과정」 = week-index.ts (주차명 · 키워드 · 메시지 · 시간 · 활동 · 결과물)
+ * ★ 수업 지도 값과 체험용 구성을 화면에서 나눠 보인다.
+ *   위쪽 = week-index.ts (주차 제목 · 그림책 · 키워드 · 메시지 · 활동 · 결과물)
+ *     배지는 자료 확정본(1~8주차)만 「공식 교육과정」, 나머지는 「개편 후보 · 검수 전」.
  *   아래 본문 = 체험용 구성 — 상태 배지와 안내 문장을 항상 함께 둔다.
+ * ★ 수업 시간은 lesson-time.ts 의 LESSON_TIME 하나만 말한다. 원본 표기는 출처 기록으로만.
  * ★ 누리과정 5개 영역과 SOYE KIDS 핵심경험은 다른 묶음으로 보인다 (섞어 쓰지 않는다).
  */
 export const dynamicParams = false;
@@ -33,7 +39,7 @@ export async function generateMetadata({ params }: PageProps<"/experience/weeks/
   if (!week) return {};
   return {
     title: `${week.weekNo}주차 「${week.title}」 | 수업 체험 | TeachAble Art Play`,
-    description: `${week.coreMessage} — 성장 키워드 「${week.growthKeyword}」 · 기본 수업 ${week.totalMinutes}분`,
+    description: `${week.coreMessage} — 그림책 《${week.storybook}》 · 성장 키워드 「${week.growthKeyword}」 · ${LESSON_TIME.label}`,
     alternates: { canonical: `/experience/weeks/${week.weekNo}` },
   };
 }
@@ -80,18 +86,18 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
         </div>
         <div className="animate-rise">
           <div className="flex flex-wrap gap-2">
-            <span className="rounded-full bg-pop-leaf-soft px-3 py-1 text-[12px] font-bold text-pop-leaf-deep">공식 교육과정</span>
-            <span className="rounded-full bg-white px-3 py-1 text-[12px] font-bold text-pop-ink ring-1 ring-pop-ink/10">PART {part.partNo} · {part.title}{part.nameProvisional ? " (가칭)" : ""}</span>
+            <span className="rounded-full bg-pop-leaf-soft px-3 py-1 text-[12px] font-bold text-pop-leaf-deep">{curriculumBadge(week.weekNo)}</span>
+            <span className="rounded-full bg-white px-3 py-1 text-[12px] font-bold text-pop-ink ring-1 ring-pop-ink/10">PART {part.partNo} · {part.title}{part.nameProvisional ? ` (${PART_NAME_CANDIDATE_LABEL})` : ""}</span>
           </div>
-          <h1 id="week-title" className="mt-4 font-display text-[40px] leading-tight text-pop-ink sm:text-[54px]">《{week.title}》</h1>
+          <h1 id="week-title" className={cx("mt-4 font-display text-[40px] leading-tight text-pop-ink sm:text-[54px]", displayFallback(week.title))}>{week.title}</h1>
+          <p className="mt-2 text-[18px] font-bold text-pop-ink-muted">그림책 《{week.storybook}》</p>
           <p className="mt-4 text-[19px] font-medium leading-relaxed text-pop-ink">{week.coreMessage}</p>
           <dl className="mt-6 grid grid-cols-2 gap-3">
             {[
               ["성장 키워드", `#${week.growthKeyword}`],
-              ["기본 수업", `${week.totalMinutes}분 (${week.duration.coreMin}~${week.duration.coreMax}분)`],
-              ["원래 권장 시간", `${week.duration.originalDurationLabel} · 공식 가이드`],
+              ["기본 수업", `${week.totalMinutes}분 (${LESSON_TIME.breakdown})`],
               ["대표 활동", week.activitySummary],
-              ["결과물", week.outcome ?? "공식 결과물 정리 중"],
+              ["결과물", week.outcome ?? "결과물 정리 중"],
             ].map(([k, v]) => (
               <div key={k} className="rounded-3xl bg-white p-4 ring-1 ring-pop-ink/5">
                 <dt className="text-[13px] font-bold text-pop-ink-muted">{k}</dt>
@@ -99,6 +105,10 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
               </div>
             ))}
           </dl>
+          <p className="mt-3 text-[13px] leading-relaxed text-pop-ink-muted">
+            시간 출처 기록 · 자료 「{week.duration.pdfDurationLabel}」
+            {week.duration.legacyGuideDurationLabel ? ` · 이전 가이드 「${week.duration.legacyGuideDurationLabel}」` : ""} — {SOURCE_TIME_NOTE}.
+          </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <PopLink href={`/experience/classroom/${week.weekNo}`} tone="pink" size="xl">
               <PlayIcon />
@@ -142,9 +152,9 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
             </Block>
           </div>
 
-          <h2 className="mt-14 font-display text-[30px] text-pop-ink sm:text-[36px]">기본 수업 {week.totalMinutes}분</h2>
+          <h2 className="mt-14 font-display text-[30px] text-pop-ink sm:text-[36px]">{LESSON_TIME.label}</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-pop-ink-muted">
-            다섯 단계로 한 회차가 끝나요. 아래 선택 확장활동은 하지 않아도 됩니다.
+            다섯 단계({LESSON_TIME.breakdown})로 한 회차가 끝나요. 아래 선택 확장활동은 하지 않아도 됩니다.
           </p>
           <ol className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             {week.stages.map((s, i) => (
@@ -165,7 +175,7 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
             </Block>
             <Block title="만들기 · 결과물" tone="bg-pop-mint-soft">
               <p className="text-[16px] leading-relaxed text-pop-ink">{b.art}</p>
-              <p className="mt-3 inline-flex rounded-full bg-white px-3.5 py-2 text-[14px] font-bold text-pop-ink">공식 결과물 · {week.outcome ?? "정리 중"}</p>
+              <p className="mt-3 inline-flex rounded-full bg-white px-3.5 py-2 text-[14px] font-bold text-pop-ink">결과물 · {week.outcome ?? "정리 중"}</p>
             </Block>
           </div>
 
@@ -194,7 +204,7 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
                     <div className="flex gap-2"><dt className="shrink-0 font-bold">준비물</dt><dd>{x.materials.slice(0, 4).join(" · ")}</dd></div>
                     {x.teacherPrompt ? <div className="flex gap-2"><dt className="shrink-0 font-bold">교사 발문</dt><dd>“{x.teacherPrompt}”</dd></div> : null}
                     {x.safetyNote ? <div className="flex gap-2"><dt className="shrink-0 font-bold">안전 주의</dt><dd>{x.safetyNote}</dd></div> : null}
-                    <div className="flex gap-2"><dt className="shrink-0 font-bold">원본 가이드 출처</dt><dd>{x.source}</dd></div>
+                    <div className="flex gap-2"><dt className="shrink-0 font-bold">원본 출처</dt><dd>{x.source}</dd></div>
                     <div className="flex gap-2"><dt className="shrink-0 font-bold">검수 상태</dt>
                       <dd>{x.sourceStatus === "verified" ? "공식 가이드 확인" : "검수 필요"}</dd></div>
                   </dl>
@@ -278,12 +288,12 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
         {prev ? (
           <Link href={`/experience/weeks/${prev.weekNo}`} className="group flex min-h-20 items-center gap-4 rounded-[28px] bg-white p-5 shadow-pop">
             <span aria-hidden="true" className="text-[22px] text-pop-ink-muted transition-transform group-hover:-translate-x-1">←</span>
-            <span><span className="block text-[13px] font-bold text-pop-ink-muted">이전 · {prev.weekNo}주차</span><span className="font-display text-[20px] text-pop-ink">{prev.title}</span></span>
+            <span><span className="block text-[13px] font-bold text-pop-ink-muted">이전 · {prev.weekNo}주차</span><span className={cx("font-display text-[20px] text-pop-ink", displayFallback(prev.title))}>{prev.title}</span></span>
           </Link>
         ) : <span />}
         {next ? (
           <Link href={`/experience/weeks/${next.weekNo}`} className="group flex min-h-20 items-center justify-end gap-4 rounded-[28px] bg-white p-5 text-right shadow-pop">
-            <span><span className="block text-[13px] font-bold text-pop-ink-muted">다음 · {next.weekNo}주차</span><span className="font-display text-[20px] text-pop-ink">{next.title}</span></span>
+            <span><span className="block text-[13px] font-bold text-pop-ink-muted">다음 · {next.weekNo}주차</span><span className={cx("font-display text-[20px] text-pop-ink", displayFallback(next.title))}>{next.title}</span></span>
             <ArrowRight className="h-6 w-6 text-pop-ink-muted transition-transform group-hover:translate-x-1" />
           </Link>
         ) : null}
