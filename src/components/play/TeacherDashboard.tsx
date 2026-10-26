@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { cx } from "@/components/ui/cx";
+import { WeekArt } from "@/components/play/WeekArt";
 import { displayFallback } from "@/components/play/display-font";
 import { weekProposal } from "@/data/experience/teacher-dashboard/proposals";
 import Link from "next/link";
@@ -345,6 +346,7 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
         </Fold>
 
         <Fold no={2} title="그림책">
+          <WeekArt week={week} className="mb-4 aspect-[4/3] w-full max-w-[280px] rounded-[20px] ring-1 ring-pop-ink/5" />
           {d.storybookTitle ? (
             <p className={cx("font-display text-[20px] text-pop-ink", displayFallback(d.storybookTitle))}>《{d.storybookTitle}》</p>
           ) : (

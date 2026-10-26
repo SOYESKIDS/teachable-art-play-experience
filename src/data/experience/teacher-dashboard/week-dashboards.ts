@@ -1400,7 +1400,8 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     physicalLead: "손을 잡고 둥글게 돌며 강강술래를 하고, 보름달에 소원을 말해요! · 교구 키트 활용",
     coreExperience: "친구와 손을 잡고 하나의 원을 만들며 소중한 마음을 말로 전하는 경험",
     activityTip: "빠르게 도는 구간에서는 넘어지지 않도록 공간을 충분히 확보해 주세요.",
-    artTitle: "복 (福) 글달 복주머니",
+    // PDF 제목 글자가 깨져 있다(「복 福 글달 복주머니」) — 같은 칸의 설명 문장으로 적는다 (source-register 남은 확인 사항)
+    artTitle: "복을 담은 복주머니",
     artLead: "복을 담은 복주머니를 만들어 소중한 사람에게 전해요!",
     workbookTitle: "동글동글 보름달 소원",
     familyTitle: "복주머니 전하기",

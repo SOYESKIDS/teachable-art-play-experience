@@ -29,7 +29,7 @@
 ## 그림 · 글꼴
 
 - 그림은 자체 제작 SVG(`HeroScene` · `WeekArt` · `Motif` · `Stickers` · `Doodles` · `MotifScatter`)입니다. 캐릭터 파일은 없습니다.
-- 1~8주 그림책 표지(`public/images/week-covers-web`)는 **사용권 확인 전이라 싣지 않습니다** — `media.ts` `LICENSE_STATUS`, 빌드 뒤 `postbuild` 가 배포본에서 뺍니다.
+- 1~8주 그림책 표지는 **사용권 확인 전이라 저장소 · `public/` 에 두지 않습니다** (Vercel 은 `public/` 을 그대로 내보냅니다). 파생본 8장은 프로젝트 밖 백업 폴더에 SHA256 과 함께 있고, 다시 싣는 절차는 `docs/images/week-cover-mapping.md` §8. 화면은 자체 제작 그림책 표지형 그림(`WeekArt`)을 씁니다.
 - 글꼴: Pretendard · Jua 의 사용 글자 서브셋(SIL OFL 1.1, 이름 변경 `TAP Play Sans` · `TAP Play Display`). 라이선스: `src/fonts/play/OFL-*.txt`.
   문구를 바꾸면 `python scripts/subset-play-fonts.py <Jua-Regular.ttf> <PretendardVariable.woff2>` 로 다시 만듭니다 (`tests/play-fonts.test.mjs` 가 검사).
   Jua 원본이 없으면 `-` 를 넘겨 본문 글꼴만 다시 만듭니다. 제목 글꼴에 없는 글자를 쓰는 제목은 문장 전체를 본문 글꼴로 그립니다 (`display-font.ts`).
@@ -45,9 +45,9 @@ npm ci
 npx tsc --noEmit
 npm run lint
 npm test        # 콘텐츠 규칙 · 글꼴 · 보안 경계(의존성 · 정적 export · 금지 코드 · 비밀값 · public 파일)
-npm run build   # out/ 생성 (postbuild: 사용권 미확인 표지 제외)
+npm run build   # out/ 생성
 node scripts/serve-out.mjs 3131                 # out/ 을 vercel.json 헤더(CSP)와 함께 로컬에서
-node scripts/qa-public.mjs http://localhost:3131 # 6개 폭 · 24주 · 플레이어 · 주제 일치 · CSP 위반 브라우저 검사
+node scripts/qa-public.mjs <배포 주소>          # 6개 폭 · 24주 · 플레이어 · 주제 일치 · CSP 위반 · 표지 404 (반드시 실제 Preview 주소로도 돌린다)
 ```
 
 배포: Vercel 프로젝트 `teachable-art-play-experience` (환경변수 없음 · 보안 헤더와 CSP 는 `vercel.json`).

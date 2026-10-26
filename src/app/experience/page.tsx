@@ -87,7 +87,7 @@ export default function ExperienceHome() {
             {picks.map((w) => (
               <li key={w.weekNo}>
                 <Link href={`/experience/classroom/${w.weekNo}`} className="group flex items-center gap-4 rounded-[28px] bg-pop-cream p-3 pr-5 transition-colors hover:bg-pop-yellow-soft">
-                  <WeekArt week={w} className="aspect-square w-24 shrink-0 rounded-[22px]" />
+                  <WeekArt week={w} size="thumb" className="aspect-square w-24 shrink-0 rounded-[22px]" />
                   <span className="min-w-0 flex-1">
                     <span className="block text-[13px] font-bold text-pop-ink-muted">{w.weekNo}주차 · #{w.growthKeyword}</span>
                     <span className={cx("mt-0.5 block truncate font-display text-[20px] text-pop-ink", displayFallback(w.title))}>{w.title}</span>
