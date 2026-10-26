@@ -1,0 +1,286 @@
+{
+  "takenAt": "2026-10-26",
+  "commit": "433e39d",
+  "note": "17~24주 · 9 · 11 · 14 · 15주 PDF 동기화 전 사이트 데이터. 되돌릴 때 이 값을 기준으로 한다.",
+  "data": [
+    {
+      "weekNo": 1,
+      "state": "source_pdf",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "관찰 문항이 아직 없습니다",
+        "활동 목표가 아직 없습니다",
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 2,
+      "state": "source_pdf",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "관찰 문항이 아직 없습니다",
+        "활동 목표가 아직 없습니다",
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 3,
+      "state": "source_pdf",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "활동 목표가 아직 없습니다",
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 4,
+      "state": "source_pdf",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "제목이 다릅니다",
+        "활동 목표가 아직 없습니다",
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 5,
+      "state": "source_pdf",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 6,
+      "state": "source_pdf",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 7,
+      "state": "source_pdf",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "제목이 다릅니다",
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 8,
+      "state": "source_pdf",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "제목이 다릅니다",
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 9,
+      "state": "needs_review",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "수업 시간 표기가 다릅니다",
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 10,
+      "state": "needs_review",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "수업 시간 표기가 다릅니다",
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 11,
+      "state": "needs_review",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "수업 시간 표기가 다릅니다",
+        "영상·음원 주소가 없습니다",
+        "성장 키워드가 다릅니다"
+      ]
+    },
+    {
+      "weekNo": 12,
+      "state": "needs_review",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "수업 시간 표기가 다릅니다",
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 13,
+      "state": "needs_review",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "수업 시간 표기가 다릅니다",
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 14,
+      "state": "needs_review",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "제목이 다릅니다",
+        "수업 시간 표기가 다릅니다",
+        "영상·음원 주소가 없습니다",
+        "성장 키워드가 다릅니다"
+      ]
+    },
+    {
+      "weekNo": 15,
+      "state": "needs_review",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "수업 시간 표기가 다릅니다",
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 16,
+      "state": "needs_review",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "수업 시간 표기가 다릅니다",
+        "영상·음원 주소가 없습니다"
+      ]
+    },
+    {
+      "weekNo": 17,
+      "state": "needs_review",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "제목이 다릅니다",
+        "PART 이름이 다릅니다",
+        "수업 주제가 다릅니다",
+        "수업 시간 표기가 다릅니다",
+        "원본이 초안 상태입니다",
+        "영상·음원 주소가 없습니다",
+        "성장 키워드가 다릅니다"
+      ]
+    },
+    {
+      "weekNo": 18,
+      "state": "needs_review",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "제목이 다릅니다",
+        "PART 이름이 다릅니다",
+        "수업 주제가 다릅니다",
+        "수업 시간 표기가 다릅니다",
+        "원본이 초안 상태입니다",
+        "영상·음원 주소가 없습니다",
+        "성장 키워드가 다릅니다"
+      ]
+    },
+    {
+      "weekNo": 19,
+      "state": "needs_review",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "제목이 다릅니다",
+        "PART 이름이 다릅니다",
+        "수업 시간 표기가 다릅니다",
+        "원본이 초안 상태입니다",
+        "영상·음원 주소가 없습니다",
+        "성장 키워드가 다릅니다"
+      ]
+    },
+    {
+      "weekNo": 20,
+      "state": "needs_review",
+      "inDevPack": true,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "제목이 다릅니다",
+        "PART 이름이 다릅니다",
+        "수업 주제가 다릅니다",
+        "수업 시간 표기가 다릅니다",
+        "원본이 초안 상태입니다",
+        "영상·음원 주소가 없습니다",
+        "성장 키워드가 다릅니다"
+      ]
+    },
+    {
+      "weekNo": 21,
+      "state": "source_pdf",
+      "inDevPack": false,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "제목이 다릅니다",
+        "수업 시간 표기가 다릅니다",
+        "PART 이름이 다릅니다",
+        "영상·음원 주소가 없습니다",
+        "원본이 초안 상태입니다",
+        "성장 키워드가 다릅니다"
+      ]
+    },
+    {
+      "weekNo": 22,
+      "state": "source_pdf",
+      "inDevPack": false,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "제목이 다릅니다",
+        "수업 시간 표기가 다릅니다",
+        "PART 이름이 다릅니다",
+        "영상·음원 주소가 없습니다",
+        "원본이 초안 상태입니다",
+        "성장 키워드가 다릅니다"
+      ]
+    },
+    {
+      "weekNo": 23,
+      "state": "source_pdf",
+      "inDevPack": false,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "제목이 다릅니다",
+        "수업 시간 표기가 다릅니다",
+        "PART 이름이 다릅니다",
+        "영상·음원 주소가 없습니다",
+        "원본이 초안 상태입니다",
+        "성장 키워드가 다릅니다"
+      ]
+    },
+    {
+      "weekNo": 24,
+      "state": "source_pdf",
+      "inDevPack": false,
+      "assetSlotsOnly": true,
+      "conflicts": [
+        "제목이 다릅니다",
+        "수업 시간 표기가 다릅니다",
+        "PART 이름이 다릅니다",
+        "영상·음원 주소가 없습니다",
+        "원본이 초안 상태입니다",
+        "성장 키워드가 다릅니다"
+      ]
+    }
+  ]
+}

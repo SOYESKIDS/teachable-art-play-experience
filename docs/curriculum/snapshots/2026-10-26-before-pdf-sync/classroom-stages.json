@@ -1,0 +1,2587 @@
+{
+  "takenAt": "2026-10-26",
+  "commit": "433e39d",
+  "note": "17~24주 · 9 · 11 · 14 · 15주 PDF 동기화 전 사이트 데이터. 되돌릴 때 이 값을 기준으로 한다.",
+  "data": [
+    {
+      "weekNo": 1,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 오늘 처음 만난 것은 무엇일까?",
+          "teacherQuestion": "처음 가는 곳에 가면 어떤 마음이 들까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "처음 가는 곳은 어떤 마음?",
+          "guide": "《유치원 가는 날》을 읽으며 처음 가는 곳의 설렘과 낯선 마음을 함께 나눠요.",
+          "teacherQuestion": "처음 가는 곳에 가면 어떤 마음이 들까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "천천히 걷고, 함께 멈춰요",
+          "guide": "‘멈추면 함께 멈추기·천천히 걷기’ 약속을 지키며 교실·놀이실·화장실·놀이터를 둘러봐요. 탐험 미션 카드를 따라 내 사물함을 찾고 해 보고 싶은 놀이 한 가지를 골라요.",
+          "teacherQuestion": "네가 앉을 자리는 어디에 있을까요?",
+          "minutes": 12
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "나만의 이름표를 꾸며요",
+          "guide": "내 이름을 찾아 좋아하는 색과 스티커로 이름표를 꾸미고 내 자리에 붙여요.",
+          "teacherQuestion": "이름표에는 어떤 색을 넣고 싶나요?",
+          "minutes": 8
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "오늘 새로 알게 된 곳은?",
+          "guide": "원에서 보낸 첫 등원 사진으로 가족과 입학 기념 액자를 꾸미며 기억나는 곳을 이야기해요.",
+          "teacherQuestion": "오늘 처음 알게 된 곳은 어디였나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《유치원 가는 날》 그림책 또는 E-BOOK",
+            "유치원 탐험 미션 카드",
+            "이름표 도안·이름 인쇄물",
+            "꾸미기 스티커·색연필·사인펜"
+          ],
+          "teacherPrompt": "네가 앉을 자리는 어디에 있을까요?",
+          "safetyNote": "복도·출입문 주변에서는 뛰지 않고 선생님 신호에 멈춰요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 1주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-탐험",
+          "title": "추가 신체놀이",
+          "activity": "탐험 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15분",
+          "materials": [
+            "《유치원 가는 날》 그림책 또는 E-BOOK",
+            "유치원 탐험 미션 카드",
+            "이름표 도안·이름 인쇄물",
+            "꾸미기 스티커·색연필·사인펜"
+          ],
+          "teacherPrompt": "네가 앉을 자리는 어디에 있을까요?",
+          "safetyNote": "복도·출입문 주변에서는 뛰지 않고 선생님 신호에 멈춰요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 1주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-이름표",
+          "title": "작품 세부 완성",
+          "activity": "이름표 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《유치원 가는 날》 그림책 또는 E-BOOK",
+            "유치원 탐험 미션 카드",
+            "이름표 도안·이름 인쇄물",
+            "꾸미기 스티커·색연필·사인펜"
+          ],
+          "teacherPrompt": "네가 앉을 자리는 어디에 있을까요?",
+          "safetyNote": "복도·출입문 주변에서는 뛰지 않고 선생님 신호에 멈춰요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 1주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "원에서 보낸 첫 등원 사진으로 가족과 입학 기념 액자를 꾸미며 기억나는 곳을 이야기해요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《유치원 가는 날》 그림책 또는 E-BOOK",
+            "유치원 탐험 미션 카드",
+            "이름표 도안·이름 인쇄물",
+            "꾸미기 스티커·색연필·사인펜"
+          ],
+          "teacherPrompt": "오늘 처음 알게 된 곳은 어디였나요?",
+          "safetyNote": "복도·출입문 주변에서는 뛰지 않고 선생님 신호에 멈춰요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 1주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 2,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 마루의 도전 상황 만나기",
+          "teacherQuestion": "마루가 멋진 이유는 잘해서일까요, 다시 해봐서일까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "마루는 어떻게 다시 해볼까?",
+          "guide": "《끝까지 해보자》에서 마루가 여러 번 시도하며 조금씩 달라지는 과정을 찾아봐요.",
+          "teacherQuestion": "마루가 멋진 이유는 잘해서일까요, 다시 해봐서일까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "먼저 하나만 옮겨 볼까?",
+          "guide": "젓가락 → 집게 → 협동 릴레이 순서로 메추리알 모형을 옮기는 ‘마루의 도전 미션’을 해요. 어떤 집게가 내 손에 편한지, 꽉 잡을 때와 살짝 잡을 때 무엇이 다른지 비교해요.",
+          "teacherQuestion": "어떤 도구가 내 손에 더 편했나요?",
+          "minutes": 14
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "다시 해본 순간을 메달에",
+          "guide": "오늘 다시 해 본 순간을 떠올리며 ‘끝까지 해본 용기 메달’을 꾸며요.",
+          "teacherQuestion": "다시 할 때 무엇을 바꿔 봤나요?",
+          "minutes": 6
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "오늘 다시 해본 순간은?",
+          "guide": "가족과 이번 주 작은 생활 도전 하나를 정하고, 성공보다 시도한 날에 스티커를 붙여요.",
+          "teacherQuestion": "처음엔 어려웠는데 나중에 조금 달라진 게 있었나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "move_more-도전 미션",
+          "title": "추가 신체놀이",
+          "activity": "도전 미션 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 25,
+          "minutesNote": "공식 가이드 권장 시간표 기준 25분",
+          "materials": [
+            "《끝까지 해보자》 그림책 또는 E-BOOK",
+            "메추리알 모형·나무 그릇·보관 트레이",
+            "젓가락·집게 2종·도전 미션 카드",
+            "용기 메달 도안·꾸미기 재료·끈"
+          ],
+          "teacherPrompt": "어떤 도구가 내 손에 더 편했나요?",
+          "safetyNote": "젓가락·집게 끝을 확인하고 도구는 친구를 향해 들지 않아요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 2주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-용기 메달",
+          "title": "작품 세부 완성",
+          "activity": "용기 메달 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10~15분",
+          "materials": [
+            "《끝까지 해보자》 그림책 또는 E-BOOK",
+            "메추리알 모형·나무 그릇·보관 트레이",
+            "젓가락·집게 2종·도전 미션 카드",
+            "용기 메달 도안·꾸미기 재료·끈"
+          ],
+          "teacherPrompt": "어떤 도구가 내 손에 더 편했나요?",
+          "safetyNote": "젓가락·집게 끝을 확인하고 도구는 친구를 향해 들지 않아요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 2주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "가족과 이번 주 작은 생활 도전 하나를 정하고, 성공보다 시도한 날에 스티커를 붙여요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《끝까지 해보자》 그림책 또는 E-BOOK",
+            "메추리알 모형·나무 그릇·보관 트레이",
+            "젓가락·집게 2종·도전 미션 카드",
+            "용기 메달 도안·꾸미기 재료·끈"
+          ],
+          "teacherPrompt": "처음엔 어려웠는데 나중에 조금 달라진 게 있었나요?",
+          "safetyNote": "젓가락·집게 끝을 확인하고 도구는 친구를 향해 들지 않아요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 2주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 3,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 오늘 내 마음은 어떤 얼굴일까?",
+          "teacherQuestion": "표정을 보니 어떤 마음 같아요? 왜 그렇게 느꼈을까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "친구는 어떤 마음일까?",
+          "guide": "《마음을 말해줘》 속 친구들이 어떤 마음이었는지, 말로 하면 무엇이 달라지는지 살펴봐요.",
+          "teacherQuestion": "표정을 보니 어떤 마음 같아요? 왜 그렇게 느꼈을까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "마음을 배달해요",
+          "guide": "하트카드를 들고 마음다리를 천천히 건너 친구에게 다가가 마음을 말로 배달해요. 표정카드와 상황카드를 보며 친구가 어떤 마음일지, 어떻게 말하면 좋을지 찾아봐요.",
+          "teacherQuestion": "행동 대신 말로 한다면 뭐라고 말할 수 있을까요?",
+          "minutes": 12
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "마음을 전하는 팔찌",
+          "guide": "전하고 싶은 마음을 떠올려 구슬 팔찌를 만들고 친구에게 한 문장으로 전해요.",
+          "teacherQuestion": "누구에게 어떤 말을 전하고 싶나요?",
+          "minutes": 8
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "마음을 말하니 어땠어?",
+          "guide": "가족에게 전하고 싶은 마음을 카드에 쓰거나 그려 마음배달 우체통에 넣고 함께 읽어요.",
+          "teacherQuestion": "마음을 말하기 전과 말한 뒤에 달라진 게 있었나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《마음을 말해줘》 그림책 또는 E-BOOK",
+            "표정카드·상황카드",
+            "마음다리(링·훌라후프)·하트카드·마음배달함",
+            "팔찌 끈·큰 구슬·장식 재료"
+          ],
+          "teacherPrompt": "행동 대신 말로 한다면 뭐라고 말할 수 있을까요?",
+          "safetyNote": "링·훌라후프가 미끄러지지 않게 두고 마음다리는 천천히 건너요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 3주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-마음배달",
+          "title": "추가 신체놀이",
+          "activity": "마음배달 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15~20분",
+          "materials": [
+            "《마음을 말해줘》 그림책 또는 E-BOOK",
+            "표정카드·상황카드",
+            "마음다리(링·훌라후프)·하트카드·마음배달함",
+            "팔찌 끈·큰 구슬·장식 재료"
+          ],
+          "teacherPrompt": "행동 대신 말로 한다면 뭐라고 말할 수 있을까요?",
+          "safetyNote": "링·훌라후프가 미끄러지지 않게 두고 마음다리는 천천히 건너요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 3주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-팔찌 만들기",
+          "title": "작품 세부 완성",
+          "activity": "팔찌 만들기 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10~15분",
+          "materials": [
+            "《마음을 말해줘》 그림책 또는 E-BOOK",
+            "표정카드·상황카드",
+            "마음다리(링·훌라후프)·하트카드·마음배달함",
+            "팔찌 끈·큰 구슬·장식 재료"
+          ],
+          "teacherPrompt": "행동 대신 말로 한다면 뭐라고 말할 수 있을까요?",
+          "safetyNote": "링·훌라후프가 미끄러지지 않게 두고 마음다리는 천천히 건너요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 3주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "가족에게 전하고 싶은 마음을 카드에 쓰거나 그려 마음배달 우체통에 넣고 함께 읽어요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《마음을 말해줘》 그림책 또는 E-BOOK",
+            "표정카드·상황카드",
+            "마음다리(링·훌라후프)·하트카드·마음배달함",
+            "팔찌 끈·큰 구슬·장식 재료"
+          ],
+          "teacherPrompt": "마음을 말하기 전과 말한 뒤에 달라진 게 있었나요?",
+          "safetyNote": "링·훌라후프가 미끄러지지 않게 두고 마음다리는 천천히 건너요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 3주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 4,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 이 작은 것 안에 무엇이 있을까?",
+          "teacherQuestion": "물을 줬는데 바로 새싹이 나왔을까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "작은 씨앗아, 무엇이 될 거니?",
+          "guide": "《소예의 씨앗》에서 작은 씨앗이 돌봄과 기다림 끝에 새싹이 되는 과정을 따라가요.",
+          "teacherQuestion": "물을 줬는데 바로 새싹이 나왔을까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "톡톡 · 살랑살랑 흔들어요",
+          "guide": "씨앗 마라카스를 들고 음악에 맞춰 머리 위에서 톡톡, 무릎 옆에서 살랑살랑 흔들며 춤춰요. 크기·모양·색이 다른 씨앗을 살펴보고 용기를 흔들어 씨앗마다 다른 소리를 비교해요.",
+          "teacherQuestion": "이 씨앗은 어떤 소리가 나요? 다른 씨앗과 같을까요?",
+          "minutes": 13
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "씨앗 소리 마라카스",
+          "guide": "넣고 싶은 씨앗의 종류와 양을 골라 소리를 실험하며 나만의 씨앗 소리 마라카스를 만들어요.",
+          "teacherQuestion": "조금 넣었을 때와 많이 넣었을 때 소리가 같을까요?",
+          "minutes": 7
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "나도 조금씩 자라요",
+          "guide": "씨앗·새싹 도안에 아이의 ‘처음’과 ‘지금’ 사진을 붙이고 가족과 무엇이 달라졌는지 이야기해요.",
+          "teacherQuestion": "우리도 아기였을 때보다 지금 달라진 게 있을까요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《소예의 씨앗》 그림책 또는 E-BOOK",
+            "여러 가지 씨앗(콩·팥·옥수수·해바라기씨 등)",
+            "관찰 용기 또는 투명 트레이",
+            "투명 마라카스 통·꾸미기 스티커"
+          ],
+          "teacherPrompt": "이 씨앗은 어떤 소리가 나요? 다른 씨앗과 같을까요?",
+          "safetyNote": "씨앗과 작은 부품은 입·코·귀에 넣지 않고, 떨어진 씨앗은 바로 치워요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 4주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-씨앗 탐험",
+          "title": "추가 신체놀이",
+          "activity": "씨앗 탐험 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10~15분",
+          "materials": [
+            "《소예의 씨앗》 그림책 또는 E-BOOK",
+            "여러 가지 씨앗(콩·팥·옥수수·해바라기씨 등)",
+            "관찰 용기 또는 투명 트레이",
+            "투명 마라카스 통·꾸미기 스티커"
+          ],
+          "teacherPrompt": "이 씨앗은 어떤 소리가 나요? 다른 씨앗과 같을까요?",
+          "safetyNote": "씨앗과 작은 부품은 입·코·귀에 넣지 않고, 떨어진 씨앗은 바로 치워요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 4주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-마라카스 연주",
+          "title": "추가 신체놀이",
+          "activity": "마라카스 연주 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《소예의 씨앗》 그림책 또는 E-BOOK",
+            "여러 가지 씨앗(콩·팥·옥수수·해바라기씨 등)",
+            "관찰 용기 또는 투명 트레이",
+            "투명 마라카스 통·꾸미기 스티커"
+          ],
+          "teacherPrompt": "이 씨앗은 어떤 소리가 나요? 다른 씨앗과 같을까요?",
+          "safetyNote": "씨앗과 작은 부품은 입·코·귀에 넣지 않고, 떨어진 씨앗은 바로 치워요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 4주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-만들기",
+          "title": "작품 세부 완성",
+          "activity": "만들기 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10~15분",
+          "materials": [
+            "《소예의 씨앗》 그림책 또는 E-BOOK",
+            "여러 가지 씨앗(콩·팥·옥수수·해바라기씨 등)",
+            "관찰 용기 또는 투명 트레이",
+            "투명 마라카스 통·꾸미기 스티커"
+          ],
+          "teacherPrompt": "이 씨앗은 어떤 소리가 나요? 다른 씨앗과 같을까요?",
+          "safetyNote": "씨앗과 작은 부품은 입·코·귀에 넣지 않고, 떨어진 씨앗은 바로 치워요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 4주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "씨앗·새싹 도안에 아이의 ‘처음’과 ‘지금’ 사진을 붙이고 가족과 무엇이 달라졌는지 이야기해요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《소예의 씨앗》 그림책 또는 E-BOOK",
+            "여러 가지 씨앗(콩·팥·옥수수·해바라기씨 등)",
+            "관찰 용기 또는 투명 트레이",
+            "투명 마라카스 통·꾸미기 스티커"
+          ],
+          "teacherPrompt": "우리도 아기였을 때보다 지금 달라진 게 있을까요?",
+          "safetyNote": "씨앗과 작은 부품은 입·코·귀에 넣지 않고, 떨어진 씨앗은 바로 치워요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 4주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 5,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 꽃들은 왜 모두 다르게 생겼을까?",
+          "teacherQuestion": "이 꽃과 저 꽃은 무엇이 다를까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "꽃들은 모두 똑같을까?",
+          "guide": "《우린 모두 특별해》를 읽으며 꽃과 친구들의 서로 다른 모습과 장점을 찾아봐요.",
+          "teacherQuestion": "이 꽃과 저 꽃은 무엇이 다를까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "분홍꽃! 노란꽃! 모여라",
+          "guide": "음악에 맞춰 움직이다 ‘분홍꽃!’, ‘노란꽃!’ 신호에 그 색 꽃판으로 모이는 꽃놀이를 해요. 여러 꽃 그림을 보며 꽃잎 모양·색·크기의 같은 점과 다른 점을 찾아봐요.",
+          "teacherQuestion": "네가 고른 꽃에서 어떤 움직임을 해 볼래요?",
+          "minutes": 12
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "세상에 하나뿐인 나만의 꽃",
+          "guide": "색과 재료를 스스로 골라 꽃을 꾸미고 가운데에 내 얼굴을 그려 나만의 꽃을 완성해요.",
+          "teacherQuestion": "왜 이 색과 모양을 골랐나요?",
+          "minutes": 8
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "친구 꽃의 멋진 점은?",
+          "guide": "가족과 꽃 도안을 꾸미며 우리 아이의 좋은 점을 비교 없이 구체적인 모습으로 이야기해요.",
+          "teacherQuestion": "친구 꽃을 보니 어떤 멋진 점을 발견했나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《우린 모두 특별해》 그림책 또는 E-BOOK",
+            "여러 색 대형 꽃판 또는 바닥 표식",
+            "꽃 도안·꽃잎·줄기·잎 도안",
+            "꾸미기 스티커·색연필·사인펜·풀"
+          ],
+          "teacherPrompt": "네가 고른 꽃에서 어떤 움직임을 해 볼래요?",
+          "safetyNote": "바닥 꽃판은 미끄러지지 않게 고정하고 한 꽃판에 너무 몰리지 않게 해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 5주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-꽃놀이",
+          "title": "추가 신체놀이",
+          "activity": "꽃놀이 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15분",
+          "materials": [
+            "《우린 모두 특별해》 그림책 또는 E-BOOK",
+            "여러 색 대형 꽃판 또는 바닥 표식",
+            "꽃 도안·꽃잎·줄기·잎 도안",
+            "꾸미기 스티커·색연필·사인펜·풀"
+          ],
+          "teacherPrompt": "네가 고른 꽃에서 어떤 움직임을 해 볼래요?",
+          "safetyNote": "바닥 꽃판은 미끄러지지 않게 고정하고 한 꽃판에 너무 몰리지 않게 해요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 5주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-나만의 꽃",
+          "title": "작품 세부 완성",
+          "activity": "나만의 꽃 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10~15분",
+          "materials": [
+            "《우린 모두 특별해》 그림책 또는 E-BOOK",
+            "여러 색 대형 꽃판 또는 바닥 표식",
+            "꽃 도안·꽃잎·줄기·잎 도안",
+            "꾸미기 스티커·색연필·사인펜·풀"
+          ],
+          "teacherPrompt": "네가 고른 꽃에서 어떤 움직임을 해 볼래요?",
+          "safetyNote": "바닥 꽃판은 미끄러지지 않게 고정하고 한 꽃판에 너무 몰리지 않게 해요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 5주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "가족과 꽃 도안을 꾸미며 우리 아이의 좋은 점을 비교 없이 구체적인 모습으로 이야기해요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《우린 모두 특별해》 그림책 또는 E-BOOK",
+            "여러 색 대형 꽃판 또는 바닥 표식",
+            "꽃 도안·꽃잎·줄기·잎 도안",
+            "꾸미기 스티커·색연필·사인펜·풀"
+          ],
+          "teacherPrompt": "친구 꽃을 보니 어떤 멋진 점을 발견했나요?",
+          "safetyNote": "바닥 꽃판은 미끄러지지 않게 고정하고 한 꽃판에 너무 몰리지 않게 해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 5주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 6,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 혼자 하기 어려운 일은 어떻게 할까?",
+          "teacherQuestion": "이 비밀기지는 누구 한 명의 기지일까요, 우리 모두의 기지일까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "누가 어떤 도움을 줬을까?",
+          "guide": "《우리들의 비밀기지》에서 우비와 친구들이 어떤 도움을 보태 기지를 완성했는지 찾아봐요.",
+          "teacherQuestion": "이 비밀기지는 누구 한 명의 기지일까요, 우리 모두의 기지일까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "톡톡 비 · 토닥 햇살",
+          "guide": "손가락으로 내 몸에 톡톡 비를 내리고, 이름이 불린 친구에게 다가가 비와 햇살을 가볍게 전해요. 비·바람·햇살의 모습을 살펴보고 각각 무엇이 필요한 상황인지 연결해 봐요.",
+          "teacherQuestion": "친구가 와 주니 어땠나요?",
+          "minutes": 10
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "함께 만드는 대형 비밀기지",
+          "guide": "각자 고른 장식을 꾸며 친구와 자리를 의논해 붙이고, 완성한 대형 비밀기지에 함께 들어가 봐요.",
+          "teacherQuestion": "혼자 붙이기 어렵다면 누구에게 어떤 도움을 부탁할까요?",
+          "minutes": 10
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "같이 하니까 해냈어!",
+          "guide": "햇살·구름·바람·빗방울 도안에 가족사진을 붙이며 가족의 도움 속에 함께 자라는 이야기를 나눠요.",
+          "teacherQuestion": "혼자 하기 어려울 때 누가 도와줬나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《우리들의 비밀기지》 그림책 또는 E-BOOK",
+            "대형 입체 종이집(비밀기지 KIT)",
+            "나뭇잎·꽃 장식·가랜드·우리 반 깃발",
+            "색연필·사인펜·풀 또는 테이프"
+          ],
+          "teacherPrompt": "친구가 와 주니 어땠나요?",
+          "safetyNote": "친구 몸에는 어깨·등·팔만 아주 가볍게 톡톡, 원하지 않으면 내 몸에 표현해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 6주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-신체활동",
+          "title": "추가 신체놀이",
+          "activity": "신체활동 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15분",
+          "materials": [
+            "《우리들의 비밀기지》 그림책 또는 E-BOOK",
+            "대형 입체 종이집(비밀기지 KIT)",
+            "나뭇잎·꽃 장식·가랜드·우리 반 깃발",
+            "색연필·사인펜·풀 또는 테이프"
+          ],
+          "teacherPrompt": "친구가 와 주니 어땠나요?",
+          "safetyNote": "친구 몸에는 어깨·등·팔만 아주 가볍게 톡톡, 원하지 않으면 내 몸에 표현해요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 6주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-비밀기지",
+          "title": "작품 세부 완성",
+          "activity": "비밀기지 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15~20분",
+          "materials": [
+            "《우리들의 비밀기지》 그림책 또는 E-BOOK",
+            "대형 입체 종이집(비밀기지 KIT)",
+            "나뭇잎·꽃 장식·가랜드·우리 반 깃발",
+            "색연필·사인펜·풀 또는 테이프"
+          ],
+          "teacherPrompt": "친구가 와 주니 어땠나요?",
+          "safetyNote": "친구 몸에는 어깨·등·팔만 아주 가볍게 톡톡, 원하지 않으면 내 몸에 표현해요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 6주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "햇살·구름·바람·빗방울 도안에 가족사진을 붙이며 가족의 도움 속에 함께 자라는 이야기를 나눠요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《우리들의 비밀기지》 그림책 또는 E-BOOK",
+            "대형 입체 종이집(비밀기지 KIT)",
+            "나뭇잎·꽃 장식·가랜드·우리 반 깃발",
+            "색연필·사인펜·풀 또는 테이프"
+          ],
+          "teacherPrompt": "혼자 하기 어려울 때 누가 도와줬나요?",
+          "safetyNote": "친구 몸에는 어깨·등·팔만 아주 가볍게 톡톡, 원하지 않으면 내 몸에 표현해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 6주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 7,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 잡으려고 하면 왜 멀어질까?",
+          "teacherQuestion": "나비를 잡으려고 막 뛰어가면 나비는 어떻게 할까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "잡으려 하면 왜 멀어질까?",
+          "guide": "《나비야 놀자!》에서 쫓아갈수록 멀어지던 나비가 기다리자 가까이 오는 순간을 만나요.",
+          "teacherQuestion": "나비를 잡으려고 막 뛰어가면 나비는 어떻게 할까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "팔랑팔랑 꽃가루 날리기",
+          "guide": "친구들이 꽃밭이 되어 나비 날개에 꽃가루를 붙여 주고, 나비는 팔랑팔랑 천천히 날며 역할을 바꿔요. 나비와 벌의 날개·더듬이·움직임을 그림으로 천천히 살펴봐요.",
+          "teacherQuestion": "친구가 나비일 때 기다리면서 무엇을 봤나요?",
+          "minutes": 12
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "기다렸다 펼치면 짠!",
+          "guide": "한쪽 날개에 물감을 찍고 접어 잠시 기다렸다가 펼쳐 데칼코마니 나비를 만들어요.",
+          "teacherQuestion": "조금 기다렸다가 펼치면 어떤 무늬가 숨어 있을까요?",
+          "minutes": 8
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "기다리니까 무엇을 만났지?",
+          "guide": "가족과 ‘오늘 선생님은 나비 같았을까, 벌 같았을까?’ 이야기하며 아이가 그렇게 생각한 이유를 그대로 들어 줘요.",
+          "teacherQuestion": "조금 기다린 뒤에 만난 즐거운 순간이 있었나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《나비야 놀자!》 그림책 또는 E-BOOK",
+            "포스트잇 또는 가벼운 종이 꽃가루",
+            "데칼코마니용 나비 도안·물감",
+            "꾸미기 재료"
+          ],
+          "teacherPrompt": "친구가 나비일 때 기다리면서 무엇을 봤나요?",
+          "safetyNote": "날갯짓할 때 친구와 간격을 두고 뛰지 않고 ‘팔랑팔랑 걷기’로 움직여요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 7주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-신체활동",
+          "title": "추가 신체놀이",
+          "activity": "신체활동 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15분",
+          "materials": [
+            "《나비야 놀자!》 그림책 또는 E-BOOK",
+            "포스트잇 또는 가벼운 종이 꽃가루",
+            "데칼코마니용 나비 도안·물감",
+            "꾸미기 재료"
+          ],
+          "teacherPrompt": "친구가 나비일 때 기다리면서 무엇을 봤나요?",
+          "safetyNote": "날갯짓할 때 친구와 간격을 두고 뛰지 않고 ‘팔랑팔랑 걷기’로 움직여요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 7주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-미술",
+          "title": "작품 세부 완성",
+          "activity": "미술 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10~15분",
+          "materials": [
+            "《나비야 놀자!》 그림책 또는 E-BOOK",
+            "포스트잇 또는 가벼운 종이 꽃가루",
+            "데칼코마니용 나비 도안·물감",
+            "꾸미기 재료"
+          ],
+          "teacherPrompt": "친구가 나비일 때 기다리면서 무엇을 봤나요?",
+          "safetyNote": "날갯짓할 때 친구와 간격을 두고 뛰지 않고 ‘팔랑팔랑 걷기’로 움직여요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 7주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "가족과 ‘오늘 선생님은 나비 같았을까, 벌 같았을까?’ 이야기하며 아이가 그렇게 생각한 이유를 그대로 들어 줘요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《나비야 놀자!》 그림책 또는 E-BOOK",
+            "포스트잇 또는 가벼운 종이 꽃가루",
+            "데칼코마니용 나비 도안·물감",
+            "꾸미기 재료"
+          ],
+          "teacherPrompt": "조금 기다린 뒤에 만난 즐거운 순간이 있었나요?",
+          "safetyNote": "날갯짓할 때 친구와 간격을 두고 뛰지 않고 ‘팔랑팔랑 걷기’로 움직여요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 7주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 8,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 우리 숲에는 무엇이 있었지?",
+          "teacherQuestion": "꽃만 가득하면 숲이 될까요? 또 무엇이 필요할까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "하나씩 모이면 무엇이 될까?",
+          "guide": "《모이면 숲이 되는 우리》에서 작은 씨앗에 새싹·꽃·날씨·나비가 더해져 숲이 되는 흐름을 따라가요.",
+          "teacherQuestion": "꽃만 가득하면 숲이 될까요? 또 무엇이 필요할까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "내 조각을 들고 숲으로!",
+          "guide": "씨앗 → 새싹 → 꽃 → 비·바람·햇살 → 나비·벌 순서로 내 조각을 들고 걸어가 현수막에 붙여요. 씨앗 하나만 있을 때와 지금의 숲을 비교하며 무엇이 달라졌는지 이야기해요.",
+          "teacherQuestion": "네 조각은 숲 어디에서 함께 살고 싶어요?",
+          "minutes": 15
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "우리 반 숲 현수막",
+          "guide": "내 조각을 붙일 자리를 스스로 골라 친구들의 조각과 함께 우리 반 숲 현수막을 완성해요.",
+          "teacherQuestion": "친구들이 더해 주니 숲이 어떻게 달라졌나요?",
+          "minutes": 5
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "우리가 만든 멋진 숲",
+          "guide": "원에서 보내 준 숲 완성 과정 기록을 가족과 보며 무엇을 붙였는지, 숲이 어떻게 변했는지 이야기해요.",
+          "teacherQuestion": "우리 반 친구들이 하나씩 모이니까 어떤 숲이 되었나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《모이면 숲이 되는 우리》 그림책 또는 E-BOOK",
+            "SOYE KIDS 대형 숲 현수막",
+            "씨앗·새싹·꽃·비·바람·햇살·나비·벌 완성품 또는 도안",
+            "양면테이프 등 쉽게 붙는 부착재"
+          ],
+          "teacherPrompt": "네 조각은 숲 어디에서 함께 살고 싶어요?",
+          "safetyNote": "현수막은 손이 닿는 높이에 단단히 고정하고 의자·책상에 올라가지 않아요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 8주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-공동활동",
+          "title": "추가 신체놀이",
+          "activity": "공동활동 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 20,
+          "minutesNote": "공식 가이드 권장 시간표 기준 20분",
+          "materials": [
+            "《모이면 숲이 되는 우리》 그림책 또는 E-BOOK",
+            "SOYE KIDS 대형 숲 현수막",
+            "씨앗·새싹·꽃·비·바람·햇살·나비·벌 완성품 또는 도안",
+            "양면테이프 등 쉽게 붙는 부착재"
+          ],
+          "teacherPrompt": "네 조각은 숲 어디에서 함께 살고 싶어요?",
+          "safetyNote": "현수막은 손이 닿는 높이에 단단히 고정하고 의자·책상에 올라가지 않아요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 8주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-숲 이야기",
+          "title": "작품 세부 완성",
+          "activity": "숲 이야기 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 5,
+          "minutesNote": "공식 가이드 권장 시간표 기준 5~10분",
+          "materials": [
+            "《모이면 숲이 되는 우리》 그림책 또는 E-BOOK",
+            "SOYE KIDS 대형 숲 현수막",
+            "씨앗·새싹·꽃·비·바람·햇살·나비·벌 완성품 또는 도안",
+            "양면테이프 등 쉽게 붙는 부착재"
+          ],
+          "teacherPrompt": "네 조각은 숲 어디에서 함께 살고 싶어요?",
+          "safetyNote": "현수막은 손이 닿는 높이에 단단히 고정하고 의자·책상에 올라가지 않아요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 8주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "원에서 보내 준 숲 완성 과정 기록을 가족과 보며 무엇을 붙였는지, 숲이 어떻게 변했는지 이야기해요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《모이면 숲이 되는 우리》 그림책 또는 E-BOOK",
+            "SOYE KIDS 대형 숲 현수막",
+            "씨앗·새싹·꽃·비·바람·햇살·나비·벌 완성품 또는 도안",
+            "양면테이프 등 쉽게 붙는 부착재"
+          ],
+          "teacherPrompt": "우리 반 친구들이 하나씩 모이니까 어떤 숲이 되었나요?",
+          "safetyNote": "현수막은 손이 닿는 높이에 단단히 고정하고 의자·책상에 올라가지 않아요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 8주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 9,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 아직 봄일까?",
+          "teacherQuestion": "같은 숲인데 아까와 무엇이 달라졌을까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "같은 숲, 무엇이 달라졌지?",
+          "guide": "《안녕? 봄아!》를 읽으며 꽃눈 속에서 놀던 숲이 며칠 뒤 어떻게 달라졌는지 찾아봐요.",
+          "teacherQuestion": "같은 숲인데 아까와 무엇이 달라졌을까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "하나, 둘, 셋! 꽃비다!",
+          "guide": "친구들과 대형 천을 함께 잡고 살랑살랑 → 크게 → ‘하나, 둘, 셋!’ 올려 꽃비를 내려요. 꽃잎을 모아 손바닥에 올리고 후~ 불거나 살랑살랑 바람을 만들어 꽃잎 움직임을 비교해요.",
+          "teacherQuestion": "약한 바람일 때와 센 바람일 때 꽃잎이 어떻게 달라졌나요?",
+          "minutes": 11
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "나만의 꽃다발",
+          "guide": "마음에 드는 봄꽃의 색과 모양을 직접 골라 포장하고 꾸며 나만의 꽃다발을 만들어요.",
+          "teacherQuestion": "네 꽃다발에는 어떤 봄이 들어 있는 것 같아요?",
+          "minutes": 9
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "봄아, 신나게 놀았어!",
+          "guide": "완성한 꽃다발을 집에 가져가 가족에게 건네고, 오늘 꽃비 놀이 이야기를 함께 나눠요.",
+          "teacherQuestion": "오늘 봄에서 가장 기억하고 싶은 건 무엇인가요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《안녕? 봄아!》 그림책 또는 E-BOOK",
+            "대형 천 1장",
+            "종이꽃잎·조화 꽃잎과 바구니",
+            "꽃 도안·포장재·리본·스티커"
+          ],
+          "teacherPrompt": "약한 바람일 때와 센 바람일 때 꽃잎이 어떻게 달라졌나요?",
+          "safetyNote": "대형 천은 세게 당기지 않고 ‘같이 올리고 같이 내려요’ 약속을 지켜요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 9주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-꽃비 놀이",
+          "title": "추가 신체놀이",
+          "activity": "꽃비 놀이 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 20,
+          "minutesNote": "공식 가이드 권장 시간표 기준 20~25분",
+          "materials": [
+            "《안녕? 봄아!》 그림책 또는 E-BOOK",
+            "대형 천 1장",
+            "종이꽃잎·조화 꽃잎과 바구니",
+            "꽃 도안·포장재·리본·스티커"
+          ],
+          "teacherPrompt": "약한 바람일 때와 센 바람일 때 꽃잎이 어떻게 달라졌나요?",
+          "safetyNote": "대형 천은 세게 당기지 않고 ‘같이 올리고 같이 내려요’ 약속을 지켜요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 9주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-꽃다발",
+          "title": "작품 세부 완성",
+          "activity": "꽃다발 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15~20분",
+          "materials": [
+            "《안녕? 봄아!》 그림책 또는 E-BOOK",
+            "대형 천 1장",
+            "종이꽃잎·조화 꽃잎과 바구니",
+            "꽃 도안·포장재·리본·스티커"
+          ],
+          "teacherPrompt": "약한 바람일 때와 센 바람일 때 꽃잎이 어떻게 달라졌나요?",
+          "safetyNote": "대형 천은 세게 당기지 않고 ‘같이 올리고 같이 내려요’ 약속을 지켜요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 9주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "완성한 꽃다발을 집에 가져가 가족에게 건네고, 오늘 꽃비 놀이 이야기를 함께 나눠요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《안녕? 봄아!》 그림책 또는 E-BOOK",
+            "대형 천 1장",
+            "종이꽃잎·조화 꽃잎과 바구니",
+            "꽃 도안·포장재·리본·스티커"
+          ],
+          "teacherPrompt": "오늘 봄에서 가장 기억하고 싶은 건 무엇인가요?",
+          "safetyNote": "대형 천은 세게 당기지 않고 ‘같이 올리고 같이 내려요’ 약속을 지켜요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 9주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 10,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — “앗 뜨거!” 여름의 단서 만나기",
+          "teacherQuestion": "‘맴맴’ 소리는 어디에서 들릴까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "앗 뜨거! 어디가 시원할까?",
+          "guide": "《너무 뜨겁잖아!》에서 더위를 피해 그늘과 바람을 찾던 친구들이 ‘맴맴’ 소리를 따라 곤충을 만나요.",
+          "teacherQuestion": "‘맴맴’ 소리는 어디에서 들릴까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "소리를 따라가요",
+          "guide": "여름 숲 소리를 듣고 소리가 나는 쪽으로 움직인 뒤, 소그룹으로 숨은 곤충 모형을 찾아 채집통에 담아요. 장수풍뎅이와 사슴벌레, 여치와 메뚜기를 나란히 놓고 뿔·턱·더듬이·뒷다리를 비교해요.",
+          "teacherQuestion": "무엇을 보고 이 친구를 찾았나요?",
+          "minutes": 15
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "기억에 남는 곤충은?",
+          "guide": "별도 만들기 없이 관찰에 시간을 쓰고, 가장 기억에 남는 곤충을 여름 곤충 자석으로 골라요.",
+          "teacherQuestion": "비슷해 보이는데 가장 먼저 보이는 다른 점은 무엇인가요?",
+          "minutes": 5
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "가장 신기했던 점은?",
+          "guide": "여름 곤충 자석을 집에 붙이고, 이름 퀴즈 대신 아이가 직접 본 특징을 가족에게 들려줘요.",
+          "teacherQuestion": "비슷해 보였는데 자세히 보니 달랐던 친구가 있었나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《너무 뜨겁잖아!》 그림책 또는 E-BOOK",
+            "여름 곤충 모형·채집통·관찰 트레이",
+            "돋보기·곤충 단서 카드",
+            "매미 등 여름 숲 소리 자료"
+          ],
+          "teacherPrompt": "무엇을 보고 이 친구를 찾았나요?",
+          "safetyNote": "살아 있는 곤충은 잡거나 만지지 않고 모형과 사진으로만 관찰해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 10주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-곤충 채집",
+          "title": "추가 신체놀이",
+          "activity": "곤충 채집 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 20,
+          "minutesNote": "공식 가이드 권장 시간표 기준 20~25분",
+          "materials": [
+            "《너무 뜨겁잖아!》 그림책 또는 E-BOOK",
+            "여름 곤충 모형·채집통·관찰 트레이",
+            "돋보기·곤충 단서 카드",
+            "매미 등 여름 숲 소리 자료"
+          ],
+          "teacherPrompt": "무엇을 보고 이 친구를 찾았나요?",
+          "safetyNote": "살아 있는 곤충은 잡거나 만지지 않고 모형과 사진으로만 관찰해요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 10주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "여름 곤충 자석을 집에 붙이고, 이름 퀴즈 대신 아이가 직접 본 특징을 가족에게 들려줘요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《너무 뜨겁잖아!》 그림책 또는 E-BOOK",
+            "여름 곤충 모형·채집통·관찰 트레이",
+            "돋보기·곤충 단서 카드",
+            "매미 등 여름 숲 소리 자료"
+          ],
+          "teacherPrompt": "비슷해 보였는데 자세히 보니 달랐던 친구가 있었나요?",
+          "safetyNote": "살아 있는 곤충은 잡거나 만지지 않고 모형과 사진으로만 관찰해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 10주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 11,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 여행을 떠나려면 무엇이 필요할까?",
+          "teacherQuestion": "구름을 지나면 어떤 곳이 나올까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "자! 떠나자!",
+          "guide": "《자! 떠나자!》에서 여름방학을 맞은 친구들이 짐을 챙겨 비행기를 타고 새로운 곳으로 떠나요.",
+          "teacherQuestion": "구름을 지나면 어떤 곳이 나올까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "슈우우웅! 구름 위로!",
+          "guide": "여권·탑승권을 챙겨 체크인 → 탑승구 → 좌석에 앉아 ‘슈우우웅!’ 비행을 몸으로 표현하고 도착해요. 가방에 무엇을 넣을지, 탑승권에 어떤 표시가 있는지 친구와 살펴보며 여행을 준비해요.",
+          "teacherQuestion": "비행기에 올라갈 때 어떤 기분이었나요?",
+          "minutes": 15
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "꽃목걸이 · 훌라치마",
+          "guide": "마음에 드는 색 꽃과 장식을 골라 꽃목걸이와 훌라치마를 만들고 직접 입고 움직여 봐요.",
+          "teacherQuestion": "이 소품을 하고 어떤 춤을 추고 싶나요?",
+          "minutes": 5
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "가장 즐거웠던 순간은?",
+          "guide": "집에 돌아가 여권과 탑승권을 가족에게 보여 주며 오늘 가장 즐거웠던 여행 장면을 들려줘요.",
+          "teacherQuestion": "다음에 또 떠난다면 어디에 가 보고 싶나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북·미술",
+          "title": "워크북 심화",
+          "activity": "워크북·미술 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10~15분",
+          "materials": [
+            "《자! 떠나자!》 그림책 또는 E-BOOK",
+            "여권·탑승권·선글라스",
+            "체크인·탑승구 표식과 좌석용 의자",
+            "종이꽃·안전한 끈·훌라치마 꾸미기 재료"
+          ],
+          "teacherPrompt": "비행기에 올라갈 때 어떤 기분이었나요?",
+          "safetyNote": "의자 좌석 위에 올라서거나 뛰지 않고, 체크인·탑승은 차례대로 걸어서 이동해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 11주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-여행 놀이",
+          "title": "추가 신체놀이",
+          "activity": "여행 놀이 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15~20분",
+          "materials": [
+            "《자! 떠나자!》 그림책 또는 E-BOOK",
+            "여권·탑승권·선글라스",
+            "체크인·탑승구 표식과 좌석용 의자",
+            "종이꽃·안전한 끈·훌라치마 꾸미기 재료"
+          ],
+          "teacherPrompt": "비행기에 올라갈 때 어떤 기분이었나요?",
+          "safetyNote": "의자 좌석 위에 올라서거나 뛰지 않고, 체크인·탑승은 차례대로 걸어서 이동해요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 11주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-훌라댄스",
+          "title": "추가 신체놀이",
+          "activity": "훌라댄스 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15~20분",
+          "materials": [
+            "《자! 떠나자!》 그림책 또는 E-BOOK",
+            "여권·탑승권·선글라스",
+            "체크인·탑승구 표식과 좌석용 의자",
+            "종이꽃·안전한 끈·훌라치마 꾸미기 재료"
+          ],
+          "teacherPrompt": "비행기에 올라갈 때 어떤 기분이었나요?",
+          "safetyNote": "의자 좌석 위에 올라서거나 뛰지 않고, 체크인·탑승은 차례대로 걸어서 이동해요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 11주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "집에 돌아가 여권과 탑승권을 가족에게 보여 주며 오늘 가장 즐거웠던 여행 장면을 들려줘요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《자! 떠나자!》 그림책 또는 E-BOOK",
+            "여권·탑승권·선글라스",
+            "체크인·탑승구 표식과 좌석용 의자",
+            "종이꽃·안전한 끈·훌라치마 꾸미기 재료"
+          ],
+          "teacherPrompt": "다음에 또 떠난다면 어디에 가 보고 싶나요?",
+          "safetyNote": "의자 좌석 위에 올라서거나 뛰지 않고, 체크인·탑승은 차례대로 걸어서 이동해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 11주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 12,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 숲의 색이 달라졌어!",
+          "teacherQuestion": "저 친구는 누구일까요? 왜 꼼짝하지 않을까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "세상은 알록달록!",
+          "guide": "《세상은 알록달록》에서 색을 따라가던 친구들이 열매와 곡식, 꼼짝 않는 허수아비를 만나요.",
+          "teacherQuestion": "저 친구는 누구일까요? 왜 꼼짝하지 않을까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "손끝으로 먼저 만나요",
+          "guide": "상자에 손을 넣고 매끈한지 울퉁불퉁한지, 가벼운지 묵직한지 손끝으로 천천히 느껴요. 꺼내 확인한 가을 산물을 같은 색끼리, 동그란 것과 길쭉한 것끼리 바구니에 모아 비교해요.",
+          "teacherQuestion": "무엇일 것 같아요? 왜 그렇게 생각했나요?",
+          "minutes": 11
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "알록달록 허수아비",
+          "guide": "가을 산물 모양 도장으로 커다란 허수아비 옷에 색과 자리를 골라 찍어 우리 반 허수아비를 완성해요.",
+          "teacherQuestion": "친구 도장과 네 도장이 만나니 옷이 어떻게 달라졌나요?",
+          "minutes": 9
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "가을은 풍성해요",
+          "guide": "가족과 가을 산물 한 가지를 골라 색·모양·무게를 살펴보고, 원으로 가져와 친구들과 함께 탐색해요.",
+          "teacherQuestion": "상자 속에서 가장 기억나는 촉감은 무엇이었나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《세상은 알록달록》 그림책 또는 E-BOOK",
+            "촉감 상자와 가을 산물 실물 또는 모형(사과·배·고구마·옥수수·호박·감)",
+            "관찰 트레이·바구니",
+            "대형 허수아비 도안·모양 도장·물감·앞치마"
+          ],
+          "teacherPrompt": "무엇일 것 같아요? 왜 그렇게 생각했나요?",
+          "safetyNote": "가을 산물은 먹지 않고 보고 만지기만 하며, 상자에는 찌를 수 있는 재료를 넣지 않아요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 12주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-촉감놀이",
+          "title": "추가 신체놀이",
+          "activity": "촉감놀이 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 20,
+          "minutesNote": "공식 가이드 권장 시간표 기준 20~25분",
+          "materials": [
+            "《세상은 알록달록》 그림책 또는 E-BOOK",
+            "촉감 상자와 가을 산물 실물 또는 모형(사과·배·고구마·옥수수·호박·감)",
+            "관찰 트레이·바구니",
+            "대형 허수아비 도안·모양 도장·물감·앞치마"
+          ],
+          "teacherPrompt": "무엇일 것 같아요? 왜 그렇게 생각했나요?",
+          "safetyNote": "가을 산물은 먹지 않고 보고 만지기만 하며, 상자에는 찌를 수 있는 재료를 넣지 않아요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 12주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-허수아비 미술",
+          "title": "작품 세부 완성",
+          "activity": "허수아비 미술 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15~20분",
+          "materials": [
+            "《세상은 알록달록》 그림책 또는 E-BOOK",
+            "촉감 상자와 가을 산물 실물 또는 모형(사과·배·고구마·옥수수·호박·감)",
+            "관찰 트레이·바구니",
+            "대형 허수아비 도안·모양 도장·물감·앞치마"
+          ],
+          "teacherPrompt": "무엇일 것 같아요? 왜 그렇게 생각했나요?",
+          "safetyNote": "가을 산물은 먹지 않고 보고 만지기만 하며, 상자에는 찌를 수 있는 재료를 넣지 않아요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 12주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "가족과 가을 산물 한 가지를 골라 색·모양·무게를 살펴보고, 원으로 가져와 친구들과 함께 탐색해요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《세상은 알록달록》 그림책 또는 E-BOOK",
+            "촉감 상자와 가을 산물 실물 또는 모형(사과·배·고구마·옥수수·호박·감)",
+            "관찰 트레이·바구니",
+            "대형 허수아비 도안·모양 도장·물감·앞치마"
+          ],
+          "teacherPrompt": "상자 속에서 가장 기억나는 촉감은 무엇이었나요?",
+          "safetyNote": "가을 산물은 먹지 않고 보고 만지기만 하며, 상자에는 찌를 수 있는 재료를 넣지 않아요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 12주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 13,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "보름달에 소중한 마음을 담아요. (도입이 공식 가이드에 없어 임시로 만든 문장입니다)",
+          "teacherQuestion": "어? 또 따라왔어! 왜 그런 것 같아요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "달이 또 따라왔어!",
+          "guide": "《동글동글 보름달》에서 어디를 가도 따라오는 듯한 달을 신기해하는 친구들을 만나요.",
+          "teacherQuestion": "어? 또 따라왔어! 왜 그런 것 같아요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "동글동글~ 달아 커져라!",
+          "guide": "손을 가볍게 잡고 작은 원을 만든 뒤 한 걸음씩 뒤로 물러나 ‘달아, 커져라!’ 우리 반 보름달을 크게 만들어요. 선생님이 든 달 카드를 따라 걷다 멈춰 ‘지금 달은 어디에 있지?’ 하고 위치를 살펴봐요.",
+          "teacherQuestion": "우리 반 달이 작았다가 커질 때 무엇이 달라졌나요?",
+          "minutes": 11
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "복(福)름달주머니",
+          "guide": "주머니 색과 달 장식을 골라 꾸미고, 지금 떠오른 바람을 소원 카드에 담아 복(福)름달주머니를 완성해요.",
+          "teacherQuestion": "네 주머니에는 어떤 마음을 넣고 싶나요?",
+          "minutes": 9
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "주머니에 담은 내 마음",
+          "guide": "복(福)름달주머니를 집에 가져가 아이가 고른 가족에게 보여 주고, 담은 마음을 정답 없이 들어 줘요.",
+          "teacherQuestion": "네 복(福)름달주머니 안에는 어떤 마음이 들어 있나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《동글동글 보름달》 그림책 또는 E-BOOK",
+            "달 신호 카드·바닥 원형 표시",
+            "복(福)름달주머니 재료·복(福) 글자 도안",
+            "둥근 달 장식·스티커·리본·소원 카드"
+          ],
+          "teacherPrompt": "우리 반 달이 작았다가 커질 때 무엇이 달라졌나요?",
+          "safetyNote": "원을 만들 때 손은 가볍게 잡고 잡아당기지 않아요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 13주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-달빛 신체놀이",
+          "title": "추가 신체놀이",
+          "activity": "달빛 신체놀이 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 20,
+          "minutesNote": "공식 가이드 권장 시간표 기준 20~25분",
+          "materials": [
+            "《동글동글 보름달》 그림책 또는 E-BOOK",
+            "달 신호 카드·바닥 원형 표시",
+            "복(福)름달주머니 재료·복(福) 글자 도안",
+            "둥근 달 장식·스티커·리본·소원 카드"
+          ],
+          "teacherPrompt": "우리 반 달이 작았다가 커질 때 무엇이 달라졌나요?",
+          "safetyNote": "원을 만들 때 손은 가볍게 잡고 잡아당기지 않아요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 13주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-미술활동",
+          "title": "작품 세부 완성",
+          "activity": "미술활동 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15~20분",
+          "materials": [
+            "《동글동글 보름달》 그림책 또는 E-BOOK",
+            "달 신호 카드·바닥 원형 표시",
+            "복(福)름달주머니 재료·복(福) 글자 도안",
+            "둥근 달 장식·스티커·리본·소원 카드"
+          ],
+          "teacherPrompt": "우리 반 달이 작았다가 커질 때 무엇이 달라졌나요?",
+          "safetyNote": "원을 만들 때 손은 가볍게 잡고 잡아당기지 않아요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 13주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "복(福)름달주머니를 집에 가져가 아이가 고른 가족에게 보여 주고, 담은 마음을 정답 없이 들어 줘요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《동글동글 보름달》 그림책 또는 E-BOOK",
+            "달 신호 카드·바닥 원형 표시",
+            "복(福)름달주머니 재료·복(福) 글자 도안",
+            "둥근 달 장식·스티커·리본·소원 카드"
+          ],
+          "teacherPrompt": "네 복(福)름달주머니 안에는 어떤 마음이 들어 있나요?",
+          "safetyNote": "원을 만들 때 손은 가볍게 잡고 잡아당기지 않아요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 13주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 14,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 말하지 않아도 알 수 있을까?",
+          "teacherQuestion": "우비가 무엇을 하고 싶은 것 같아요? 어디를 보고 알았나요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "말하지 않아도 괜찮아!",
+          "guide": "《말하지 않아도 괜찮아!》에서 목소리가 잘 나오지 않는 우비가 그림과 몸짓으로 마음을 전해요.",
+          "teacherQuestion": "우비가 무엇을 하고 싶은 것 같아요? 어디를 보고 알았나요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "몸으로 말해요",
+          "guide": "카드 한 장을 골라 ‘같이 놀자’, ‘추워’ 같은 말을 몸짓으로 표현하고, 짝이 “○○하고 싶은 거야?” 하고 확인해요. 선생님의 말 없는 표정을 보고 눈·입·어깨·손이 어떻게 달라졌는지 살펴봐요.",
+          "teacherQuestion": "어떤 부분을 보고 그런 뜻이라고 생각했나요?",
+          "minutes": 11
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "감기야 사라져라! 얍!",
+          "guide": "따뜻한 물·목수건·하트 같은 돌봄 상징을 골라 우비가 편안해지길 바라는 응원 그림을 꾸며요.",
+          "teacherQuestion": "말 없이도 이 그림을 보면 어떤 마음인지 알 수 있을까요?",
+          "minutes": 9
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "마음은 여러 방법으로 전해져",
+          "guide": "가족이 자주 쓰는 몸짓을 찾아 우리 집만의 ‘몸으로 말해요 카드’를 만들고 서로 뜻을 확인해 봐요.",
+          "teacherQuestion": "말로 했을 때와 몸으로 표현했을 때 무엇이 달랐나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《말하지 않아도 괜찮아!》 그림책 또는 E-BOOK",
+            "표정카드·몸짓 상황카드",
+            "동작 카드(같이 놀자·안아줘·추워 등)",
+            "「감기야 사라져라! 얍!」 도안·돌봄 상징 도안·꾸미기 재료"
+          ],
+          "teacherPrompt": "어떤 부분을 보고 그런 뜻이라고 생각했나요?",
+          "safetyNote": "몸짓은 자기 자리 안에서 서기·앉기·손짓 중심으로 하고, 눕거나 구르지 않아요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 14주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-몸으로 말해요",
+          "title": "추가 신체놀이",
+          "activity": "몸으로 말해요 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 20,
+          "minutesNote": "공식 가이드 권장 시간표 기준 20~25분",
+          "materials": [
+            "《말하지 않아도 괜찮아!》 그림책 또는 E-BOOK",
+            "표정카드·몸짓 상황카드",
+            "동작 카드(같이 놀자·안아줘·추워 등)",
+            "「감기야 사라져라! 얍!」 도안·돌봄 상징 도안·꾸미기 재료"
+          ],
+          "teacherPrompt": "어떤 부분을 보고 그런 뜻이라고 생각했나요?",
+          "safetyNote": "몸짓은 자기 자리 안에서 서기·앉기·손짓 중심으로 하고, 눕거나 구르지 않아요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 14주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-미술활동",
+          "title": "작품 세부 완성",
+          "activity": "미술활동 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15~20분",
+          "materials": [
+            "《말하지 않아도 괜찮아!》 그림책 또는 E-BOOK",
+            "표정카드·몸짓 상황카드",
+            "동작 카드(같이 놀자·안아줘·추워 등)",
+            "「감기야 사라져라! 얍!」 도안·돌봄 상징 도안·꾸미기 재료"
+          ],
+          "teacherPrompt": "어떤 부분을 보고 그런 뜻이라고 생각했나요?",
+          "safetyNote": "몸짓은 자기 자리 안에서 서기·앉기·손짓 중심으로 하고, 눕거나 구르지 않아요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 14주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "가족이 자주 쓰는 몸짓을 찾아 우리 집만의 ‘몸으로 말해요 카드’를 만들고 서로 뜻을 확인해 봐요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《말하지 않아도 괜찮아!》 그림책 또는 E-BOOK",
+            "표정카드·몸짓 상황카드",
+            "동작 카드(같이 놀자·안아줘·추워 등)",
+            "「감기야 사라져라! 얍!」 도안·돌봄 상징 도안·꾸미기 재료"
+          ],
+          "teacherPrompt": "말로 했을 때와 몸으로 표현했을 때 무엇이 달랐나요?",
+          "safetyNote": "몸짓은 자기 자리 안에서 서기·앉기·손짓 중심으로 하고, 눕거나 구르지 않아요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 14주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 15,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 따뜻한 마음은 어떤 모습일까?",
+          "teacherQuestion": "말하지 않아도 어떤 마음이 전해졌을까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "따뜻한 소리가 들려요",
+          "guide": "《따뜻한 소리가 들려요》에서 문을 잡아 주고 장갑을 주워 주는 작은 도움이 이어지는 겨울 하루를 만나요.",
+          "teacherQuestion": "말하지 않아도 어떤 마음이 전해졌을까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "도움 장면을 찾아요",
+          "guide": "교실 곳곳의 도움 상황카드를 찾아 몸으로 짧게 표현하고, 완성한 마음벨을 들고 원 안의 어른을 찾아가요. 벨을 세게 흔들 때와 살짝 흔들 때를 비교하고, 내 마음을 전할 소리를 골라요.",
+          "teacherQuestion": "네 마음은 어떤 소리로 전하고 싶나요?",
+          "minutes": 9
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "딸랑딸랑 마음벨",
+          "guide": "색·모양·장식을 골라 딸랑딸랑 마음벨을 만들고, 마음을 나누고 싶은 사람을 스스로 정해요.",
+          "teacherQuestion": "그 사람은 평소에 너에게 어떤 도움을 주었나요?",
+          "minutes": 11
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "따뜻한 마음이 이어져요",
+          "guide": "집에서도 ‘누가 너를 도와준 일이 있었지?’ 하고 장면을 떠올린 뒤, 가까운 어른에게 그림이나 몸짓으로 작은 마음을 건네요.",
+          "teacherQuestion": "마음벨을 건넸을 때 그 어른의 표정은 어땠나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10분",
+          "materials": [
+            "《따뜻한 소리가 들려요》 그림책 또는 E-BOOK",
+            "작은 도움 상황카드·하트 마음카드",
+            "마음벨 몸체 도안·안전한 작은 방울",
+            "하트·별 스티커·색칠 도구"
+          ],
+          "teacherPrompt": "네 마음은 어떤 소리로 전하고 싶나요?",
+          "safetyNote": "방울·장식이 단단히 붙었는지 확인하고, 끈은 목에 길게 걸지 않아요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 15주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-마음벨 놀이",
+          "title": "추가 신체놀이",
+          "activity": "마음벨 놀이 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15~20분",
+          "materials": [
+            "《따뜻한 소리가 들려요》 그림책 또는 E-BOOK",
+            "작은 도움 상황카드·하트 마음카드",
+            "마음벨 몸체 도안·안전한 작은 방울",
+            "하트·별 스티커·색칠 도구"
+          ],
+          "teacherPrompt": "네 마음은 어떤 소리로 전하고 싶나요?",
+          "safetyNote": "방울·장식이 단단히 붙었는지 확인하고, 끈은 목에 길게 걸지 않아요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 15주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-미술·전달",
+          "title": "작품 세부 완성",
+          "activity": "미술·전달 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 20,
+          "minutesNote": "공식 가이드 권장 시간표 기준 20~25분",
+          "materials": [
+            "《따뜻한 소리가 들려요》 그림책 또는 E-BOOK",
+            "작은 도움 상황카드·하트 마음카드",
+            "마음벨 몸체 도안·안전한 작은 방울",
+            "하트·별 스티커·색칠 도구"
+          ],
+          "teacherPrompt": "네 마음은 어떤 소리로 전하고 싶나요?",
+          "safetyNote": "방울·장식이 단단히 붙었는지 확인하고, 끈은 목에 길게 걸지 않아요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 15주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "집에서도 ‘누가 너를 도와준 일이 있었지?’ 하고 장면을 떠올린 뒤, 가까운 어른에게 그림이나 몸짓으로 작은 마음을 건네요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《따뜻한 소리가 들려요》 그림책 또는 E-BOOK",
+            "작은 도움 상황카드·하트 마음카드",
+            "마음벨 몸체 도안·안전한 작은 방울",
+            "하트·별 스티커·색칠 도구"
+          ],
+          "teacherPrompt": "마음벨을 건넸을 때 그 어른의 표정은 어땠나요?",
+          "safetyNote": "방울·장식이 단단히 붙었는지 확인하고, 끈은 목에 길게 걸지 않아요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 15주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 16,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "공식 가이드 도입 — 이 사진, 기억나?",
+          "teacherQuestion": "사진이 모이니까 어떤 시간이 보이나요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "우리 그리고 모두의 사계절",
+          "guide": "《우리 그리고 모두의 사계절》에서 사진 속 봄·여름·가을·겨울이 하나의 긴 이야기로 이어지는 것을 발견해요.",
+          "teacherQuestion": "사진이 모이니까 어떤 시간이 보이나요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "이 사진은 어느 계절?",
+          "guide": "기억나는 사진을 하나 골라 들고 가서 봄·여름·가을·겨울 표식 옆에 놓으며 우리 반 사계절을 모아요. 예전 사진과 나중 사진을 나란히 보며 우리 모습이 어떻게 달라졌는지 찾아봐요.",
+          "teacherQuestion": "처음이랑 나중에 우리 모습이 어떻게 달라졌나요?",
+          "minutes": 12
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "나의 사계절을 남겨요",
+          "guide": "별도 만들기 없이, 워크북 「나의 사계절」에 가장 기억에 남는 장면을 그림이나 말로 남겨요.",
+          "teacherQuestion": "네 사계절에서 가장 기억나는 순간은 언제인가요?",
+          "minutes": 8
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "또 한 뼘 자랐어",
+          "guide": "수업 전에 보호자가 함께한 구체적인 기억을 담은 짧은 영상편지를 준비하면, 수업 중 아이에게 도착해요.",
+          "teacherQuestion": "봄·여름·가을·겨울 중 다시 가 보고 싶은 장면은 어디인가요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-워크북",
+          "title": "워크북 심화",
+          "activity": "워크북 — 수업에서 본 것을 종이 위에서 다시 떠올려요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10~15분",
+          "materials": [
+            "《우리 그리고 모두의 사계절》 그림책 또는 E-BOOK",
+            "9~15주 활동사진(수업 활용 동의 자료)",
+            "봄·여름·가을·겨울 계절 표식",
+            "보호자·선생님 영상편지와 재생 기기",
+            "워크북 「나의 사계절」"
+          ],
+          "teacherPrompt": "처음이랑 나중에 우리 모습이 어떻게 달라졌나요?",
+          "safetyNote": "사진·영상은 수업 활용이 확인된 자료만 쓰고 기관 안에서만 재생·보관해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 16주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "move_more-사계절 사진 회상",
+          "title": "추가 신체놀이",
+          "activity": "사계절 사진 회상 — 기본 수업에서 줄인 놀이를 더 길게 해요.",
+          "estimatedMinutes": 15,
+          "minutesNote": "공식 가이드 권장 시간표 기준 15~20분",
+          "materials": [
+            "《우리 그리고 모두의 사계절》 그림책 또는 E-BOOK",
+            "9~15주 활동사진(수업 활용 동의 자료)",
+            "봄·여름·가을·겨울 계절 표식",
+            "보호자·선생님 영상편지와 재생 기기",
+            "워크북 「나의 사계절」"
+          ],
+          "teacherPrompt": "처음이랑 나중에 우리 모습이 어떻게 달라졌나요?",
+          "safetyNote": "사진·영상은 수업 활용이 확인된 자료만 쓰고 기관 안에서만 재생·보관해요.",
+          "linkToCore": "몸과 감각으로 탐색",
+          "source": "공식 교사용 수업가이드 16주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "art_more-영상편지",
+          "title": "작품 세부 완성",
+          "activity": "영상편지 — 기본 수업에서 시작한 작품을 더 완성해요.",
+          "estimatedMinutes": 10,
+          "minutesNote": "공식 가이드 권장 시간표 기준 10~15분",
+          "materials": [
+            "《우리 그리고 모두의 사계절》 그림책 또는 E-BOOK",
+            "9~15주 활동사진(수업 활용 동의 자료)",
+            "봄·여름·가을·겨울 계절 표식",
+            "보호자·선생님 영상편지와 재생 기기",
+            "워크북 「나의 사계절」"
+          ],
+          "teacherPrompt": "처음이랑 나중에 우리 모습이 어떻게 달라졌나요?",
+          "safetyNote": "사진·영상은 수업 활용이 확인된 자료만 쓰고 기관 안에서만 재생·보관해요.",
+          "linkToCore": "예술로 표현하기",
+          "source": "공식 교사용 수업가이드 16주차",
+          "sourceStatus": "verified"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "수업 전에 보호자가 함께한 구체적인 기억을 담은 짧은 영상편지를 준비하면, 수업 중 아이에게 도착해요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《우리 그리고 모두의 사계절》 그림책 또는 E-BOOK",
+            "9~15주 활동사진(수업 활용 동의 자료)",
+            "봄·여름·가을·겨울 계절 표식",
+            "보호자·선생님 영상편지와 재생 기기",
+            "워크북 「나의 사계절」"
+          ],
+          "teacherPrompt": "봄·여름·가을·겨울 중 다시 가 보고 싶은 장면은 어디인가요?",
+          "safetyNote": "사진·영상은 수업 활용이 확인된 자료만 쓰고 기관 안에서만 재생·보관해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 16주차",
+          "sourceStatus": "verified"
+        }
+      ]
+    },
+    {
+      "weekNo": 17,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "색이 만들어낸 아름다움 (도입이 공식 가이드에 없어 임시로 만든 문장입니다)",
+          "teacherQuestion": "색이 만났는데도 원래 색이 보이나요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "색과 색이 만나면?",
+          "guide": "《짝! 우리들의 색》에서 친구들의 색이 만나도 원래 색이 그대로 남아 있는 장면을 찾아봐요.",
+          "teacherQuestion": "색이 만났는데도 원래 색이 보이나요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "팡팡! 색을 터트려요!",
+          "guide": "비닐 아래 물감 중 원하는 색을 찾아 이동하고, 소프트 뿅망치로 톡톡 두드려 색이 퍼지는 모습을 봐요. 색이 맞닿거나 겹친 곳을 찾아 어떤 색들이 만났는지, 무엇처럼 보이는지 자유롭게 말해요.",
+          "teacherQuestion": "색이 어디로 움직였나요?",
+          "minutes": 13
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "내가 만든 색친구",
+          "guide": "비닐을 걷어 낸 번진 모양에 눈·입·팔다리를 더해 내가 만든 색친구를 완성하고 이름을 붙여요.",
+          "teacherQuestion": "이 모양은 무엇처럼 보여요?",
+          "minutes": 7
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "달라서 더 아름다워",
+          "guide": "가족이 각자 좋아하는 색을 골라 한 장의 큰 종이에 손바닥 도장을 함께 남겨요.",
+          "teacherQuestion": "처음 종이와 지금 종이는 어떻게 달라졌나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-pending",
+          "title": "워크북 심화",
+          "activity": "워크북으로 오늘 활동을 다시 떠올려요.",
+          "estimatedMinutes": null,
+          "minutesNote": "이 주차는 공식 가이드에 단계별 시간이 없습니다 · 검수 필요",
+          "materials": [
+            "《짝! 우리들의 색》 그림책 또는 E-BOOK",
+            "큰 흰 종이(롤지)·씻어지는 물감",
+            "두꺼운 투명 PE 비닐·고정 테이프",
+            "유아용 소프트 뿅망치",
+            "입체 눈알·스티커·사인펜"
+          ],
+          "teacherPrompt": "색이 어디로 움직였나요?",
+          "safetyNote": "쉽게 찢어지지 않는 두꺼운 비닐을 단단히 고정하고, 물감은 너무 묽지 않게 준비해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 17주차 (단계별 시간 미기재)",
+          "sourceStatus": "pending_review"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "가족이 각자 좋아하는 색을 골라 한 장의 큰 종이에 손바닥 도장을 함께 남겨요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《짝! 우리들의 색》 그림책 또는 E-BOOK",
+            "큰 흰 종이(롤지)·씻어지는 물감",
+            "두꺼운 투명 PE 비닐·고정 테이프",
+            "유아용 소프트 뿅망치",
+            "입체 눈알·스티커·사인펜"
+          ],
+          "teacherPrompt": "처음 종이와 지금 종이는 어떻게 달라졌나요?",
+          "safetyNote": "쉽게 찢어지지 않는 두꺼운 비닐을 단단히 고정하고, 물감은 너무 묽지 않게 준비해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 17주차",
+          "sourceStatus": "pending_review"
+        }
+      ]
+    },
+    {
+      "weekNo": 18,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "표현할수록 따뜻하게 전해지는 마음 (도입이 공식 가이드에 없어 임시로 만든 문장입니다)",
+          "teacherQuestion": "풍덩! 빠졌을 때 어떤 마음이 들었을까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "반짝이는 물길을 따라가요",
+          "guide": "《반짝이는 물길 놀이터》에서 계곡을 건너다 풍덩 빠진 친구들이 모두 웃게 되는 이야기를 만나요.",
+          "teacherQuestion": "풍덩! 빠졌을 때 어떤 마음이 들었을까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "조심조심 돌다리 건너기",
+          "guide": "파란 천 계곡 위 징검다리를 한두 명씩 조심조심 건너고, 앞 친구가 도착하면 출발해요. 물방울 카드나 빈 컵을 건네며 “이건 시원한 물이에요”, “고마워” 하고 마음을 주고받아요.",
+          "teacherQuestion": "친구에게 어떤 말을 건네고 싶나요?",
+          "minutes": 13
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "마음을 담은 비누",
+          "guide": "비누클레이를 하트·물방울 모양으로 눌러 무늬를 남기고, 누구에게 어떤 마음을 전할지 떠올려요.",
+          "teacherQuestion": "어떤 모양이면 마음이 잘 전해질까요?",
+          "minutes": 7
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "따뜻한 마음을 전해요",
+          "guide": "집에서 가족과 서로의 발을 조심조심 씻어 주며 “오늘 수고했어” 같은 짧은 칭찬을 나눠요.",
+          "teacherQuestion": "친구가 해 줘서 좋았던 건 무엇이었나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-pending",
+          "title": "워크북 심화",
+          "activity": "워크북으로 오늘 활동을 다시 떠올려요.",
+          "estimatedMinutes": null,
+          "minutesNote": "이 주차는 공식 가이드에 단계별 시간이 없습니다 · 검수 필요",
+          "materials": [
+            "《반짝이는 물길 놀이터》 그림책 또는 E-BOOK",
+            "파란 천·미끄럼 방지 징검다리 발판",
+            "물결 스카프·물방울 카드",
+            "비누클레이(성형 비누베이스)·실리콘 몰드·압인 장식"
+          ],
+          "teacherPrompt": "친구에게 어떤 말을 건네고 싶나요?",
+          "safetyNote": "실제 물은 되도록 쓰지 않고, 발판은 흔들리지 않게 고정한 뒤 한두 명씩 건너요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 18주차 (단계별 시간 미기재)",
+          "sourceStatus": "pending_review"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "집에서 가족과 서로의 발을 조심조심 씻어 주며 “오늘 수고했어” 같은 짧은 칭찬을 나눠요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《반짝이는 물길 놀이터》 그림책 또는 E-BOOK",
+            "파란 천·미끄럼 방지 징검다리 발판",
+            "물결 스카프·물방울 카드",
+            "비누클레이(성형 비누베이스)·실리콘 몰드·압인 장식"
+          ],
+          "teacherPrompt": "친구가 해 줘서 좋았던 건 무엇이었나요?",
+          "safetyNote": "실제 물은 되도록 쓰지 않고, 발판은 흔들리지 않게 고정한 뒤 한두 명씩 건너요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 18주차",
+          "sourceStatus": "pending_review"
+        }
+      ]
+    },
+    {
+      "weekNo": 19,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "함께 만드는 우리의 리듬 (도입이 공식 가이드에 없어 임시로 만든 문장입니다)",
+          "teacherQuestion": "지금 어디에서 소리가 들리는 것 같아요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "숲 속 작은 연주회",
+          "guide": "《숲 속 작은 연주회》에서 숲 곳곳의 서로 다른 소리가 모여 하나의 음악이 되는 이야기를 만나요.",
+          "teacherQuestion": "지금 어디에서 소리가 들리는 것 같아요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "귀 쫑긋! 들리면 움직여요",
+          "guide": "북 ‘쿵!’에는 점프, 마라카스 ‘찰찰!’에는 몸 흔들기처럼 소리를 듣고 몸으로 대답해요. 악기를 보지 않고 소리만 듣고 어느 악기인지 찾고, 치는 방법에 따라 소리가 어떻게 달라지는지 비교해요.",
+          "teacherQuestion": "친구 소리 다음엔 어떤 소리로 대답해 볼까요?",
+          "minutes": 13
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "나만의 북과 스틱",
+          "guide": "북과 스틱에 원하는 색·무늬·이름표를 꾸민 뒤 소리를 들어 보고 우리 반 작은 연주회를 열어요.",
+          "teacherQuestion": "혼자 칠 때와 같이 칠 때 무엇이 달랐나요?",
+          "minutes": 7
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "함께 만든 우리 리듬",
+          "guide": "공식 가정연계는 아직 정해지지 않아, 집으로 따로 과제를 보내지 않고 원에서의 연주회 경험으로 마무리해요.",
+          "teacherQuestion": "친구 소리를 기다렸을 때 어떤 느낌이었나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-pending",
+          "title": "워크북 심화",
+          "activity": "워크북으로 오늘 활동을 다시 떠올려요.",
+          "estimatedMinutes": null,
+          "minutesNote": "이 주차는 공식 가이드에 단계별 시간이 없습니다 · 검수 필요",
+          "materials": [
+            "《숲 속 작은 연주회》 그림책 또는 E-BOOK",
+            "북·마라카스·우드블록 등 2~3종 악기",
+            "아이별 북 + 스틱 세트",
+            "스티커·도형 테이프·이름 스티커"
+          ],
+          "teacherPrompt": "친구 소리 다음엔 어떤 소리로 대답해 볼까요?",
+          "safetyNote": "스틱은 친구에게 향하거나 휘두르지 않고 ‘북만 톡톡’ 해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 19주차 (단계별 시간 미기재)",
+          "sourceStatus": "pending_review"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "공식 가정연계는 아직 정해지지 않아, 집으로 따로 과제를 보내지 않고 원에서의 연주회 경험으로 마무리해요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《숲 속 작은 연주회》 그림책 또는 E-BOOK",
+            "북·마라카스·우드블록 등 2~3종 악기",
+            "아이별 북 + 스틱 세트",
+            "스티커·도형 테이프·이름 스티커"
+          ],
+          "teacherPrompt": "친구 소리를 기다렸을 때 어떤 느낌이었나요?",
+          "safetyNote": "스틱은 친구에게 향하거나 휘두르지 않고 ‘북만 톡톡’ 해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 19주차",
+          "sourceStatus": "pending_review"
+        }
+      ]
+    },
+    {
+      "weekNo": 20,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "배려할 때 더 커지는 즐거움 (도입이 공식 가이드에 없어 임시로 만든 문장입니다)",
+          "teacherQuestion": "친구에게 보내기 전에 왜 ‘준비됐어?’라고 물었을까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "준비됐어? 이제 보내!",
+          "guide": "《주렁주렁 신나는 하루》에서 친구에게 토마토를 보내기 전 “준비됐어?” 하고 묻는 장면을 만나요.",
+          "teacherQuestion": "친구에게 보내기 전에 왜 ‘준비됐어?’라고 물었을까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "토마토 길을 이어 줘!",
+          "guide": "4~5명이 짧은 레일을 이어 들고 토마토 공을 굴리고, 공이 지나가면 뒤 레일을 앞으로 옮겨 길을 이어요. 빨강·노랑·방울토마토의 크기와 색, 단면 속 씨와 속살을 비교해 살펴봐요.",
+          "teacherQuestion": "어디를 맞추면 공이 계속 갈까요?",
+          "minutes": 13
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "반쪽 토마토",
+          "guide": "반쪽만 있는 토마토 도안을 보고 나머지 반쪽을 관찰하고 상상한 대로 자유롭게 완성해요.",
+          "teacherQuestion": "나머지 반쪽을 꼭 똑같이 그려야 할까요?",
+          "minutes": 7
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "나누니까 더 즐거워",
+          "guide": "가족과 간단한 토마토 요리를 만들며 아이는 씻기·담기·섞기를 맡고, 칼과 불은 보호자가 다뤄요.",
+          "teacherQuestion": "누가 너를 기다려 줘서 좋았나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-pending",
+          "title": "워크북 심화",
+          "activity": "워크북으로 오늘 활동을 다시 떠올려요.",
+          "estimatedMinutes": null,
+          "minutesNote": "이 주차는 공식 가이드에 단계별 시간이 없습니다 · 검수 필요",
+          "materials": [
+            "《주렁주렁 신나는 하루》 그림책 또는 E-BOOK",
+            "U자형 짧은 레일 6~8개·부드러운 토마토 공",
+            "도착 바구니·출발/도착 표식",
+            "토마토 사진(단면 포함)·반쪽 토마토 도안·크레파스"
+          ],
+          "teacherPrompt": "어디를 맞추면 공이 계속 갈까요?",
+          "safetyNote": "레일 끝은 얼굴 높이로 들지 않고 허리 아래에서 사용해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 20주차 (단계별 시간 미기재)",
+          "sourceStatus": "pending_review"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "가족과 간단한 토마토 요리를 만들며 아이는 씻기·담기·섞기를 맡고, 칼과 불은 보호자가 다뤄요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《주렁주렁 신나는 하루》 그림책 또는 E-BOOK",
+            "U자형 짧은 레일 6~8개·부드러운 토마토 공",
+            "도착 바구니·출발/도착 표식",
+            "토마토 사진(단면 포함)·반쪽 토마토 도안·크레파스"
+          ],
+          "teacherPrompt": "누가 너를 기다려 줘서 좋았나요?",
+          "safetyNote": "레일 끝은 얼굴 높이로 들지 않고 허리 아래에서 사용해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 20주차",
+          "sourceStatus": "pending_review"
+        }
+      ]
+    },
+    {
+      "weekNo": 21,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "새로운 세상을 만드는 호기심 (도입이 공식 가이드에 없어 임시로 만든 문장입니다)",
+          "teacherQuestion": "안 닿으면 다른 방법을 어떻게 찾아볼 수 있을까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "두근두근 하늘여행",
+          "guide": "《두근두근 하늘여행》에서 구름 가까이 가 보고 싶은 친구들이 여러 방법을 시도해 열기구를 완성해요.",
+          "teacherQuestion": "안 닿으면 다른 방법을 어떻게 찾아볼 수 있을까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "하나, 둘, 셋! 놓아요",
+          "guide": "종이컵에 연결한 풍선을 ‘하나, 둘, 셋!’ 놓고, 날아가는 미니 열기구를 따라가 잡아요. 컵 방향을 조금 바꿔 “이번엔 어디로 갈까?” 예상하고 다시 날려 움직임을 비교해요.",
+          "teacherQuestion": "이번엔 무엇을 바꿔 볼까요?",
+          "minutes": 13
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "우리들의 큰 열기구",
+          "guide": "원하는 색 풍선을 하나 골라 대형 망에 넣어 우리들의 큰 열기구를 함께 완성해요.",
+          "teacherQuestion": "여러 색이 모이니까 열기구가 어떻게 달라졌나요?",
+          "minutes": 7
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "궁금하면 다시 해 봐요",
+          "guide": "집에서도 종이컵과 풍선으로 미니 열기구를 짧게 날리며 “이번엔 어디로 갈까?” 함께 예상해요.",
+          "teacherQuestion": "잘 안 됐을 때 어떻게 다시 해 봤나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-pending",
+          "title": "워크북 심화",
+          "activity": "워크북으로 오늘 활동을 다시 떠올려요.",
+          "estimatedMinutes": null,
+          "minutesNote": "이 주차는 공식 가이드에 단계별 시간이 없습니다 · 검수 필요",
+          "materials": [
+            "《두근두근 하늘여행》 그림책 또는 E-BOOK",
+            "종이컵(교사가 구멍·슬릿 준비)·여러 색 풍선",
+            "대형 풍선망·독립 지지구조",
+            "열기구 바구니 포토존·열기구 사진"
+          ],
+          "teacherPrompt": "이번엔 무엇을 바꿔 볼까요?",
+          "safetyNote": "풍선 불기는 선생님이 돕고, 터진 풍선 조각은 바로 치워요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 21주차 (단계별 시간 미기재)",
+          "sourceStatus": "pending_review"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "집에서도 종이컵과 풍선으로 미니 열기구를 짧게 날리며 “이번엔 어디로 갈까?” 함께 예상해요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《두근두근 하늘여행》 그림책 또는 E-BOOK",
+            "종이컵(교사가 구멍·슬릿 준비)·여러 색 풍선",
+            "대형 풍선망·독립 지지구조",
+            "열기구 바구니 포토존·열기구 사진"
+          ],
+          "teacherPrompt": "잘 안 됐을 때 어떻게 다시 해 봤나요?",
+          "safetyNote": "풍선 불기는 선생님이 돕고, 터진 풍선 조각은 바로 치워요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 21주차",
+          "sourceStatus": "pending_review"
+        }
+      ]
+    },
+    {
+      "weekNo": 22,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "예상치 못해 더 특별한 재미와 추억 (도입이 공식 가이드에 없어 임시로 만든 문장입니다)",
+          "teacherQuestion": "깜짝 놀랐을 때 친구들은 어떻게 했나요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "오늘 밤, 무슨 일이 생길까?",
+          "guide": "《오늘 밤, 무슨 일이 생길까?》에서 깜짝 장난에 놀란 친구들이 곧 ‘다음엔 뭐가 나올까?’ 기대해요.",
+          "teacherQuestion": "깜짝 놀랐을 때 친구들은 어떻게 했나요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "Trick or Treat!",
+          "guide": "‘Treat!’ 신호에는 소프트 사탕을 하나 찾아 호박 바구니에 넣고, ‘Trick!’ 신호에는 그 자리에서 재미있는 포즈로 멈춰요. 호박등의 빛과 모양을 보며 오늘 밤 숲이 평소와 무엇이 달라졌는지 찾아봐요.",
+          "teacherQuestion": "지금은 Trick일까요, Treat일까요?",
+          "minutes": 13
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "나만의 할로윈 바구니",
+          "guide": "호박 얼굴·별·사탕·박쥐 장식을 골라 집에서 간식통으로 쓸 나만의 할로윈 바구니를 꾸며요.",
+          "teacherQuestion": "네 바구니는 어떤 표정이에요?",
+          "minutes": 7
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "놀랐지만 재미있었어!",
+          "guide": "만든 바구니를 집에 가져가 가족과 좋아하는 간식 몇 가지를 골라 담아 우리 집 간식통으로 써요.",
+          "teacherQuestion": "다음엔 뭐가 나올지 기다렸던 순간이 있었나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-pending",
+          "title": "워크북 심화",
+          "activity": "워크북으로 오늘 활동을 다시 떠올려요.",
+          "estimatedMinutes": null,
+          "minutesNote": "이 주차는 공식 가이드에 단계별 시간이 없습니다 · 검수 필요",
+          "materials": [
+            "《오늘 밤, 무슨 일이 생길까?》 그림책 또는 E-BOOK",
+            "대형 호박 바구니·큼직한 소프트 사탕 소품",
+            "Trick/Treat 신호 카드·배터리식 호박등",
+            "할로윈 바구니 베이스·스티커·색지·리본"
+          ],
+          "teacherPrompt": "지금은 Trick일까요, Treat일까요?",
+          "safetyNote": "실제 사탕 대신 큼직한 소프트 소품을 쓰고, 소품은 먹지 않아요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 22주차 (단계별 시간 미기재)",
+          "sourceStatus": "pending_review"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "만든 바구니를 집에 가져가 가족과 좋아하는 간식 몇 가지를 골라 담아 우리 집 간식통으로 써요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《오늘 밤, 무슨 일이 생길까?》 그림책 또는 E-BOOK",
+            "대형 호박 바구니·큼직한 소프트 사탕 소품",
+            "Trick/Treat 신호 카드·배터리식 호박등",
+            "할로윈 바구니 베이스·스티커·색지·리본"
+          ],
+          "teacherPrompt": "다음엔 뭐가 나올지 기다렸던 순간이 있었나요?",
+          "safetyNote": "실제 사탕 대신 큼직한 소프트 소품을 쓰고, 소품은 먹지 않아요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 22주차",
+          "sourceStatus": "pending_review"
+        }
+      ]
+    },
+    {
+      "weekNo": 23,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "나누면 커지는 기쁨 (도입이 공식 가이드에 없어 임시로 만든 문장입니다)",
+          "teacherQuestion": "친구에게 골라 준 선물은 왜 그 친구에게 어울렸을까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "별빛이 찾아온 크리스마스",
+          "guide": "《별빛이 찾아온 크리스마스》에서 이름 없는 선물상자를 발견한 친구들이 서로에게 어울리는 선물을 골라 나눠요.",
+          "teacherQuestion": "친구에게 골라 준 선물은 왜 그 친구에게 어울렸을까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "씽씽! 선물 썰매 출발",
+          "guide": "선물상자를 썰매에 싣고 트리까지 천천히 끌고 가서, 친구 자리를 남기며 차곡차곡 쌓아요. 선물탑이 와르르 무너지면 웃으며, 어떤 순서로 놓아야 안정적인지 함께 생각해요.",
+          "teacherQuestion": "어떻게 옮기면 선물이 떨어지지 않을까요?",
+          "minutes": 13
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "선물 안에는 무엇이?",
+          "guide": "펼침형 선물상자를 꾸미고, 안쪽에 받고 싶은 것이나 함께 하고 싶은 일을 그림·콜라주로 담아요.",
+          "teacherQuestion": "물건 말고 같이 하고 싶은 것도 선물이 될까요?",
+          "minutes": 7
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "나누면 기쁨이 커져요",
+          "guide": "선물상자 작품을 집에서 가족과 함께 열어 보며, 사 주기 약속 대신 ‘왜 이걸 골랐어?’ 하고 이야기를 들어요.",
+          "teacherQuestion": "선물을 나누니까 어떤 기분이었을까요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-pending",
+          "title": "워크북 심화",
+          "activity": "워크북으로 오늘 활동을 다시 떠올려요.",
+          "estimatedMinutes": null,
+          "minutesNote": "이 주차는 공식 가이드에 단계별 시간이 없습니다 · 검수 필요",
+          "materials": [
+            "《별빛이 찾아온 크리스마스》 그림책 또는 E-BOOK",
+            "가벼운 썰매(끌 수 있는 판)·손잡이",
+            "크기가 다른 가벼운 선물상자·트리 도착 표식",
+            "펼침형 선물상자 도안·색지·스티커·리본"
+          ],
+          "teacherPrompt": "어떻게 옮기면 선물이 떨어지지 않을까요?",
+          "safetyNote": "썰매에는 사람이 타지 않고 손잡이 끈은 발에 걸리지 않게 짧게 해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 23주차 (단계별 시간 미기재)",
+          "sourceStatus": "pending_review"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "선물상자 작품을 집에서 가족과 함께 열어 보며, 사 주기 약속 대신 ‘왜 이걸 골랐어?’ 하고 이야기를 들어요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《별빛이 찾아온 크리스마스》 그림책 또는 E-BOOK",
+            "가벼운 썰매(끌 수 있는 판)·손잡이",
+            "크기가 다른 가벼운 선물상자·트리 도착 표식",
+            "펼침형 선물상자 도안·색지·스티커·리본"
+          ],
+          "teacherPrompt": "선물을 나누니까 어떤 기분이었을까요?",
+          "safetyNote": "썰매에는 사람이 타지 않고 손잡이 끈은 발에 걸리지 않게 짧게 해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 23주차",
+          "sourceStatus": "pending_review"
+        }
+      ]
+    },
+    {
+      "weekNo": 24,
+      "totalMinutes": 35,
+      "stages": [
+        {
+          "key": "open",
+          "title": "이야기 열기",
+          "childLine": "오늘은 무엇을 만날까요?",
+          "guide": "다른 우리, 같은 지구 (도입이 공식 가이드에 없어 임시로 만든 문장입니다)",
+          "teacherQuestion": "사는 곳이 달라도 닮은 즐거움이 있을까요?",
+          "minutes": 5
+        },
+        {
+          "key": "story",
+          "title": "그림책 만나기",
+          "childLine": "서로 다른 하루, 하나의 지구",
+          "guide": "《서로 다른 하루, 하나의 지구》에서 세계 곳곳 사람들이 무엇을 하며 웃는지 살펴보고 우리 놀이와 이어 봐요.",
+          "teacherQuestion": "사는 곳이 달라도 닮은 즐거움이 있을까요?",
+          "minutes": 7
+        },
+        {
+          "key": "move",
+          "title": "몸과 감각으로 탐색",
+          "childLine": "사진 들고 지구촌으로!",
+          "guide": "17~23주 활동사진을 들고 지구촌 판의 닮은 지역까지 걸어가 붙이고, 마지막에 내 놀이 사진을 대한민국에 붙여요. 세계 장면과 우리 놀이 사진을 나란히 보고 무엇이 닮았고 무엇이 다른지 한마디씩 나눠요.",
+          "teacherQuestion": "이 사진은 세계 어느 장면과 닮았을까요?",
+          "minutes": 13
+        },
+        {
+          "key": "make",
+          "title": "예술로 표현하기",
+          "childLine": "나만의 태극기",
+          "guide": "태극과 건곤감리의 기본 구조는 지키면서 원하는 재료와 무늬로 나만의 태극기를 표현해요.",
+          "teacherQuestion": "같은 태극기인데 친구 작품과 무엇이 달라요?",
+          "minutes": 7
+        },
+        {
+          "key": "share",
+          "title": "나누고 정리",
+          "childLine": "다른 우리, 같은 지구",
+          "guide": "주말에 즐겁게 놀았던 사진 한 장을 아이와 함께 골라 보내면, 수업에서 아이가 직접 대한민국 영역에 붙여요.",
+          "teacherQuestion": "우리 사진까지 붙이니 지구촌 판이 어떻게 달라졌나요?",
+          "minutes": 3
+        }
+      ],
+      "extensions": [
+        {
+          "key": "workbook-pending",
+          "title": "워크북 심화",
+          "activity": "워크북으로 오늘 활동을 다시 떠올려요.",
+          "estimatedMinutes": null,
+          "minutesNote": "이 주차는 공식 가이드에 단계별 시간이 없습니다 · 검수 필요",
+          "materials": [
+            "《서로 다른 하루, 하나의 지구》 그림책 또는 E-BOOK",
+            "대형 지구촌 판·국가/문화 표식",
+            "17~23주 활동사진·벨크로 등 안전한 부착재",
+            "태극기 기본 도안·빨강·파랑 재료·크레파스"
+          ],
+          "teacherPrompt": "이 사진은 세계 어느 장면과 닮았을까요?",
+          "safetyNote": "핀·압정 대신 벨크로나 재사용 점착재로 붙이고, 판은 단단히 고정해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 24주차 (단계별 시간 미기재)",
+          "sourceStatus": "pending_review"
+        },
+        {
+          "key": "home",
+          "title": "가정연계",
+          "activity": "주말에 즐겁게 놀았던 사진 한 장을 아이와 함께 골라 보내면, 수업에서 아이가 직접 대한민국 영역에 붙여요.",
+          "estimatedMinutes": null,
+          "minutesNote": "원에서 쓰는 시간은 가이드에 없습니다 · 검수 필요",
+          "materials": [
+            "《서로 다른 하루, 하나의 지구》 그림책 또는 E-BOOK",
+            "대형 지구촌 판·국가/문화 표식",
+            "17~23주 활동사진·벨크로 등 안전한 부착재",
+            "태극기 기본 도안·빨강·파랑 재료·크레파스"
+          ],
+          "teacherPrompt": "우리 사진까지 붙이니 지구촌 판이 어떻게 달라졌나요?",
+          "safetyNote": "핀·압정 대신 벨크로나 재사용 점착재로 붙이고, 판은 단단히 고정해요.",
+          "linkToCore": "나누고 정리",
+          "source": "공식 교사용 수업가이드 24주차",
+          "sourceStatus": "pending_review"
+        }
+      ]
+    }
+  ]
+}
