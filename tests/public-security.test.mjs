@@ -7,6 +7,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -65,8 +66,71 @@ test("비밀값처럼 보이는 문자열이 저장소에 없다", () => {
   }
 });
 
-test("배포 폴더(public)에는 로고만 있다 — 사진 · 캐릭터 · 회사 자료 그림 없음", () => {
-  assert.deepEqual(files("public", /./).map(rel), ["public/images/site/brand/soyeskids-logo-primary.png"]);
+// ★ 손으로 적은 고정 목록이다. 새 파일이 public 에 들어오면 그대로 걸린다.
+// ★ Vercel 은 public/ 을 그대로 내보낸다. 화면이 쓰지 않는 파일도 주소만 알면 받힌다 —
+//   그래서 public/ 에 있는 것 = 공개되는 것으로 본다 (빌드 결과물 out/ 이 아니라 public/ 을 검사한다).
+const LOGO = "public/images/site/brand/soyeskids-logo-primary.png";
+const { LICENSE_STATUS, WEEK_IMAGE_FILES, WEEK_COVER_REGISTRY, WEEK_MEDIA } = await import("../src/data/experience/media.ts");
+const ALLOWED_PUBLIC_FILES = LICENSE_STATUS === "confirmed" ? [LOGO, ...WEEK_IMAGE_FILES] : [LOGO];
+
+test("public 에는 로고(와 사용권이 확인된 표지)만 있다 — zip · pdf · 원본 · 문서가 없다", () => {
+  // zip · pdf · 동영상 · 문서 · 임의 업로드 파일 · 사용권 미확인 표지가 들어오면 여기서 걸린다
+  assert.deepEqual(files("public", /./).map(rel).sort(), [...ALLOWED_PUBLIC_FILES].sort());
+  for (const f of files("public", /./)) assert.doesNotMatch(rel(f), /\.(zip|pdf|psd|ai|docx?|xlsx?|pptx?|hwp|mp4|mov|png\.bak)$/i, rel(f));
+});
+
+test("사용권이 확인되기 전에는 표지 파일이 public 에 없고 화면도 싣지 않는다 (배포 주소는 404)", () => {
+  // 그림 속 내용이 확인된 1~8주차만 등록부에 둔다. 나머지는 자체 제작 SVG 를 쓴다
+  assert.deepEqual(Object.keys(WEEK_COVER_REGISTRY).map(Number).sort((a, b) => a - b), Array.from({ length: 8 }, (_, i) => i + 1));
+  assert.deepEqual(Object.values(WEEK_COVER_REGISTRY).map((x) => `public${x.src}`).sort(), [...WEEK_IMAGE_FILES].sort());
+  if (LICENSE_STATUS === "confirmed") {
+    for (const f of WEEK_IMAGE_FILES) assert.ok(existsSync(join(ROOT, f)), `${f} — 사용권 확인 뒤에는 파일이 있어야 한다`);
+    return;
+  }
+  assert.deepEqual(Object.keys(WEEK_MEDIA), [], "화면이 사용권 미확인 표지를 싣는다");
+  for (const f of WEEK_IMAGE_FILES) assert.ok(!existsSync(join(ROOT, f)), `${f} — public 에 있으면 Vercel 이 그대로 내보낸다`);
+  assert.ok(!existsSync(join(ROOT, "public/images/week-covers-web")), "표지 폴더가 public 에 남아 있다");
+  // 효과가 없던 빌드 뒤 정리 단계(out/ 만 지움)에 기대지 않는다
+  const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
+  assert.equal(pkg.scripts.postbuild, undefined);
+});
+
+// 백업 폴더 SHA256SUMS.txt 와 같은 값 — 다른 그림(예: 9~16주차 이름의 썸네일)으로 바뀌면 걸린다
+const COVER_SHA256 = {
+  "week-01.webp": "6366c7ee6427c9c8bb34861031069accd056f04f0da51d4aa1950df40213384a",
+  "week-02.webp": "7150b20f1969ed4d35c96bbe5774e97c253de55444f319b563096fa819156fd7",
+  "week-03.webp": "282ab75eced8215d027986e8be34863802d285ea9ab2c0c5ed0af4921a59ebb1",
+  "week-04.webp": "8ecae64394067eb4e970ebf531576d0bef2b8862a9c6b6cb5b9719575da4a758",
+  "week-05.webp": "5a95d0585f7ba88587360a6e1543b4ea440a748fb8321431356b394e493ceb14",
+  "week-06.webp": "51b8efbbd8eddae2f8719533c82140bcbf2460e24b2a624fbe1e3e6f833d98d3",
+  "week-07.webp": "f8406b7f9ef81443b8208326be0cff18d6f16df5358e47b92deab5ed397b5589",
+  "week-08.webp": "da72fa18e91de0b52a64dd1eec61abc6a8474e9f60f7fd9b28643591c197fd64",
+};
+
+test("공개 표지는 내용을 확인한 1~8주차 파생본 그대로다 (SHA256)", () => {
+  if (LICENSE_STATUS !== "confirmed") return;
+  for (const f of WEEK_IMAGE_FILES) {
+    const name = f.split("/").pop();
+    assert.equal(createHash("sha256").update(readFileSync(join(ROOT, f))).digest("hex"), COVER_SHA256[name], f);
+  }
+});
+
+test("배포 QA 가 표지 주소 200 · 원본 404 를 실제 배포에서 확인한다", () => {
+  const qa = readFileSync(join(ROOT, "scripts/qa-public.mjs"), "utf8");
+  assert.match(qa, /week-covers-web\/week-0/, "qa-public.mjs 에 표지 주소 검사가 없다");
+});
+
+test("public 의 그림은 실제 이미지 파일이다 (확장자와 내용이 같다)", () => {
+  const MAGIC = [
+    [Buffer.from([0x89, 0x50, 0x4e, 0x47]), "PNG"],
+    [Buffer.from([0xff, 0xd8, 0xff]), "JPEG"],
+    [Buffer.from("RIFF"), "WEBP"],
+  ];
+  for (const f of ALLOWED_PUBLIC_FILES) {
+    assert.match(f, /\.(png|jpe?g|webp)$/i, `${f} — 허용하지 않는 확장자`);
+    const head = readFileSync(join(ROOT, f)).subarray(0, 4);
+    assert.ok(MAGIC.some(([m]) => head.subarray(0, m.length).equals(m)), `${f} — 확장자와 실제 내용이 다르다`);
+  }
 });
 
 test("문의는 전화 · 이메일 · 영업 사이트 링크뿐이다 (저장하는 폼 없음)", () => {

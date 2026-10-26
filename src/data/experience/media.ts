@@ -1,14 +1,122 @@
 import type { ExperienceImage } from "./types";
 
 /**
- * 체험 화면 사진 — 공개 체험 사이트에서는 쓰지 않는다 (2026-10-21).
+ * 주차 그림책 표지 — 소예키즈 제공 자료 가운데 **내용이 확인된 1~8주차만** 쓴다.
  *
- * ★ 회사 제공 수업 장면 그림 · 사진은 외부 공개 사용권 증빙이 확인되지 않았다.
- *   그래서 이 저장소에는 사진 파일이 없고, 모든 그림은 자체 제작 SVG
- *   (HeroScene · WeekArt · Motif · Stickers · Doodles)로 그린다. 로고만 예외다.
- * ★ 사용권이 확인된 그림을 쓰게 되면 여기에 더하고 tests/public-security.test.mjs 의 허용 목록도 고친다.
+ * ── 왜 8장뿐인가 ───────────────────────────────────────────────
+ *
+ * 받은 16장 가운데 9~16주차로 이름 붙은 8장은 그림 속 제목이 모두
+ * 1~8주차 수업이었다 (예: 「9주_안녕봄아」 안에 「EP 01. 유치원 가는 날」).
+ * 주차 번호만 보고 그대로 걸면 9주차 화면에 1주차 표지가 올라간다.
+ * 그래서 **공개 등록에서 뺐다.** 파일을 지우거나 다른 주차로 옮기지 않았다 —
+ * 원본 16장은 프로젝트 밖에 그대로 보관한다.
+ *
+ * ── 화면용 파생본 ──────────────────────────────────────────────
+ *
+ * ★ 화면이 받는 것은 WebP 로 만든 파생본이다. 원본 PNG 는 덮어쓰지 않았고 파일명도
+ *   그대로다. 어느 원본에서 나왔는지는 docs/images/week-cover-mapping.md 에 적었다.
+ * ★ 비율을 바꾸지 않았다. 가로 1200 을 넘을 때만 줄였다 — 표지 제목 글씨의
+ *   선명도를 먼저 본다.
+ *
+ * ── 사용권 ──────────────────────────────────────────────────────
+ *
+ * ★ 2026-10-26 소예키즈가 「24주 수업 이미지 교체」 폴더 이미지의 소유와 온라인 공개 사용을 확인했다.
+ *   확인 범위는 그 폴더의 이미지뿐이다 — 음원 · 영상 · 다른 캐릭터 파일로 넓히지 않는다.
+ * ★ 사용권이 확인됐어도 9~16주차 이름의 8장은 싣지 않는다. 그림 속 내용이 1~8주차이고
+ *   (16:9 영상 썸네일), 그 주차의 영상 파일은 아직 없다 — 썸네일만 걸면 영상이 있는 것처럼 보인다.
+ * ★ public/ 의 파일은 화면이 싣지 않아도 주소로 받힌다. 그래서 public/ 에는 아래 8장만 둔다
+ *   (tests/public-security.test.mjs 허용 목록). 원본 PNG 는 프로젝트 밖에 그대로 보관한다.
+ * ★ 사용권을 거둬야 하면 LICENSE_STATUS 를 "unconfirmed" 로 돌리고 public/images/week-covers-web/ 를 지운다.
  */
+
+export type LicenseStatus = "unconfirmed" | "confirmed";
+
+/** 공개 사용권 확인 상태 — 2026-10-26 소예키즈 확인 */
+export const LICENSE_STATUS: LicenseStatus = "confirmed";
+
+export function coversPublished(status: LicenseStatus): boolean {
+  return status === "confirmed";
+}
+
 export const MEDIA: Record<string, ExperienceImage> = {};
 
-/** 주차 전용 그림 — 없음. 24주 모두 주차 색 · 주제 그림(WeekArt)으로 그린다. */
-export const WEEK_MEDIA: Partial<Record<number, ExperienceImage>> = {};
+/**
+ * 내용이 확인된 1~8주차 표지 등록부.
+ * coverTitle 은 표지 그림에 적힌 글씨 그대로다 — 3 · 7 · 8주차는 자료 PDF 의 그림책 제목과 다르다
+ * (화면은 두 제목을 나눠 적는다. 자료 제목을 고치지 않는다).
+ */
+export const WEEK_COVER_REGISTRY: Partial<Record<number, ExperienceImage>> = {
+  1: {
+    src: "/images/week-covers-web/week-01.webp",
+    alt: "1주차 그림책 표지 《유치원 가는 날》",
+    coverTitle: "유치원 가는 날",
+    width: 1200,
+    height: 1097,
+  },
+  2: {
+    src: "/images/week-covers-web/week-02.webp",
+    alt: "2주차 그림책 표지 《끝까지 해보자》",
+    coverTitle: "끝까지 해보자",
+    width: 1200,
+    height: 1097,
+  },
+  3: {
+    src: "/images/week-covers-web/week-03.webp",
+    alt: "3주차 그림책 표지 《마음을 말해요》",
+    coverTitle: "마음을 말해요",
+    width: 1200,
+    height: 1097,
+  },
+  4: {
+    src: "/images/week-covers-web/week-04.webp",
+    alt: "4주차 그림책 표지 《소예의 씨앗》",
+    coverTitle: "소예의 씨앗",
+    width: 1200,
+    height: 1097,
+  },
+  5: {
+    src: "/images/week-covers-web/week-05.webp",
+    alt: "5주차 그림책 표지 《우린 모두 특별해》",
+    coverTitle: "우린 모두 특별해",
+    width: 1200,
+    height: 1097,
+  },
+  6: {
+    src: "/images/week-covers-web/week-06.webp",
+    alt: "6주차 그림책 표지 《우리들의 비밀기지》",
+    coverTitle: "우리들의 비밀기지",
+    width: 1200,
+    height: 1097,
+  },
+  7: {
+    src: "/images/week-covers-web/week-07.webp",
+    alt: "7주차 그림책 표지 《나비야, 놀러와!》",
+    coverTitle: "나비야, 놀러와!",
+    width: 1200,
+    height: 1097,
+  },
+  8: {
+    src: "/images/week-covers-web/week-08.webp",
+    alt: "8주차 그림책 표지 《우리들의 숲》",
+    coverTitle: "우리들의 숲",
+    width: 1200,
+    height: 1097,
+  },
+};
+
+/** 화면이 실제로 싣는 주차 표지 — 사용권이 확인되기 전에는 비어 있다 */
+export const WEEK_MEDIA: Partial<Record<number, ExperienceImage>> = coversPublished(LICENSE_STATUS)
+  ? WEEK_COVER_REGISTRY
+  : {};
+
+/** 보안 테스트가 대조하는 실제 배포 파일 목록 */
+export const WEEK_IMAGE_FILES: readonly string[] = [
+  "public/images/week-covers-web/week-01.webp",
+  "public/images/week-covers-web/week-02.webp",
+  "public/images/week-covers-web/week-03.webp",
+  "public/images/week-covers-web/week-04.webp",
+  "public/images/week-covers-web/week-05.webp",
+  "public/images/week-covers-web/week-06.webp",
+  "public/images/week-covers-web/week-07.webp",
+  "public/images/week-covers-web/week-08.webp",
+];

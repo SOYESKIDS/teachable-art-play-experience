@@ -5,6 +5,8 @@ import { ArrowRight, PlayIcon, PopLink } from "@/components/play/PopButton";
 import { Sticker } from "@/components/play/Stickers";
 import { WeekArt } from "@/components/play/WeekArt";
 import { EXPERIENCE_WEEKS, experienceWeek, FEATURED_WEEK_NO } from "@/data/experience/weeks";
+import { displayFallback } from "@/components/play/display-font";
+import { cx } from "@/components/ui/cx";
 
 export const metadata = {
   title: "수업 체험하기 | TeachAble Art Play",
@@ -85,10 +87,10 @@ export default function ExperienceHome() {
             {picks.map((w) => (
               <li key={w.weekNo}>
                 <Link href={`/experience/classroom/${w.weekNo}`} className="group flex items-center gap-4 rounded-[28px] bg-pop-cream p-3 pr-5 transition-colors hover:bg-pop-yellow-soft">
-                  <WeekArt week={w} className="aspect-square w-24 shrink-0 rounded-[22px]" />
+                  <WeekArt week={w} size="thumb" className="aspect-square w-24 shrink-0 rounded-[22px]" />
                   <span className="min-w-0 flex-1">
                     <span className="block text-[13px] font-bold text-pop-ink-muted">{w.weekNo}주차 · #{w.growthKeyword}</span>
-                    <span className="mt-0.5 block truncate font-display text-[20px] text-pop-ink">{w.title}</span>
+                    <span className={cx("mt-0.5 block truncate font-display text-[20px] text-pop-ink", displayFallback(w.title))}>{w.title}</span>
                   </span>
                   <span aria-hidden="true" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-pop-pink-deep text-white transition-transform group-hover:scale-110">
                     <PlayIcon className="h-4 w-4" />

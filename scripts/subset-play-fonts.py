@@ -42,6 +42,7 @@ SOURCE_GLOBS = [
     "src/app/page.tsx",
     "src/app/experience/**/*.tsx",
     "src/components/play/**/*.tsx",
+    "src/components/play/**/*.ts",
     "src/components/layout/BrandMark.tsx",
     "src/data/experience/**/*.ts",
     "src/data/*.ts",
@@ -57,6 +58,11 @@ def glyph_text() -> str:
         for path in glob.glob(os.path.join(ROOT, pattern), recursive=True):
             with open(path, encoding="utf-8") as f:
                 chars |= set(f.read())
+    # 제목 글꼴 글자는 본문 서브셋에도 둔다 — 제목 글꼴이 대체될 때 본문 글꼴이 받는다
+    display_path = os.path.join(OUT, "display-glyphs.txt")
+    if os.path.exists(display_path):
+        with open(display_path, encoding="utf-8") as f:
+            chars |= set(f.read())
     chars -= {"\n", "\r", "\t", "﻿"}
     # 그림 문자(이모지)는 시스템 글꼴로 그린다
     chars = {c for c in chars if ord(c) < 0x1F000}
@@ -108,6 +114,11 @@ def main() -> None:
     with open(os.path.join(OUT, "play-glyphs.txt"), "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
     build(pretendard, "tap-play-sans.woff2", "TAP Play Sans", text, SANS_WEIGHT_RANGE)
+    # Jua 원본이 없으면 "-" 를 넘긴다 — 제목 글꼴은 지금 서브셋을 그대로 두고 본문 글꼴만 만든다.
+    # (제목 글꼴에 없는 글자를 쓰는 제목은 화면이 본문 글꼴로 대체한다: src/components/play/display-font.ts)
+    if jua == "-":
+        print("tap-play-display.woff2: 그대로 둠 (Jua 원본 없음)")
+        return
     display_path = os.path.join(OUT, "display-glyphs.txt")
     display_text = text
     if os.path.exists(display_path):

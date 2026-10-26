@@ -1,0 +1,40 @@
+{
+  "takenAt": "2026-10-26",
+  "commit": "433e39d",
+  "note": "17~24주 · 9 · 11 · 14 · 15주 PDF 동기화 전 사이트 데이터. 되돌릴 때 이 값을 기준으로 한다.",
+  "data": [
+    {
+      "partNo": 1,
+      "title": "씨앗과 숲",
+      "nameProvisional": false,
+      "weekFrom": 1,
+      "weekTo": 8,
+      "tagline": "나를 알고, 친구를 만나요",
+      "description": "작은 씨앗이 숲이 되듯, 새 교실에서 나와 친구를 알아 가는 여덟 번의 모험.",
+      "tone": "mint",
+      "character": "pupu"
+    },
+    {
+      "partNo": 2,
+      "title": "우리 그리고 모두의 사계절",
+      "nameProvisional": false,
+      "weekFrom": 9,
+      "weekTo": 16,
+      "tagline": "계절과 함께 자라요",
+      "description": "봄 꽃비부터 겨울 영상편지까지, 사계절의 색과 마음을 몸으로 느끼는 여덟 번의 여행.",
+      "tone": "sky",
+      "character": "bukgeuki"
+    },
+    {
+      "partNo": 3,
+      "title": "세계의 축제",
+      "nameProvisional": true,
+      "weekFrom": 17,
+      "weekTo": 24,
+      "tagline": "세상과 어울려요",
+      "description": "색 · 물 · 소리 · 하늘, 그리고 세계의 축제로 넓어지는 마지막 여덟 번의 탐험.",
+      "tone": "pink",
+      "character": "ella"
+    }
+  ]
+}

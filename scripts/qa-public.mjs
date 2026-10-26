@@ -1,6 +1,6 @@
 // 공개 체험 사이트 브라우저 QA — 로그인 · 토큰 · 쿠키 없이 (시크릿 창과 같은 새 프로필).
 //   node scripts/qa-public.mjs https://teachable-art-play-experience.vercel.app [캡처 폴더]
-// 6개 화면 × 5개 폭 · 24주 상세 + 플레이어 48개 · 플레이어 버튼 17개 · 운영 경로 404 · 외부 요청 0 · 문의 동선.
+// 6개 화면 × 6개 폭(휴대폰 360 · 390 · 태블릿 768 · 1024 · PC 1440 · 전자칠판 1920) · 24주 상세 + 플레이어 48개 · 플레이어 버튼 17개 · 운영 경로 404 · 외부 요청 0 · 문의 동선.
 // `vercel env run` (env VERCEL_OIDC_TOKEN), is attached ONLY to requests for the preview host,
 // and is never printed.
 import { launch } from "./cdp.mjs";
@@ -36,10 +36,10 @@ const measure = () => page.eval(MEASURE);
 
 // 1. key pages x widths
 const PAGES = ["/", "/experience", "/experience/weeks", "/experience/weeks/4", "/experience/classroom/4", "/experience/report"];
-for (const w of (process.env.SKIP_PART1 ? [] : [360, 390, 768, 1024, 1440])) {
+for (const w of (process.env.SKIP_PART1 ? [] : [360, 390, 768, 1024, 1440, 1920])) {
   for (const p of PAGES) {
     page.requests = []; page.drain();
-    await page.viewport(w, 900, w < 768);
+    await page.viewport(w, w === 1920 ? 1080 : 900, w < 768);
     await page.goto(base + p).catch(() => {});
     await page.eval("(async()=>{for(let y=0;y<document.body.scrollHeight;y+=700){window.scrollTo(0,y);await new Promise(r=>setTimeout(r,50));}window.scrollTo(0,0)})()");
     await page.idle(400, 8000);
@@ -80,7 +80,23 @@ for (let n = 1; n <= 24; n++) {
     }
   }
 }
-note(bad24.length === 0, "24주 상세 + 플레이어 48페이지 (200, 이미지, 체험표시, 임시콘텐츠 표기, Supabase 0, 콘솔 0)", bad24.join(" "));
+note(bad24.length === 0, "24주 상세 + 플레이어 48페이지 (200, 이미지, 체험표시, 임시콘텐츠 표기, Supabase 0, 콘솔 · CSP 위반 0)", bad24.join(" "));
+
+// 2-1. 주제 일치 — 주차 상세 제목 · 그림책 · 대시보드 그림책 · 교실 플레이어 시작 화면이 같은 수업을 가리킨다
+const TOPIC = `(()=>{const t=(s)=>document.querySelector(s)?.textContent.trim()??null;
+  const book=[...document.querySelectorAll("p")].map(p=>p.textContent.trim()).find(x=>x.startsWith("그림책 《"))??null;
+  return {h1:t("h1"), h2:t("[aria-label='수업 시작'] h2"), book, dashBook:[...document.querySelectorAll("#teacher-dash ~ div details p")].map(p=>p.textContent.trim()).find(x=>/^《.*》$/.test(x))??null};})()`;
+const topicBad = [];
+for (let n = 1; n <= 24; n++) {
+  await page.goto(base + `/experience/weeks/${n}`).catch(() => {}); await page.idle(300, 6000);
+  const a = await page.eval(TOPIC);
+  await page.goto(base + `/experience/classroom/${n}`).catch(() => {}); await page.eval("sessionStorage.clear()"); await page.goto(base + `/experience/classroom/${n}`).catch(() => {}); await page.idle(300, 6000);
+  const b = await page.eval(TOPIC);
+  const sameBook = a.book && a.dashBook && a.book === `그림책 ${a.dashBook}` && b.book === a.book;
+  if (!a.h1 || a.h1 !== b.h2 || !sameBook) topicBad.push(`${n}: 상세「${a.h1}」 플레이어「${b.h2}」 ${a.book} / 대시보드 ${a.dashBook} / 플레이어 ${b.book}`);
+}
+page.drain();
+note(topicBad.length === 0, "24주 주제 일치 (상세 제목 = 플레이어 제목, 상세 그림책 = 대시보드 그림책 = 플레이어 그림책)", topicBad.join(" | "));
 page.requests = []; page.drain();
 await page.goto(base + "/experience/weeks/25").catch(() => {});
 note((await measure()).status === 404, "없는 주차(25) 404");
@@ -108,7 +124,7 @@ const steps = [
   ["Esc 닫기", () => page.key("Escape", "Escape", 27), (s) => !s.dlg],
   ["발문", () => page.clickText("발문"), (s) => s.dlg === "교사 발문"],
   ["닫기 버튼", () => page.click('dialog[open] button[aria-label="닫기"]'), (s) => !s.dlg],
-  ["전체 단계에서 5단계로", async () => { await page.clickText("전체 단계"); return page.clickText("5. 정리하고 나누기", { exact: false }); }, (s) => s.p === "80"],
+  ["전체 단계에서 5단계로", async () => { await page.clickText("전체 단계"); return page.clickText("5. 나누고 정리", { exact: false }); }, (s) => s.p === "80"],
   ["새로고침 후 복원", async () => { await page.goto(base + "/experience/classroom/4"); await page.idle(700, 6000); }, (s) => s.p === "80"],
   ["수업 종료 → 계속 진행", async () => { await page.clickText("수업 종료"); return page.clickText("계속 진행"); }, (s) => !s.dlg && !s.done],
   ["수업 종료 → 수업 마치기", async () => { await page.clickText("수업 종료"); return page.click("dialog[open] button.bg-pop-pink-deep"); }, (s) => s.done && s.p === "100"],
@@ -132,6 +148,29 @@ for (const p of ["/teacher", "/director", "/admin", "/login", "/kindergarten", "
   const m = await page.eval("({status: performance.getEntriesByType('navigation')[0]?.responseStatus, path: location.pathname})");
   note(m.status === 404, `운영 경로 없음 ${p}`, JSON.stringify(m));
 }
+// 4-1. 공개 표지 8장만 받히고, 원본 · 저장소 파일이 배포 주소로 받히지 않는다 (Vercel 은 public/ 을 그대로 내보낸다)
+{
+  const covers = [];
+  for (let n = 1; n <= 8; n++) covers.push((await fetch(`${base}/images/week-covers-web/week-0${n}.webp`)).status);
+  // 2026-10-26 소예키즈 사용권 확인 → 1~8주차 표지 8장만 공개. 원본 PNG 와 9~16주차 이름의 파일은 공개하지 않는다
+  note(covers.every((s) => s === 200), "1~8주차 표지 8장 200 (배포 주소)", covers.join(","));
+  const originals = [];
+  for (const p of ["/images/1주차_유치원 가는 날.png", "/images/9주_안녕봄아.png", "/images/16주_나비야놀러와.png",
+    "/images/week-covers-web/week-09.webp", "/images/week-covers-web/week-16.webp", "/images/week-covers/week-09.png"]) {
+    const s = (await fetch(base + encodeURI(p))).status;
+    if (s !== 404) originals.push(`${p}:${s}`);
+  }
+  note(originals.length === 0, "원본 PNG · 9~16주차 표지 주소 404", originals.join(" "));
+  const leaks = [];
+  for (const p of ["/package.json", "/.env", "/.env.local", "/vercel.json", "/docs/curriculum/PDF-SYNC-2026-10-26.md", "/src/data/site.ts",
+    "/TeachAble_24Week_Dashboard_DevPack.zip", "/images/week-covers/week-01.png"]) {
+    const s = (await fetch(base + p)).status;
+    if (s !== 404) leaks.push(`${p}:${s}`);
+  }
+  note(leaks.length === 0, "저장소 · 원본 파일이 배포 주소로 열리지 않는다", leaks.join(" "));
+  note((await fetch(`${base}/images/site/brand/soyeskids-logo-primary.png`)).status === 200, "회사 로고 200");
+}
+
 // 5. 문의 동선 — 전화 · 이메일 · 영업 사이트 (저장 폼 없음)
 await page.goto(base + "/"); await page.idle(600);
 const c = await page.eval(`({tel: !!document.querySelector('a[href^="tel:023034420"]'), mail: !!document.querySelector('a[href^="mailto:soyes2013@gmail.com"]'), sales: !!document.querySelector('a[href="https://teachable-art-play-sales.vercel.app/"]'), contact: !!document.getElementById("contact"), forms: document.querySelectorAll("form,input,textarea").length})`);

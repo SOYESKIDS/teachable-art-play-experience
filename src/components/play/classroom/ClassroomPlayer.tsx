@@ -3,14 +3,19 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { cx } from "@/components/ui/cx";
-import type { ClassStage, ExperienceWeek, StageKey } from "@/data/experience/types";
+import { TEXT_ORIGIN_LABEL, type ClassStage, type ExperienceWeek, type StageKey } from "@/data/experience/types";
 import { ContentStatusBadge, DemoNotice } from "../Badges";
 import { ArrowRight, PlayIcon, popButtonClass } from "../PopButton";
 import { ConsultButton } from "../ConsultButton";
+import { ShareButton } from "../ShareButton";
+import { EmailInquiryButton } from "../EmailInquiryButton";
 import { Buddy } from "../Doodles";
 import { Motif } from "../Motif";
 import { Sticker } from "../Stickers";
-import { WeekArt } from "../WeekArt";
+import { CoverTitleNote, WeekArt } from "../WeekArt";
+import { OriginTag } from "../OriginTag";
+import { displayFallback } from "../display-font";
+import { LESSON_TIME } from "@/lib/weeks/lesson-time";
 
 /**
  * INTERACTIVE CLASSROOM PLAYER — 공개 체험용 수업 진행 화면.
@@ -40,6 +45,7 @@ const subscribeWide = (onChange: () => void) => {
 };
 
 const STAGE_TONE: Record<StageKey, { soft: string; solid: string; text: string; color: string }> = {
+  open: { soft: "bg-pop-mint-soft", solid: "bg-pop-mint", text: "text-pop-mint-deep", color: "#22c3b5" },
   story: { soft: "bg-pop-sky-soft", solid: "bg-pop-sky", text: "text-pop-sky-deep", color: "#4da3ff" },
   move: { soft: "bg-pop-pink-soft", solid: "bg-pop-pink", text: "text-pop-pink-deep", color: "#ff4f8b" },
   explore: { soft: "bg-pop-mint-soft", solid: "bg-pop-mint", text: "text-pop-mint-deep", color: "#22c3b5" },
@@ -52,6 +58,7 @@ function StageIcon({ stage, className = "h-12 w-12" }: { stage: StageKey; classN
   return (
     <svg viewBox="0 0 64 64" aria-hidden="true" className={className}>
       <circle cx="32" cy="32" r="29" fill={STAGE_TONE[stage].color} />
+      {stage === "open" && <g {...s}><path d="M32 14v36M14 24h36" strokeWidth="4" /><circle cx="32" cy="32" r="12" fill="#fff" /></g>}
       {stage === "story" && <g {...s}><path d="M14 20c6-2 12-2 18 2v24c-6-4-12-4-18-2z" fill="#fff" /><path d="M50 20c-6-2-12-2-18 2v24c6-4 12-4 18-2z" fill="#fff" /></g>}
       {stage === "move" && <g {...s}><circle cx="32" cy="15" r="5" fill="#fff" /><path d="M32 21v14M19 25l13 5 13-5M24 50l8-15 8 15" /></g>}
       {stage === "explore" && <g {...s}><circle cx="28" cy="28" r="11" fill="#fff" /><path d="M36 36l12 12" strokeWidth="5" /></g>}
@@ -229,7 +236,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
           <span className="inline-flex h-11 items-center rounded-full px-4 font-display text-[18px] text-white" style={{ backgroundColor: week.themeColor }}>
             {week.weekNo}주차
           </span>
-          <span className="font-display text-[20px] text-pop-ink sm:text-[22px]">{week.title}</span>
+          <span className={cx("font-display text-[20px] text-pop-ink sm:text-[22px]", displayFallback(week.title))}>{week.title}</span>
           <DemoNotice compact />
         </div>
         <div className="flex flex-wrap items-center gap-2" role="toolbar" aria-label="수업 도구">
@@ -275,7 +282,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
             {phase.kind === "intro" ? "수업 준비" : phase.kind === "done" ? "수업 완료" : `${stageIndex + 1} / ${stages.length} 단계 · ${current?.title}`}
           </span>
           <span className="tabular">
-            {phase.kind === "stage" ? `진행 ${formatClock(elapsed)} · 계획 약 ${current?.minutes}분` : `전체 약 ${week.totalMinutes}분`}
+            {phase.kind === "stage" ? `진행 ${formatClock(elapsed)} · 계획 ${current?.minutes}분` : LESSON_TIME.label}
           </span>
         </div>
         <div className="mt-2 flex gap-1.5" role="progressbar" aria-label="수업 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
@@ -313,7 +320,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
                   </p>
                 </div>
                 <div className="flex flex-1 items-center justify-center px-6 pb-28 text-center sm:px-10 [@media(max-height:700px)]:pb-14">
-                  <p className={cx("max-w-[18ch] font-display leading-[1.15] text-pop-ink", effectiveView === "split" ? "text-[40px] sm:text-[52px]" : isFullscreen ? "text-[clamp(56px,6.4vw,124px)]" : "text-[44px] sm:text-[64px] lg:text-[76px] [@media(max-height:700px)]:text-[36px]")}>
+                  <p className={cx("max-w-[18ch] font-display leading-[1.15] text-pop-ink", displayFallback(current.childLine), effectiveView === "split" ? "text-[40px] sm:text-[52px]" : isFullscreen ? "text-[clamp(56px,6.4vw,124px)]" : "text-[44px] sm:text-[64px] lg:text-[76px] [@media(max-height:700px)]:text-[36px]")}>
                     {current.childLine}
                   </p>
                 </div>
@@ -436,13 +443,18 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
 function IntroScreen({ week, onStart }: { week: ExperienceWeek; onStart: () => void }) {
   return (
     <section aria-label="수업 시작" className="grid animate-stage-in gap-6 overflow-hidden rounded-[36px] bg-white p-4 shadow-pop-lg sm:p-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:p-8">
-      <WeekArt week={week} size="hero" priority className="aspect-[4/3] w-full rounded-[28px]" />
+      <WeekArt week={week} size="hero" priority className="aspect-[4/3] max-h-[72vh] w-full rounded-[28px]" />
       <div className="flex flex-col justify-center gap-5 p-2">
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full bg-pop-yellow-soft px-3 py-1 text-[14px] font-bold text-pop-ink">#{week.growthKeyword}</span>
-          <span className="rounded-full bg-pop-sky-soft px-3 py-1 text-[14px] font-bold text-pop-sky-deep">{week.durationLabel}</span>
+          <span className="rounded-full bg-pop-sky-soft px-3 py-1 text-[14px] font-bold text-pop-sky-deep">{LESSON_TIME.label}</span>
+          <span className="rounded-full bg-pop-cream px-3 py-1 text-[14px] font-bold text-pop-ink-muted">선택 확장활동 별도</span>
         </div>
-        <h2 className="font-display text-[40px] leading-tight text-pop-ink sm:text-[52px]">《{week.title}》</h2>
+        <div>
+          <h2 className={cx("font-display text-[40px] leading-tight text-pop-ink sm:text-[52px]", displayFallback(week.title))}>{week.title}</h2>
+          <p className="mt-1 text-[17px] font-bold text-pop-ink-muted">그림책 《{week.storybook}》</p>
+          <CoverTitleNote week={week} className="mt-1" />
+        </div>
         <p className="text-[19px] font-medium leading-relaxed text-pop-ink">{week.coreMessage}</p>
         <div>
           <p className="text-[14px] font-bold text-pop-ink-muted">오늘의 준비물</p>
@@ -479,10 +491,11 @@ function Fold({ title, badge, children, defaultOpen = false }: { title: string; 
 
 function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage }) {
   const extra: Record<StageKey, { label: string; text: string }[]> = {
+    open: [{ label: "오늘 여는 말", text: week.body.goal }],
     story: [{ label: "그림책 활동", text: week.body.story }],
     move: [{ label: "신체표현", text: week.body.movement }, { label: "음악 · 리듬", text: week.body.music }],
     explore: [{ label: "탐색", text: week.body.explore }],
-    make: [{ label: "미술 활동", text: week.body.art }, { label: "결과물", text: week.outcome ?? `${week.activitySummary} (공식 결과물 정리 중)` }],
+    make: [{ label: "미술 활동", text: week.body.art }, { label: "결과물", text: week.outcome ?? `${week.activitySummary} (결과물 정리 중)` }],
     share: [{ label: "가정연계", text: week.body.homeConnection }],
   };
   const details = extra[stage.key].filter((x) => x.text !== stage.guide);
@@ -500,11 +513,73 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
         <span className="shrink-0 rounded-full bg-pop-cream px-3 py-1 text-[14px] font-bold text-pop-ink">약 {stage.minutes}분</span>
       </div>
       <p className="mt-4 text-[13px] font-bold text-pop-ink-muted">활동 안내</p>
-      <p className="mt-1 text-[18px] font-semibold leading-relaxed text-pop-ink">{stage.guide}</p>
+      <p className="mt-1 text-[18px] font-semibold leading-relaxed text-pop-ink">{stage.guide} <OriginTag origin={stage.guideOrigin} className="align-middle" /></p>
       <div className="mt-5 rounded-3xl bg-pop-sky-soft p-5">
-        <p className="text-[13px] font-bold text-pop-sky-deep">교사 발문</p>
+        <p className="flex items-center gap-2 text-[13px] font-bold text-pop-sky-deep">교사 발문 <OriginTag origin={stage.teacherQuestionOrigin} /></p>
         <p className="mt-1 text-[20px] font-bold leading-relaxed text-pop-ink">“{stage.teacherQuestion}”</p>
       </div>
+
+      {/* 진행 순서 — 아이가 하는 일. 자료 PDF 단계가 있으면 원문이다 */}
+      <div className="mt-5">
+        <p className="flex flex-wrap items-center gap-2 text-[13px] font-bold text-pop-ink-muted">
+          진행 순서 · 아이가 하는 일
+        </p>
+        <ol className="mt-2 grid gap-1.5">
+          {stage.steps.map((s, i) => (
+            <li key={s.text} className="flex gap-2.5 text-[16px] leading-relaxed text-pop-ink">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pop-cream text-[12px] font-extrabold text-pop-ink-muted">{i + 1}</span>
+              <span>{s.text} <OriginTag origin={s.origin} className="align-middle" /></span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      {stage.materials.length ? (
+        <div className="mt-4">
+          <p className="text-[13px] font-bold text-pop-ink-muted">이 단계 준비물</p>
+          <ul className="mt-1.5 flex flex-wrap gap-1.5">
+            {stage.materials.map((m) => <li key={m} className="rounded-full bg-pop-cream px-3 py-1 text-[14px] font-semibold text-pop-ink">{m}</li>)}
+          </ul>
+        </div>
+      ) : null}
+      {stage.safety.length ? (
+        <div className="mt-4 rounded-2xl border-2 border-pop-pink-deep/30 bg-pop-pink-soft px-4 py-3">
+          <p className="text-[13px] font-extrabold text-pop-pink-deep">안전 먼저</p>
+          <ul className="mt-1 grid gap-1 text-[15px] leading-relaxed text-pop-ink">{stage.safety.map((x) => <li key={x}>· {x}</li>)}</ul>
+        </div>
+      ) : null}
+      {stage.tip ? <p className="mt-3 rounded-2xl bg-pop-mint-soft px-4 py-3 text-[14px] leading-relaxed text-pop-ink">진행 팁 (자료 원문) · {stage.tip}</p> : null}
+      <div className="mt-4 grid gap-2 rounded-2xl bg-pop-yellow-soft/60 px-4 py-3 text-[14px] leading-relaxed text-pop-ink">
+        <p className="text-[12px] font-extrabold text-pop-ink-muted">교사용 제안 · 본사 검수 전</p>
+        <p><span className="font-bold">함께 참여하기 · </span>{stage.inclusion}</p>
+        {stage.levels ? <p><span className="font-bold">연령별 조절 · </span>{stage.levels}</p> : null}
+        {stage.transition ? <p><span className="font-bold">다음 단계로 · </span>“{stage.transition}”</p> : null}
+      </div>
+      {/*
+        선택 확장활동 — 교사 화면에만 둔다. 교실 화면(아이들이 보는 쪽)에는 띄우지 않는다.
+        ★ 기본 수업 완료를 막지 않는다. 접힌 채로 두고 필요할 때만 연다.
+      */}
+      {week.extensions.length ? (
+        <div className="mt-4">
+          <Fold title={`선택 확장활동 ${week.extensions.length}개 (기본 수업 뒤)`}>
+            <ul className="grid gap-3">
+              {week.extensions.map((x) => (
+                <li key={x.key} className="rounded-2xl bg-pop-cream p-4">
+                  <p className="flex flex-wrap items-center gap-2">
+                    <span className="font-display text-[17px] text-pop-ink">{x.title}</span>
+                    <span className="rounded-full bg-white px-2 py-0.5 text-[12px] font-bold text-pop-ink-muted">
+                      {x.estimatedMinutes === null ? "예상 시간 검수 필요" : `약 ${x.estimatedMinutes}분`}
+                    </span>
+                  </p>
+                  <p className="mt-1.5 text-[15px] leading-relaxed text-pop-ink">{x.activity}</p>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-pop-ink-muted">준비물 · {x.materials.slice(0, 4).join(" · ")}</p>
+                  {x.safetyNote ? <p className="mt-1 text-[13px] leading-relaxed text-pop-ink-muted">안전 주의 · {x.safetyNote}</p> : null}
+                </li>
+              ))}
+            </ul>
+          </Fold>
+        </div>
+      ) : null}
+
       <div className="mt-4 grid gap-2">
         {details.length ? (
           <Fold title="세부 활동">
@@ -518,9 +593,9 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
             </dl>
           </Fold>
         ) : null}
-        <Fold title="관찰 포인트" defaultOpen={observeOpen}>
+        <Fold title="관찰 포인트" badge={TEXT_ORIGIN_LABEL[week.teacherObservations.origin]} defaultOpen={observeOpen}>
           <ul className="grid gap-1 text-[15px] leading-relaxed text-pop-ink">
-            {week.body.observationPoints.map((o) => <li key={o}>· {o}</li>)}
+            {week.teacherObservations.items.map((o) => <li key={o}>· {o}</li>)}
           </ul>
         </Fold>
         <Fold title="안전 안내" badge={`${week.body.safety.length}`}>
@@ -555,7 +630,7 @@ function DoneScreen({ week, elapsed, nextWeekNo, onRestart }: { week: Experience
       <Sticker kind="star" color="#ff4f8b" className="mx-auto h-20 w-20 animate-pop-in" />
       <h2 className="mt-4 font-display text-[40px] leading-tight text-pop-ink sm:text-[56px]">오늘 수업 완료!</h2>
       <p className="mx-auto mt-3 max-w-[36ch] text-[19px] font-medium leading-relaxed text-pop-ink">
-        《{week.title}》 다섯 단계를 모두 마쳤어요. {elapsed > 0 ? `진행 시간 ${formatClock(elapsed)}.` : ""}
+        「{week.title}」 다섯 단계를 모두 마쳤어요. {elapsed > 0 ? `진행 시간 ${formatClock(elapsed)}.` : ""}
       </p>
       <p className="mx-auto mt-4 max-w-[40ch] rounded-2xl bg-white/80 px-4 py-3 text-[16px] font-semibold text-pop-ink">마무리 질문 · “{week.body.closingQuestion}”</p>
       <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
@@ -570,7 +645,11 @@ function DoneScreen({ week, elapsed, nextWeekNo, onRestart }: { week: Experience
       {/* 다음 행동 — 다른 주차 둘러보기 · 도입 문의 (상담 폼은 기존 동의 · 검증 · 저장 경로 그대로) */}
       <div className="mx-auto mt-6 flex max-w-[640px] flex-col items-center justify-center gap-3 rounded-[28px] bg-white/70 p-4 sm:flex-row">
         <Link href="/experience/weeks" className={popButtonClass("ghost", "md")}>다른 주차 고르기</Link>
-        <ConsultButton tone="white" size="md">우리 유치원 도입 문의</ConsultButton>
+        <ShareButton path={`/experience/classroom/${week.weekNo}`} tone="white" size="md" />
+        <EmailInquiryButton screen="classroom" weekNo={week.weekNo} tone="white" size="md" />
+        <ConsultButton medium="classroom" campaign={`w${week.weekNo}`} tone="white" size="md">
+          우리 원에서 해 보기
+        </ConsultButton>
       </div>
       <p className="mt-6 text-[14px] font-semibold text-pop-ink-muted">체험용 화면이라 수업 기록 · 관찰 · 출결은 저장되지 않았습니다.</p>
     </section>

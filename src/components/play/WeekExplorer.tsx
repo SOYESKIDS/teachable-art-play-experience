@@ -6,6 +6,7 @@ import { cx } from "@/components/ui/cx";
 import type { ExperiencePart, ExperienceWeek } from "@/data/experience/types";
 import { Motif } from "./Motif";
 import { WeekCard } from "./WeekCard";
+import { PART_NAME_CANDIDATE_LABEL } from "@/lib/weeks/week-types";
 
 /**
  * 24주 탐색 — PART 선택 + 주차 카드.
@@ -50,7 +51,7 @@ export function WeekExplorer({ parts, weeks }: { parts: ExperiencePart[]; weeks:
           {parts.map((p) => (
             <li key={p.partNo} className={cx("rounded-3xl p-4", BAND[p.tone].bg)}>
               <p className={cx("text-[14px] font-extrabold", BAND[p.tone].text)}>
-                PART {p.partNo} · {p.title}{p.nameProvisional ? " (가칭)" : ""}
+                PART {p.partNo} · {p.title}{p.nameProvisional ? ` (${PART_NAME_CANDIDATE_LABEL})` : ""}
               </p>
               <ul className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-8 lg:grid-cols-4">
                 {weeks.filter((w) => w.partNo === p.partNo).map((w) => (
@@ -107,7 +108,7 @@ export function WeekExplorer({ parts, weeks }: { parts: ExperiencePart[]; weeks:
                   <p className={cx("text-[14px] font-bold", BAND[p.tone].text)}>{p.weekFrom}~{p.weekTo}주 · {p.tagline}</p>
                   <h2 id={`part-${p.partNo}-title`} className="mt-0.5 font-display text-[28px] text-pop-ink sm:text-[36px]">
                     {p.title}
-                    {p.nameProvisional ? <span className="ml-2 align-middle font-sans text-[14px] font-bold text-pop-ink-muted">(가칭)</span> : null}
+                    {p.nameProvisional ? <span className="ml-2 align-middle font-sans text-[14px] font-bold text-pop-ink-muted">({PART_NAME_CANDIDATE_LABEL})</span> : null}
                   </h2>
                 </div>
               </div>

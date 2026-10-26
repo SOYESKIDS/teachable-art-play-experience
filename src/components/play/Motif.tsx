@@ -35,6 +35,10 @@ const MOTIFS: Record<MotifKey, (c: string) => React.ReactNode> = {
   pumpkin: (c) => (<g {...st}><ellipse cx="20" cy="36" rx="12" ry="16" fill={c} /><ellipse cx="44" cy="36" rx="12" ry="16" fill={c} /><ellipse cx="32" cy="36" rx="12" ry="18" fill={O} /><path d="M32 18c0-6 4-10 8-10" fill="none" stroke={G} strokeWidth="4" /><path d="M24 34l4-4 4 4M36 34l4-4 4 4" fill="none" stroke={INK} strokeWidth="3" /></g>),
   gift: (c) => (<g {...st}><rect x="10" y="24" width="44" height="32" rx="4" fill={c} /><rect x="8" y="18" width="48" height="10" rx="3" fill={P} /><path d="M32 18v38" stroke={Y} strokeWidth="6" /><path d="M32 18c-8-12-18-6-12 0zM32 18c8-12 18-6 12 0z" fill={Y} /></g>),
   globe: (c) => (<g {...st}><circle cx="32" cy="32" r="24" fill={S} /><path d="M18 18c6 2 8 8 4 12s2 10 8 8 6 8 2 12M40 12c-2 6 4 8 8 6s6 6 2 10" fill="none" stroke={W} strokeWidth="3" /><path d="M20 22c6 4 4 10 0 12 4 6 12 4 12 10M38 30c6-2 10 2 12 6" fill={c} stroke={W} strokeWidth="2" /></g>),
+  // 14주차 눈 결정 — 여섯 갈래 가지
+  snow: (c) => (<g {...st}><circle cx="32" cy="32" r="26" fill={c} />{[0, 60, 120].map((r) => <path key={r} d="M32 12v40M26 16l6 5 6-5M26 48l6-5 6 5" fill="none" stroke={W} strokeWidth="3.5" transform={`rotate(${r} 32 32)`} />)}<circle cx="32" cy="32" r="4" fill={S} /></g>),
+  // 20주차 명절 밥상 — 접시 위 송편 · 만두
+  feast: (c) => (<g {...st}><ellipse cx="32" cy="44" rx="26" ry="10" fill={c} /><ellipse cx="32" cy="42" rx="20" ry="6" fill={W} stroke="none" /><path d="M16 40c0-6 6-9 10-6 3 2 1 6-2 7z" fill={G} /><path d="M27 41c0-8 10-8 10 0z" fill={Y} /><path d="M38 41c1-6 8-8 11-4 2 3-1 5-4 5z" fill={P} /><path d="M24 22c2-4 6-4 8 0M34 18c2-4 6-4 8 0" fill="none" stroke={O} strokeWidth="3" /></g>),
 };
 
 export function Motif({ motif, color, className }: { motif: MotifKey; color: string; className?: string }) {

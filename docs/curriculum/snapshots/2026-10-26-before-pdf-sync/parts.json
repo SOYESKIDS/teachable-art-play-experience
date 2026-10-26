@@ -1,0 +1,28 @@
+{
+  "takenAt": "2026-10-26",
+  "commit": "433e39d",
+  "note": "17~24주 · 9 · 11 · 14 · 15주 PDF 동기화 전 사이트 데이터. 되돌릴 때 이 값을 기준으로 한다.",
+  "data": [
+    {
+      "partNo": 1,
+      "title": "씨앗과 숲",
+      "weekFrom": 1,
+      "weekTo": 8,
+      "nameProvisional": false
+    },
+    {
+      "partNo": 2,
+      "title": "우리 그리고 모두의 사계절",
+      "weekFrom": 9,
+      "weekTo": 16,
+      "nameProvisional": false
+    },
+    {
+      "partNo": 3,
+      "title": "세계의 축제",
+      "weekFrom": 17,
+      "weekTo": 24,
+      "nameProvisional": true
+    }
+  ]
+}
