@@ -7,6 +7,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -94,7 +95,27 @@ test("사용권이 확인되기 전에는 표지 파일이 public 에 없고 화
   assert.equal(pkg.scripts.postbuild, undefined);
 });
 
-test("배포 QA 가 표지 주소 404 를 실제 배포에서 확인한다", () => {
+// 백업 폴더 SHA256SUMS.txt 와 같은 값 — 다른 그림(예: 9~16주차 이름의 썸네일)으로 바뀌면 걸린다
+const COVER_SHA256 = {
+  "week-01.webp": "6366c7ee6427c9c8bb34861031069accd056f04f0da51d4aa1950df40213384a",
+  "week-02.webp": "7150b20f1969ed4d35c96bbe5774e97c253de55444f319b563096fa819156fd7",
+  "week-03.webp": "282ab75eced8215d027986e8be34863802d285ea9ab2c0c5ed0af4921a59ebb1",
+  "week-04.webp": "8ecae64394067eb4e970ebf531576d0bef2b8862a9c6b6cb5b9719575da4a758",
+  "week-05.webp": "5a95d0585f7ba88587360a6e1543b4ea440a748fb8321431356b394e493ceb14",
+  "week-06.webp": "51b8efbbd8eddae2f8719533c82140bcbf2460e24b2a624fbe1e3e6f833d98d3",
+  "week-07.webp": "f8406b7f9ef81443b8208326be0cff18d6f16df5358e47b92deab5ed397b5589",
+  "week-08.webp": "da72fa18e91de0b52a64dd1eec61abc6a8474e9f60f7fd9b28643591c197fd64",
+};
+
+test("공개 표지는 내용을 확인한 1~8주차 파생본 그대로다 (SHA256)", () => {
+  if (LICENSE_STATUS !== "confirmed") return;
+  for (const f of WEEK_IMAGE_FILES) {
+    const name = f.split("/").pop();
+    assert.equal(createHash("sha256").update(readFileSync(join(ROOT, f))).digest("hex"), COVER_SHA256[name], f);
+  }
+});
+
+test("배포 QA 가 표지 주소 200 · 원본 404 를 실제 배포에서 확인한다", () => {
   const qa = readFileSync(join(ROOT, "scripts/qa-public.mjs"), "utf8");
   assert.match(qa, /week-covers-web\/week-0/, "qa-public.mjs 에 표지 주소 검사가 없다");
 });

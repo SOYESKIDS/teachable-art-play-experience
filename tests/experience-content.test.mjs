@@ -396,3 +396,19 @@ test("단계 · 수업 전 준비 문장에 「을(를)」 같은 기계적 조�
     for (const s of all) assert.doesNotMatch(s, /을\(를\)|이\(가\)|은\(는\)/, `${w.weekNo}주: ${s}`);
   }
 });
+
+test("교사 대시보드 업무 메뉴 여덟 가지가 모두 있고, 가는 자리가 화면에 있다", () => {
+  const dash = readFileSync(join(ROOT, "src/components/play/TeacherDashboard.tsx"), "utf8");
+  const page = readFileSync(join(ROOT, "src/app/experience/weeks/[weekNo]/page.tsx"), "utf8");
+  for (const code of ["WK", "LS", "PR", "OB", "RP", "FM", "MD", "CW"]) assert.match(dash, new RegExp(`code: "${code}"`), code);
+  for (const id of ["dash-prep", "dash-cw"]) assert.match(dash, new RegExp(`id="${id}"`), id);
+  assert.match(page, /id="lesson-plan"/);
+});
+
+test("표지 글씨가 자료의 그림책 제목과 다른 주차(3 · 7 · 8)는 두 제목을 나눠 적는다", () => {
+  const differ = EXPERIENCE_WEEKS.filter((w) => w.image?.coverTitle && w.image.coverTitle !== w.storybook).map((w) => w.weekNo);
+  assert.deepEqual(differ, [3, 7, 8]);
+  for (const w of EXPERIENCE_WEEKS) if (w.image) assert.ok(w.image.alt.includes(`《${w.image.coverTitle}》`), `${w.weekNo}주 대체 텍스트`);
+  // 9~16주차 이름의 영상 썸네일(그림 속 내용은 1~8주차)은 어느 주차에도 걸지 않는다
+  for (const w of EXPERIENCE_WEEKS) if (w.image) assert.match(w.image.src, /^\/images\/week-covers-web\/week-0[1-8]\.webp$/);
+});

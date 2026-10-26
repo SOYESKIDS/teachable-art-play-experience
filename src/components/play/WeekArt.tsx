@@ -122,6 +122,20 @@ export function WeekArt({
   );
 }
 
+/**
+ * 표지 글씨와 자료의 그림책 제목이 다를 때 두 제목을 나눠 적는다 (3 · 7 · 8주차).
+ * 같으면 아무것도 그리지 않는다.
+ */
+export function CoverTitleNote({ week, className }: { week: ExperienceWeek; className?: string }) {
+  const cover = week.image?.coverTitle;
+  if (!cover || cover === week.storybook) return null;
+  return (
+    <p className={cx("text-[13px] font-semibold leading-relaxed text-pop-ink-muted", className)}>
+      표지 글씨 《{cover}》 · 자료의 그림책 제목 《{week.storybook}》
+    </p>
+  );
+}
+
 /** 표지 제목 글자색 — 원본 표지처럼 색색으로. 흰 테두리로 배경과 떨어뜨린다 (장식 · 읽는 글은 옆에 따로 있다) */
 const TITLE_COLORS = ["#e2336b", "#e86a12", "#1f9d55", "#2f7fd6", "#7b5cd6"];
 

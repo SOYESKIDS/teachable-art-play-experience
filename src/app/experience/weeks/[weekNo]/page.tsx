@@ -9,7 +9,7 @@ import { notFound } from "next/navigation";
 import { ContentStatusBadge, DemoNotice } from "@/components/play/Badges";
 import { ArrowRight, PlayIcon, PopLink } from "@/components/play/PopButton";
 import { Sticker } from "@/components/play/Stickers";
-import { WeekArt } from "@/components/play/WeekArt";
+import { CoverTitleNote, WeekArt } from "@/components/play/WeekArt";
 import { cx } from "@/components/ui/cx";
 import { displayFallback } from "@/components/play/display-font";
 import { curriculumBadge } from "@/data/experience/teacher-dashboard/source-register";
@@ -93,6 +93,7 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
           </div>
           <h1 id="week-title" className={cx("mt-4 font-display text-[40px] leading-tight text-pop-ink sm:text-[54px]", displayFallback(week.title))}>{week.title}</h1>
           <p className="mt-2 text-[18px] font-bold text-pop-ink-muted">그림책 《{week.storybook}》</p>
+          <CoverTitleNote week={week} className="mt-1" />
           <p className="mt-4 text-[19px] font-medium leading-relaxed text-pop-ink">{week.coreMessage}</p>
           <dl className="mt-6 grid grid-cols-2 gap-3">
             {[

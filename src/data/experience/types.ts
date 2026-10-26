@@ -123,6 +123,8 @@ export interface ExperienceImage {
   alt: string;
   width: number;
   height: number;
+  /** 그림책 표지에 실제로 적힌 제목 — 자료 PDF 의 그림책 제목과 다를 수 있다 */
+  coverTitle?: string;
 }
 
 export interface ClassStage {

@@ -148,11 +148,19 @@ for (const p of ["/teacher", "/director", "/admin", "/login", "/kindergarten", "
   const m = await page.eval("({status: performance.getEntriesByType('navigation')[0]?.responseStatus, path: location.pathname})");
   note(m.status === 404, `운영 경로 없음 ${p}`, JSON.stringify(m));
 }
-// 4-1. 사용권 미확인 표지 · 저장소 파일이 배포 주소로 받히지 않는다 (Vercel 은 public/ 을 그대로 내보낸다)
+// 4-1. 공개 표지 8장만 받히고, 원본 · 저장소 파일이 배포 주소로 받히지 않는다 (Vercel 은 public/ 을 그대로 내보낸다)
 {
   const covers = [];
   for (let n = 1; n <= 8; n++) covers.push((await fetch(`${base}/images/week-covers-web/week-0${n}.webp`)).status);
-  note(covers.every((s) => s === 404), "사용권 미확인 표지 8장 404 (배포 주소)", covers.join(","));
+  // 2026-10-26 소예키즈 사용권 확인 → 1~8주차 표지 8장만 공개. 원본 PNG 와 9~16주차 이름의 파일은 공개하지 않는다
+  note(covers.every((s) => s === 200), "1~8주차 표지 8장 200 (배포 주소)", covers.join(","));
+  const originals = [];
+  for (const p of ["/images/1주차_유치원 가는 날.png", "/images/9주_안녕봄아.png", "/images/16주_나비야놀러와.png",
+    "/images/week-covers-web/week-09.webp", "/images/week-covers-web/week-16.webp", "/images/week-covers/week-09.png"]) {
+    const s = (await fetch(base + encodeURI(p))).status;
+    if (s !== 404) originals.push(`${p}:${s}`);
+  }
+  note(originals.length === 0, "원본 PNG · 9~16주차 표지 주소 404", originals.join(" "));
   const leaks = [];
   for (const p of ["/package.json", "/.env", "/.env.local", "/vercel.json", "/docs/curriculum/PDF-SYNC-2026-10-26.md", "/src/data/site.ts",
     "/TeachAble_24Week_Dashboard_DevPack.zip", "/images/week-covers/week-01.png"]) {

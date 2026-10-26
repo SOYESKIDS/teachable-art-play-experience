@@ -18,23 +18,21 @@ import type { ExperienceImage } from "./types";
  * ★ 비율을 바꾸지 않았다. 가로 1200 을 넘을 때만 줄였다 — 표지 제목 글씨의
  *   선명도를 먼저 본다.
  *
- * ── 사용권 ─────────────────────────────────────────────────────
+ * ── 사용권 ──────────────────────────────────────────────────────
  *
- * ★ 소예키즈가 준 자료로 다루되 **외부 공개 사용권 증빙은 아직 확인되지 않았다.**
- * ★ 그래서 사용권이 확인되기 전에는 **파일 자체를 저장소에 두지 않는다.**
- *   Vercel 은 public/ 을 그대로 내보낸다 — 화면이 싣지 않아도 public/ 에 있으면 주소로 받힌다
- *   (2026-10-26 Preview 에서 실제로 200 이었다. 빌드 뒤 out/ 을 지우는 방식은 효과가 없었다).
- *   파생본 8장 · SHA256 은 프로젝트 밖 `_백업_체험사이트자료/화면용파생본8장_week-covers-web/` 에 있다.
- * ★ 사용권 증빙을 받은 뒤 다시 싣는 절차 (docs/images/week-cover-mapping.md §8):
- *   ① 백업 폴더의 8장을 public/images/week-covers-web/ 로 복사하고 SHA256 을 대조한다
- *   ② LICENSE_STATUS 를 "confirmed" 로 바꾼다 ③ npm test (public 허용 목록이 함께 바뀐다)
- *   ④ Preview 에서 8장 200 · 화면 표시를 확인한 뒤 출시한다.
+ * ★ 2026-10-26 소예키즈가 「24주 수업 이미지 교체」 폴더 이미지의 소유와 온라인 공개 사용을 확인했다.
+ *   확인 범위는 그 폴더의 이미지뿐이다 — 음원 · 영상 · 다른 캐릭터 파일로 넓히지 않는다.
+ * ★ 사용권이 확인됐어도 9~16주차 이름의 8장은 싣지 않는다. 그림 속 내용이 1~8주차이고
+ *   (16:9 영상 썸네일), 그 주차의 영상 파일은 아직 없다 — 썸네일만 걸면 영상이 있는 것처럼 보인다.
+ * ★ public/ 의 파일은 화면이 싣지 않아도 주소로 받힌다. 그래서 public/ 에는 아래 8장만 둔다
+ *   (tests/public-security.test.mjs 허용 목록). 원본 PNG 는 프로젝트 밖에 그대로 보관한다.
+ * ★ 사용권을 거둬야 하면 LICENSE_STATUS 를 "unconfirmed" 로 돌리고 public/images/week-covers-web/ 를 지운다.
  */
 
 export type LicenseStatus = "unconfirmed" | "confirmed";
 
-/** 공개 사용권 확인 상태 — 확인되면 "confirmed" 로 바꾼다 */
-export const LICENSE_STATUS: LicenseStatus = "unconfirmed";
+/** 공개 사용권 확인 상태 — 2026-10-26 소예키즈 확인 */
+export const LICENSE_STATUS: LicenseStatus = "confirmed";
 
 export function coversPublished(status: LicenseStatus): boolean {
   return status === "confirmed";
@@ -42,53 +40,65 @@ export function coversPublished(status: LicenseStatus): boolean {
 
 export const MEDIA: Record<string, ExperienceImage> = {};
 
-/** 내용이 확인된 1~8주차 표지 등록부 — 사용권과 관계없이 그대로 둔다 */
+/**
+ * 내용이 확인된 1~8주차 표지 등록부.
+ * coverTitle 은 표지 그림에 적힌 글씨 그대로다 — 3 · 7 · 8주차는 자료 PDF 의 그림책 제목과 다르다
+ * (화면은 두 제목을 나눠 적는다. 자료 제목을 고치지 않는다).
+ */
 export const WEEK_COVER_REGISTRY: Partial<Record<number, ExperienceImage>> = {
   1: {
     src: "/images/week-covers-web/week-01.webp",
-    alt: "1주차 그림책 표지",
+    alt: "1주차 그림책 표지 《유치원 가는 날》",
+    coverTitle: "유치원 가는 날",
     width: 1200,
     height: 1097,
   },
   2: {
     src: "/images/week-covers-web/week-02.webp",
-    alt: "2주차 그림책 표지",
+    alt: "2주차 그림책 표지 《끝까지 해보자》",
+    coverTitle: "끝까지 해보자",
     width: 1200,
     height: 1097,
   },
   3: {
     src: "/images/week-covers-web/week-03.webp",
-    alt: "3주차 그림책 표지",
+    alt: "3주차 그림책 표지 《마음을 말해요》",
+    coverTitle: "마음을 말해요",
     width: 1200,
     height: 1097,
   },
   4: {
     src: "/images/week-covers-web/week-04.webp",
-    alt: "4주차 그림책 표지",
+    alt: "4주차 그림책 표지 《소예의 씨앗》",
+    coverTitle: "소예의 씨앗",
     width: 1200,
     height: 1097,
   },
   5: {
     src: "/images/week-covers-web/week-05.webp",
-    alt: "5주차 그림책 표지",
+    alt: "5주차 그림책 표지 《우린 모두 특별해》",
+    coverTitle: "우린 모두 특별해",
     width: 1200,
     height: 1097,
   },
   6: {
     src: "/images/week-covers-web/week-06.webp",
-    alt: "6주차 그림책 표지",
+    alt: "6주차 그림책 표지 《우리들의 비밀기지》",
+    coverTitle: "우리들의 비밀기지",
     width: 1200,
     height: 1097,
   },
   7: {
     src: "/images/week-covers-web/week-07.webp",
-    alt: "7주차 그림책 표지",
+    alt: "7주차 그림책 표지 《나비야, 놀러와!》",
+    coverTitle: "나비야, 놀러와!",
     width: 1200,
     height: 1097,
   },
   8: {
     src: "/images/week-covers-web/week-08.webp",
-    alt: "8주차 그림책 표지",
+    alt: "8주차 그림책 표지 《우리들의 숲》",
+    coverTitle: "우리들의 숲",
     width: 1200,
     height: 1097,
   },

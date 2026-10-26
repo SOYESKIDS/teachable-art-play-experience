@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cx } from "@/components/ui/cx";
-import { WeekArt } from "@/components/play/WeekArt";
+import { CoverTitleNote, WeekArt } from "@/components/play/WeekArt";
 import { OriginLegend, OriginTag } from "@/components/play/OriginTag";
 import { displayFallback } from "@/components/play/display-font";
 import { weekProposal } from "@/data/experience/teacher-dashboard/proposals";
@@ -144,14 +144,64 @@ function List({ items, empty }: { items: readonly string[]; empty?: string }) {
  * ★ 누르면 그 영역을 펼치고 그 자리로 간다. 긴 자료를 처음부터 읽지 않아도 된다.
  * ★ 새 내용을 만들지 않는다 — 아래 영역에 이미 있는 자료 문장 · 개수만 보인다.
  */
-function PrepSummary({ tiles }: { tiles: readonly { area: number; label: string; title: string; detail: string }[] }) {
-  function open(area: number) {
-    const el = document.getElementById(`dash-area-${area}`);
-    if (el instanceof HTMLDetailsElement) {
-      el.open = true;
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+/** 영역(들)을 펼치고 첫 자리로 간다. 영역이 아닌 묶음(id)도 받는다. */
+function goTo(ids: readonly string[]) {
+  let first: HTMLElement | null = null;
+  for (const id of ids) {
+    const el = document.getElementById(id);
+    if (el instanceof HTMLDetailsElement) el.open = true;
+    if (el && !first) first = el;
   }
+  first?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+const area = (n: number) => `dash-area-${n}`;
+
+/**
+ * 교사 업무 메뉴 — 원본 명세의 여덟 업무(WK · LS · PR · OB · RP · FM · MD · CW).
+ *
+ * ★ 새 내용을 만들지 않는다. 같은 화면의 열두 영역 · 기본 수업 진행 단계 · 준비 카드로 바로 간다.
+ *   업무 하나가 여러 영역을 묶으면 그 영역을 함께 펼친다.
+ */
+const TASKS: readonly { code: string; name: string; hint: string; ids: readonly string[]; areas: readonly number[] }[] = [
+  { code: "WK", name: "주간 개요", hint: "주제 · 목표 · 누리과정", ids: [area(1), area(9)], areas: [1, 9] },
+  { code: "LS", name: "수업 진행 가이드", hint: `${LESSON_TIME.totalMinutes}분 단계 · 발문 · 그림책 · 활동`, ids: ["lesson-plan"], areas: [2, 3, 4] },
+  { code: "PR", name: "준비 · 물류", hint: "준비물 · 키트 · 안전 · 정리", ids: ["dash-prep", area(6), area(8)], areas: [6, 8] },
+  { code: "OB", name: "관찰 포인트", hint: "수업 중 볼 행동 · 운영 포인트", ids: [area(11)], areas: [11] },
+  { code: "RP", name: "성장 리포트", hint: "성장기록 예시 · 가상 리포트", ids: [area(12)], areas: [12] },
+  { code: "FM", name: "가정 연계", hint: "가족 활동 · 부모 안내 문구", ids: [area(7), area(12)], areas: [7, 12] },
+  { code: "MD", name: "미디어 라이브러리", hint: "그림책 표지 · 음원 · 영상", ids: [area(10)], areas: [10] },
+  { code: "CW", name: "주차 연계 산출물", hint: "결과물 · 다음 주차 · 모아 올 것", ids: ["dash-cw"], areas: [4, 12] },
+];
+
+function TaskMenu({ color }: { color: string }) {
+  return (
+    <nav aria-label="교사 업무 메뉴" className="mt-5 rounded-[28px] bg-white p-4 ring-1 ring-pop-ink/5 sm:p-5">
+      <p className="text-[14px] font-extrabold text-pop-ink">교사 업무 메뉴</p>
+      <ul className="mt-3 grid grid-cols-2 gap-2.5 md:grid-cols-4">
+        {TASKS.map((x) => (
+          <li key={x.code}>
+            <button
+              type="button"
+              onClick={() => goTo(x.ids)}
+              className="flex h-full min-h-[88px] w-full flex-col items-start gap-1 rounded-2xl bg-pop-cream px-3.5 py-3 text-left ring-1 ring-pop-ink/5 transition-colors hover:bg-pop-yellow-soft"
+            >
+              <span className="flex items-center gap-2">
+                <span className="rounded-lg px-1.5 py-0.5 text-[12px] font-extrabold tracking-wide text-white" style={{ backgroundColor: color }}>{x.code}</span>
+                <span className="text-[15px] font-bold leading-snug text-pop-ink">{x.name}</span>
+              </span>
+              <span className="text-[12px] font-semibold leading-snug text-pop-ink-muted">{x.hint}</span>
+              <span className="text-[11px] font-semibold text-pop-ink-muted">영역 {x.areas.join(" · ")}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+function PrepSummary({ tiles }: { tiles: readonly { area: number; label: string; title: string; detail: string }[] }) {
+  const open = (n: number) => goTo([area(n)]);
   return (
     <div className="mt-5 rounded-[28px] bg-white p-4 ring-1 ring-pop-ink/5 sm:p-5">
       <p className="text-[14px] font-extrabold text-pop-ink">수업 준비 한눈에</p>
@@ -267,6 +317,8 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
 
       <OriginLegend className="mt-3" />
 
+      <TaskMenu color={week.themeColor} />
+
       {d.missingInSource.length > 0 ? (
         <p className="mt-3 rounded-2xl border-2 bg-pop-cream px-4 py-3 text-[14px] leading-relaxed text-pop-ink" style={tone}>
           이 주차 자료에는 {d.missingInSource.join(" · ")}이(가) 비어 있습니다. 검수가 필요합니다.
@@ -298,7 +350,7 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
         </div>
       ) : null}
 
-      <div className="mt-4 rounded-[24px] bg-white px-5 py-4 ring-1 ring-pop-ink/5">
+      <div id="dash-prep" className="mt-4 scroll-mt-28 rounded-[24px] bg-white px-5 py-4 ring-1 ring-pop-ink/5">
         <p className="text-[14px] font-extrabold text-pop-ink">수업 전 준비 · 공간 · 정리 — 선생님 혼자 운영할 때</p>
         <ul className="mt-2 grid gap-1.5 text-[14px] leading-relaxed text-pop-ink">
           {week.prep.before.filter((x) => !gather.includes(x.text)).map((x) => (
@@ -309,13 +361,26 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
         </ul>
       </div>
 
-      {gather.length > 0 ? (
-        <div className="mt-4 rounded-[24px] bg-white px-5 py-4 ring-1 ring-pop-ink/5">
-          <p className="text-[14px] font-extrabold text-pop-ink">앞 주차에서 모아 올 것 · 수업 전 체크</p>
-          <p className="mt-0.5 text-[13px] text-pop-ink-muted">각 주차 자료의 「주차 연계」 원문입니다. 이 주차는 앞선 결과물을 모아 완성하는 통합 주차예요.</p>
-          <CheckList items={gather} />
-        </div>
-      ) : null}
+      <div id="dash-cw" className="mt-4 scroll-mt-28 rounded-[24px] bg-white px-5 py-4 ring-1 ring-pop-ink/5">
+        <p className="text-[14px] font-extrabold text-pop-ink">주차 연계 산출물</p>
+        <ul className="mt-2 grid gap-1.5 text-[14px] leading-relaxed text-pop-ink">
+          <li className="flex flex-wrap items-baseline gap-x-2">
+            <span><strong className="font-bold">이 주차 결과물 · </strong>{d.artTitle ?? NONE}</span>
+            {d.artTitle ? <OriginTag origin="source" /> : null}
+          </li>
+          <li className="flex flex-wrap items-baseline gap-x-2">
+            <span><strong className="font-bold">다음 주차로 · </strong>{d.crossWeek ?? NONE}</span>
+            {d.crossWeek ? <OriginTag origin="source" /> : null}
+          </li>
+        </ul>
+        {gather.length > 0 ? (
+          <>
+            <p className="mt-3 text-[14px] font-extrabold text-pop-ink">앞 주차에서 모아 올 것 · 수업 전 체크</p>
+            <p className="mt-0.5 text-[13px] text-pop-ink-muted">각 주차 자료의 「주차 연계」 원문입니다. 이 주차는 앞선 결과물을 모아 완성하는 통합 주차예요.</p>
+            <CheckList items={gather} />
+          </>
+        ) : null}
+      </div>
 
       <div className="mt-6 flex flex-col gap-3">
         <Fold no={1} title="주차 기본 정보와 교육 목표" count={d.goals.length || proposal?.goals.length}>
@@ -349,6 +414,7 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
           ) : (
             <p className="text-[14px] text-pop-ink-muted">{NONE}</p>
           )}
+          <CoverTitleNote week={week} className="mt-1" />
           {d.storySummary ? <p className="mt-2">{d.storySummary}</p> : null}
           {d.storyMessage ? (
             <p className="mt-3 rounded-2xl bg-pop-sky-soft px-4 py-3 text-[15px] font-semibold text-pop-ink">
@@ -466,7 +532,7 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
             <p className="text-[14px] text-pop-ink-muted">{NONE}</p>
           )}
           <p className="mt-3 text-[14px] leading-relaxed text-pop-ink-muted">
-            워크북은 선택 확장활동입니다. {LESSON_TIME.label} 안에 넣지 않습니다.
+            워크북은 선택 확장활동입니다. {LESSON_TIME.label} 안에 넣지 않습니다. 워크북 인쇄 파일 · 교구 사진은 자료 준비 중입니다.
           </p>
         </Fold>
 
@@ -561,10 +627,16 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
         </Fold>
 
         <Fold no={10} title="동화책 음원과 뮤직비디오" count={d.media.length}>
+          <Head>그림책 표지</Head>
+          <p className="mt-1">
+            {week.image
+              ? "소예키즈 그림책 표지를 씁니다 (공개 사용 확인)."
+              : "표지 그림 준비 중 — 화면에는 자체 제작 그림을 씁니다."}
+          </p>
           <Head>음원</Head>
           <List items={d.media} empty={NONE} />
           <p className="mt-3 rounded-2xl bg-pop-cream px-4 py-3 text-[14px] leading-relaxed text-pop-ink">
-            음원 · 영상 · 그림은 <strong className="font-bold">자료 준비 중</strong>입니다. 자료에
+            음원 · 영상 파일은 <strong className="font-bold">자료 준비 중</strong>입니다. 자료에
             자리만 있고 실제 파일이 없어, 눌러도 열리지 않는 단추를 두지 않았습니다.
           </p>
         </Fold>
@@ -596,12 +668,9 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
               <CopyBlock lines={d.parentNotice} />
             </>
           ) : null}
-          {d.crossWeek ? (
-            <>
-              <Head>다음 주차로 이어지는 것</Head>
-              <p className="mt-1">{d.crossWeek}</p>
-            </>
-          ) : null}
+          <Link href="/experience/report" className="mt-3 mr-2 inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">
+            성장 리포트 예시 보기 (가상)
+          </Link>
           {week.weekNo < 24 ? (
             <Link href={`/experience/weeks/${week.weekNo + 1}`} className="mt-3 inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">
               다음 주차 {week.weekNo + 1}주 보기 →

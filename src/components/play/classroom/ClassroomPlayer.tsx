@@ -12,7 +12,7 @@ import { EmailInquiryButton } from "../EmailInquiryButton";
 import { Buddy } from "../Doodles";
 import { Motif } from "../Motif";
 import { Sticker } from "../Stickers";
-import { WeekArt } from "../WeekArt";
+import { CoverTitleNote, WeekArt } from "../WeekArt";
 import { OriginTag } from "../OriginTag";
 import { displayFallback } from "../display-font";
 import { LESSON_TIME } from "@/lib/weeks/lesson-time";
@@ -443,7 +443,7 @@ export function ClassroomPlayer({ week, nextWeekNo }: { week: ExperienceWeek; ne
 function IntroScreen({ week, onStart }: { week: ExperienceWeek; onStart: () => void }) {
   return (
     <section aria-label="수업 시작" className="grid animate-stage-in gap-6 overflow-hidden rounded-[36px] bg-white p-4 shadow-pop-lg sm:p-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:p-8">
-      <WeekArt week={week} size="hero" priority className="aspect-[4/3] w-full rounded-[28px]" />
+      <WeekArt week={week} size="hero" priority className="aspect-[4/3] max-h-[72vh] w-full rounded-[28px]" />
       <div className="flex flex-col justify-center gap-5 p-2">
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full bg-pop-yellow-soft px-3 py-1 text-[14px] font-bold text-pop-ink">#{week.growthKeyword}</span>
@@ -453,6 +453,7 @@ function IntroScreen({ week, onStart }: { week: ExperienceWeek; onStart: () => v
         <div>
           <h2 className={cx("font-display text-[40px] leading-tight text-pop-ink sm:text-[52px]", displayFallback(week.title))}>{week.title}</h2>
           <p className="mt-1 text-[17px] font-bold text-pop-ink-muted">그림책 《{week.storybook}》</p>
+          <CoverTitleNote week={week} className="mt-1" />
         </div>
         <p className="text-[19px] font-medium leading-relaxed text-pop-ink">{week.coreMessage}</p>
         <div>
