@@ -1,3 +1,5 @@
+import { LESSON_TOTAL_MINUTES } from "@/lib/weeks/lesson-time";
+
 /**
  * 공개 체험(/experience) 데이터 타입.
  *
@@ -69,19 +71,29 @@ export interface OptionalExtension {
 }
 
 /**
- * 교사용 문장의 출처 상태 — 대시보드가 항목마다 배지로 보인다.
+ * 교사용 문장의 출처 — 문장 · 활동 단위로 붙인다. 주차 상세 · 대시보드 · 교실 플레이어가 같은 값을 쓴다.
  *
- *   source   — 자료 PDF 에 적힌 문장 그대로 (공식 원문)
- *   proposal — 자료가 비어 있어 교사용으로 새로 쓴 제안 (본사 검수 전)
- *   review   — 자료에도 제안에도 없어 검수가 필요한 자리
+ *   source   — PDF 원문 확인: 자료 PDF 에 적힌 문장 그대로 (tests 가 저장소의 원문 텍스트와 대조한다)
+ *   edited   — 35분 체험 편집: 근거 자료(PDF · 이전 공식 가이드)를 35분 체험용으로 줄이거나 다듬은 문장
+ *   proposal — 교사용 제안: 자료에 없어 새로 쓴 문장 (본사 검수 전)
+ *   review   — 검수 필요: 자료에도 제안에도 없어 비어 있는 자리
+ *
+ * ★ PDF 원문이 아닌 문장을 source 로 두지 않는다. 출처를 모르면 source 로 올리지 않는다.
  */
-export type TextOrigin = "source" | "proposal" | "review";
+export type TextOrigin = "source" | "edited" | "proposal" | "review";
 
 export const TEXT_ORIGIN_LABEL: Record<TextOrigin, string> = {
-  source: "공식 원문",
+  source: "PDF 원문",
+  edited: `${LESSON_TOTAL_MINUTES}분 체험 편집`,
   proposal: "교사용 제안",
   review: "검수 필요",
 };
+
+/** 출처가 붙은 문장 */
+export interface Sourced {
+  text: string;
+  origin: TextOrigin;
+}
 
 /**
  * 수업 시간 — 운영 기준 하나 + 출처 기록.
@@ -120,13 +132,15 @@ export interface ClassStage {
   childLine: string;
   /** 교사용 한 문장 활동 안내 */
   guide: string;
+  /** 안내의 출처 */
+  guideOrigin: TextOrigin;
   /** 교사 발문 */
   teacherQuestion: string;
+  /** 발문의 출처 */
+  teacherQuestionOrigin: TextOrigin;
   minutes: number;
-  /** 진행 순서 — 아이가 하는 일 (자료 PDF 단계가 있으면 원문) */
-  steps: readonly string[];
-  /** steps 의 출처 */
-  stepsOrigin: TextOrigin;
+  /** 진행 순서 — 아이가 하는 일. 문장마다 출처가 있다 */
+  steps: readonly Sourced[];
   /** 이 단계에서 쓰는 도구 · 재료 */
   materials: readonly string[];
   /** 이 단계의 안전 주의 */
@@ -188,6 +202,12 @@ export interface DemoLessonBody {
   childLines: Record<Exclude<StageKey, "open">, string>;
   /** 마무리 질문 */
   closingQuestion: string;
+  /** 도입 5분 — 교사가 읽는 짧은 도입 멘트 (교사용 제안) */
+  openLine: string;
+  /** 도입 5분 — 아이의 경험 · 감정 · 감각 · 호기심을 여는 발문 (교사용 제안) */
+  openQuestion: string;
+  /** teacherQuestions[0](그림책 장면 발문)을 새로 쓴 주차면 true — 출처가 교사용 제안이 된다 */
+  storyQuestionProposed?: boolean;
 }
 
 export interface ExperienceWeek extends OfficialWeekMeta {
@@ -203,6 +223,8 @@ export interface ExperienceWeek extends OfficialWeekMeta {
    * 자료 원문이 있으면 원문(source), 자료가 「미작성」이면 교사용 제안(proposal).
    */
   teacherObservations: { items: readonly string[]; origin: TextOrigin };
+  /** 수업 전 준비 · 공간 배치 · 정리 — 교사 혼자 운영할 때 */
+  prep: { before: readonly Sourced[]; space: Sourced; cleanup: Sourced };
   /** 기본 수업 합계. duration.coreMinutes 와 같다 */
   totalMinutes: number;
 }

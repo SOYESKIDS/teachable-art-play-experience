@@ -13,6 +13,7 @@ import { Buddy } from "../Doodles";
 import { Motif } from "../Motif";
 import { Sticker } from "../Stickers";
 import { WeekArt } from "../WeekArt";
+import { OriginTag } from "../OriginTag";
 import { displayFallback } from "../display-font";
 import { LESSON_TIME } from "@/lib/weeks/lesson-time";
 
@@ -511,9 +512,9 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
         <span className="shrink-0 rounded-full bg-pop-cream px-3 py-1 text-[14px] font-bold text-pop-ink">약 {stage.minutes}분</span>
       </div>
       <p className="mt-4 text-[13px] font-bold text-pop-ink-muted">활동 안내</p>
-      <p className="mt-1 text-[18px] font-semibold leading-relaxed text-pop-ink">{stage.guide}</p>
+      <p className="mt-1 text-[18px] font-semibold leading-relaxed text-pop-ink">{stage.guide} <OriginTag origin={stage.guideOrigin} className="align-middle" /></p>
       <div className="mt-5 rounded-3xl bg-pop-sky-soft p-5">
-        <p className="text-[13px] font-bold text-pop-sky-deep">교사 발문</p>
+        <p className="flex items-center gap-2 text-[13px] font-bold text-pop-sky-deep">교사 발문 <OriginTag origin={stage.teacherQuestionOrigin} /></p>
         <p className="mt-1 text-[20px] font-bold leading-relaxed text-pop-ink">“{stage.teacherQuestion}”</p>
       </div>
 
@@ -521,15 +522,12 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
       <div className="mt-5">
         <p className="flex flex-wrap items-center gap-2 text-[13px] font-bold text-pop-ink-muted">
           진행 순서 · 아이가 하는 일
-          <span className={cx("rounded-full px-2 py-0.5 text-[11px] font-extrabold", stage.stepsOrigin === "source" ? "bg-pop-mint-soft text-pop-mint-deep" : "bg-pop-yellow-soft text-pop-ink")}>
-            {TEXT_ORIGIN_LABEL[stage.stepsOrigin]}
-          </span>
         </p>
         <ol className="mt-2 grid gap-1.5">
           {stage.steps.map((s, i) => (
-            <li key={s} className="flex gap-2.5 text-[16px] leading-relaxed text-pop-ink">
+            <li key={s.text} className="flex gap-2.5 text-[16px] leading-relaxed text-pop-ink">
               <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pop-cream text-[12px] font-extrabold text-pop-ink-muted">{i + 1}</span>
-              <span>{s}</span>
+              <span>{s.text} <OriginTag origin={s.origin} className="align-middle" /></span>
             </li>
           ))}
         </ol>

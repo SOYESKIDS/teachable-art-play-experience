@@ -15,6 +15,7 @@ import { displayFallback } from "@/components/play/display-font";
 import { curriculumBadge } from "@/data/experience/teacher-dashboard/source-register";
 import { EXPERIENCE_WEEKS, experiencePart, experienceWeek } from "@/data/experience/weeks";
 import { TEXT_ORIGIN_LABEL } from "@/data/experience/types";
+import { OriginLegend, OriginTag } from "@/components/play/OriginTag";
 import { LESSON_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
 import { PART_NAME_CANDIDATE_LABEL } from "@/lib/weeks/week-types";
 
@@ -157,21 +158,22 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
           <p className="mt-2 text-[15px] leading-relaxed text-pop-ink-muted">
             다섯 단계({LESSON_TIME.breakdown})로 한 회차가 끝나요. 아래 선택 확장활동은 하지 않아도 됩니다.
           </p>
+          <OriginLegend className="mt-2" />
           <ol className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             {week.stages.map((s, i) => (
               <li key={s.key} className={cx("flex flex-col rounded-[28px] p-5", ["bg-pop-sky-soft", "bg-pop-pink-soft", "bg-pop-mint-soft", "bg-pop-yellow-soft", "bg-pop-lilac-soft"][i])}>
                 <p className="text-[13px] font-bold text-pop-ink-muted">{i + 1}단계 · 약 {s.minutes}분</p>
                 <h3 className="mt-1 font-display text-[21px] text-pop-ink">{s.title}</h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-pop-ink">{s.guide}</p>
+                <p className="mt-2 text-[15px] leading-relaxed text-pop-ink">{s.guide} <OriginTag origin={s.guideOrigin} className="align-middle" /></p>
                 <details className="group mt-3 rounded-2xl bg-white/70 px-3 py-2">
                   <summary className="flex min-h-9 cursor-pointer list-none items-center justify-between text-[13px] font-bold text-pop-ink [&::-webkit-details-marker]:hidden">
-                    진행 순서 {s.steps.length} · {TEXT_ORIGIN_LABEL[s.stepsOrigin]}
+                    진행 순서 {s.steps.length}
                     <span aria-hidden="true" className="text-pop-ink-muted transition-transform group-open:rotate-45">+</span>
                   </summary>
-                  <ol className="mt-1 grid gap-1 pb-1 text-[13px] leading-relaxed text-pop-ink">{s.steps.map((x, j) => <li key={x}>{j + 1}. {x}</li>)}</ol>
+                  <ol className="mt-1 grid gap-1.5 pb-1 text-[13px] leading-relaxed text-pop-ink">{s.steps.map((x, j) => <li key={x.text}>{j + 1}. {x.text} <OriginTag origin={x.origin} className="align-middle" /></li>)}</ol>
                   {s.materials.length ? <p className="mt-1 text-[12px] text-pop-ink-muted">준비물 · {s.materials.join(" · ")}</p> : null}
                 </details>
-                <p className="mt-auto pt-4 text-[14px] font-semibold leading-relaxed text-pop-ink-muted">“{s.teacherQuestion}”</p>
+                <p className="mt-auto pt-4 text-[14px] font-semibold leading-relaxed text-pop-ink-muted">“{s.teacherQuestion}” <OriginTag origin={s.teacherQuestionOrigin} className="align-middle" /></p>
                 {s.transition ? <p className="mt-2 text-[12px] leading-relaxed text-pop-ink-muted">다음 단계로 (교사용 제안) · “{s.transition}”</p> : null}
               </li>
             ))}

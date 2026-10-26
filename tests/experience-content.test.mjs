@@ -287,15 +287,14 @@ test("35분 단계마다 진행 순서 · 준비물 · 전환 멘트 · 대체 �
     const d = WEEK_DASHBOARDS.find((x) => x.weekNo === w.weekNo);
     for (const s of w.stages) {
       const at = `${w.weekNo}주 ${s.title}`;
-      assert.ok(s.steps.length >= 1 && s.steps.every((x) => x.trim()), `${at} 진행 순서`);
+      assert.ok(s.steps.length >= 1 && s.steps.every((x) => x.text.trim()), `${at} 진행 순서`);
       assert.ok(s.inclusion.trim(), `${at} 대체 참여`);
       assert.equal(s.transition === null, s.key === "share", `${at} 전환 멘트는 마지막 단계만 없다`);
       if (s.transition) assert.doesNotMatch(s.transition, /정답|무슨 색/, at);
     }
     const move = w.stages.find((s) => s.key === "move"), make = w.stages.find((s) => s.key === "make");
-    assert.equal(move.stepsOrigin, d.physicalSteps.length ? "source" : "proposal", `${w.weekNo}주 신체 단계 출처`);
-    for (const p of d.physicalSteps) assert.ok(move.steps.some((x) => x.startsWith(p.title)), `${w.weekNo}주 신체 단계 원문 ${p.title}`);
-    assert.equal(make.stepsOrigin, d.artSteps.length ? "source" : "proposal", `${w.weekNo}주 예술 단계 출처`);
+    for (const p of d.physicalSteps) assert.ok(move.steps.some((x) => x.origin === "source" && x.text.startsWith(p.title)), `${w.weekNo}주 신체 단계 원문 ${p.title}`);
+    if (d.artSteps.length) assert.ok(make.steps.every((x) => x.origin === "source"), `${w.weekNo}주 예술 단계 원문`);
     assert.ok(move.materials.length >= 1, `${w.weekNo}주 신체 단계 준비물`);
   }
 });
@@ -312,4 +311,88 @@ test("2차 원문 대조 — 두 번째 대표활동(7 · 9주) · 미술 제목
   assert.deepEqual(weeksOf(8), [4, 5, 6, 7], "8주차는 4~7주차 결과물을 모은다");
   assert.deepEqual(weeksOf(16), [9, 10, 11, 12, 13, 14, 15]);
   assert.deepEqual(weeksOf(24), [17, 18, 19, 20, 21, 22, 23]);
+});
+
+const SRC_DIR = join(ROOT, "docs/curriculum-upgrade/TAP_Curriculum_Development_Pack/TeachAble_24Week_Dashboard_DevPack/source_text");
+const sourceText = (n) => readFileSync(n <= 20 ? join(SRC_DIR, `week-${String(n).padStart(2, "0")}.txt`) : join(ROOT, `docs/curriculum-upgrade/dashboard-source-21-24/week-${n}.txt`), "utf8");
+const squashAll = (s) => s.normalize("NFC").replace(/[\s?.!,·ˮ”“"'‘’()~\-–]/g, "");
+
+test("「PDF 원문」으로 표시한 문장은 저장소의 PDF 원문 텍스트에 그대로 있다 (단계 · 수업 전 준비)", () => {
+  for (const w of EXPERIENCE_WEEKS) {
+    const srcWeek = squashAll(sourceText(w.weekNo));
+    const items = [...w.stages.flatMap((s) => s.steps), ...w.prep.before, w.prep.space, w.prep.cleanup];
+    for (const it of items) {
+      if (it.origin !== "source") continue;
+      // 「제목 — 안내」 · 「N주차 — 주차 연계」는 각 조각이 원문에 있어야 한다
+      // 「N주차 — …」(통합 주차의 모아 올 것)은 N주차 원문에서 온 문장이다
+      const from = it.text.match(/^(\d+)주차 — /)?.[1];
+      const src = from ? squashAll(sourceText(Number(from))) : srcWeek;
+      for (const part of it.text.split(" — ")) {
+        if (/^\d+주차$/.test(part)) continue;
+        // 원문 텍스트가 단(column) 나눔대로 뽑혀 한 문장이 여러 줄에 흩어진 주차가 있다 — 문장의 낱말이 모두 원문에 있어야 한다
+        const words = part.split(/\s+/).map(squashAll).filter((x) => x.length >= 2);
+        assert.ok(src.includes(squashAll(part)) || words.every((x) => src.includes(x)), `${w.weekNo}주 원문에 없는데 「PDF 원문」: ${part}`);
+      }
+    }
+    for (const s of w.stages) {
+      if (s.teacherQuestionOrigin === "source") assert.ok(srcWeek.includes(squashAll(s.teacherQuestion)), `${w.weekNo}주 발문 출처`);
+      assert.notEqual(s.guideOrigin, "source", `${w.weekNo}주 ${s.title} 안내는 편집 문장이다`);
+    }
+  }
+});
+
+test("35분 단계 발문 — 단계마다 다르고(도입 ≠ 그림책), 정답 유도 · 평가 질문이 없다", () => {
+  for (const w of EXPERIENCE_WEEKS) {
+    const qs = w.stages.map((s) => s.teacherQuestion);
+    assert.equal(new Set(qs).size, qs.length, `${w.weekNo}주 발문 중복: ${qs.join(" | ")}`);
+    const open = w.stages.find((s) => s.key === "open"), story = w.stages.find((s) => s.key === "story");
+    assert.equal(open.teacherQuestion, w.body.openQuestion);
+    assert.equal(open.teacherQuestionOrigin, "proposal", `${w.weekNo}주 도입 발문은 교사용 제안`);
+    assert.equal(open.guide, w.body.openLine);
+    assert.equal(story.teacherQuestionOrigin, w.body.storyQuestionProposed ? "proposal" : "edited", `${w.weekNo}주 그림책 발문 출처`);
+    for (const q of qs) assert.doesNotMatch(q, /정답|맞혀|맞춰 보|잘했|잘하는|못하는|누가 더|누가 제일|몇 점|무슨 색이 될|무슨 색일까/, `${w.weekNo}주: ${q}`);
+  }
+  // 도입 멘트 · 도입 발문이 주차마다 다르다 (모든 주차에 같은 틀 문장을 쓰지 않는다)
+  assert.equal(new Set(EXPERIENCE_WEEKS.map((w) => w.body.openLine)).size, 24);
+  assert.equal(new Set(EXPERIENCE_WEEKS.map((w) => w.body.openQuestion)).size, 24);
+});
+
+test("교사용 전체 흐름 — 수업 전 준비 → 다섯 단계 → 확장활동 → 관찰 · 가정연계가 24주 모두 이어진다", () => {
+  for (const w of EXPERIENCE_WEEKS) {
+    const at = `${w.weekNo}주`;
+    assert.ok(w.prep.before.length >= 2 && w.prep.space.text && w.prep.cleanup.text, `${at} 수업 전 준비 · 공간 · 정리`);
+    assert.deepEqual(w.stages.map((s) => s.key), STAGE_ORDER, `${at} 단계`);
+    assert.ok(w.extensions.length >= 1, `${at} 확장활동`);
+    assert.ok(w.teacherObservations.items.length >= 3, `${at} 관찰`);
+    assert.ok(w.body.homeConnection.trim(), `${at} 가정연계`);
+    for (const x of [...w.prep.before, w.prep.space, w.prep.cleanup, ...w.stages.flatMap((s) => s.steps)]) assert.ok(["source", "edited", "proposal", "review"].includes(x.origin), at);
+  }
+  // 통합 주차는 앞 주차 결과물 모으기가 수업 전 준비에 원문으로 들어간다
+  for (const [n, from] of [[8, [4, 5, 6, 7]], [16, [9, 10, 11, 12, 13, 14, 15]], [24, [17, 18, 19, 20, 21, 22, 23]]]) {
+    const w = EXPERIENCE_WEEKS.find((x) => x.weekNo === n);
+    const got = w.prep.before.filter((x) => x.origin === "source" && /^\d+주차 — /.test(x.text)).map((x) => Number(x.text.split("주차")[0]));
+    assert.deepEqual(got, from, `${n}주 모아 올 것`);
+  }
+  // 8주 교사 사전 준비 4단계 (원문)
+  assert.ok(EXPERIENCE_WEEKS.find((x) => x.weekNo === 8).prep.before.some((x) => x.text === "4~7주차 완성품을 종류별로 정리하기" && x.origin === "source"));
+});
+
+test("자료에 적힌 발문(진행 팁 · 운영 포인트 속 따옴표 문장)은 PDF 원문 그대로 보존된다", async () => {
+  const { pdfQuestions } = await import("../src/data/experience/teacher-dashboard/week-dashboards.ts");
+  let total = 0;
+  for (let n = 1; n <= 24; n++) {
+    const src = squashAll(sourceText(n));
+    for (const q of pdfQuestions(n)) {
+      total++;
+      assert.ok(src.includes(squashAll(q)), `${n}주 자료 발문이 원문에 없다: ${q}`);
+    }
+  }
+  assert.ok(total >= 9, `자료 발문 ${total}개`);
+});
+
+test("단계 · 수업 전 준비 문장에 「을(를)」 같은 기계적 조사가 없다", () => {
+  for (const w of EXPERIENCE_WEEKS) {
+    const all = [...w.stages.flatMap((s) => s.steps.map((x) => x.text)), ...w.prep.before.map((x) => x.text), w.prep.space.text, w.prep.cleanup.text];
+    for (const s of all) assert.doesNotMatch(s, /을\(를\)|이\(가\)|은\(는\)/, `${w.weekNo}주: ${s}`);
+  }
 });

@@ -2839,3 +2839,13 @@ export function gatherForWeek(weekNo: number): string[] {
   return WEEK_DASHBOARDS.filter((x) => x.weekNo < weekNo && (x.crossWeek ?? "").includes(`→ ${weekNo}주차`))
     .map((x) => `${x.weekNo}주차 — ${(x.crossWeek ?? "").split("→")[0].trim()}`);
 }
+
+/**
+ * 자료에 적힌 발문 — PDF 에는 발문 칸이 따로 없고, 진행 팁 · 교사 운영 포인트 안에 따옴표로 들어 있다.
+ * 그 문장들을 원문 그대로 모은다 (물음표로 끝나는 것만). 수업 단계 발문은 이것을 35분용으로 다듬은 것이다.
+ */
+export function pdfQuestions(weekNo: number): string[] {
+  const d = weekDashboard(weekNo);
+  const text = [d?.activityTip, d?.teacherPoint, d?.physical2?.tip].filter(Boolean).join(" ");
+  return [...new Set([...text.matchAll(/“([^”]{3,60}\?)”/g)].map((m) => m[1].trim()))];
+}

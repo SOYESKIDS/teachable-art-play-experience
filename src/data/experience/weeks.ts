@@ -4,7 +4,7 @@ import { PARTS } from "@/lib/weeks/week-types";
 import { DEMO_LESSONS } from "./demo-lessons";
 import { WEEK_MEDIA } from "./media";
 import { officialPlan, type OfficialWeekPlan } from "./official-plan";
-import { weekDashboard, type WeekDashboard } from "./teacher-dashboard/week-dashboards";
+import { gatherForWeek, weekDashboard, type WeekDashboard } from "./teacher-dashboard/week-dashboards";
 import { weekProposal } from "./teacher-dashboard/proposals";
 import {
   CORE_STAGE_ORDER,
@@ -16,7 +16,9 @@ import {
   type ExperiencePart,
   type ExperienceWeek,
   type OfficialWeekMeta,
+  type Sourced,
   type StageKey,
+  type TextOrigin,
 } from "./types";
 
 /**
@@ -45,72 +47,93 @@ export function parseDurationMinutes(label: string): number {
  *
  * ★ 단계별 분은 24주 모두 lesson-time.ts 의 5 + 7 + 13 + 7 + 3분이다. 화면이 말하는
  *   시간과 단계 합이 어긋나면 교사가 수업 중에 시간을 잘못 잡는다.
- * ★ 「이야기 열기」 안내는 이전 공식 가이드의 도입 제목을 쓴다 — 그 가이드가 지금과
- *   같은 수업일 때만. 아니면 핵심 메시지로 대신하고 임시 문장이라고 밝힌다.
+ * ★ 발문은 단계마다 다르다 — 도입은 아이의 경험 · 감정 · 호기심을 여는 발문(openQuestion),
+ *   그림책은 그림책 장면 · 인물 행동을 묻는 발문(teacherQuestions[0]). 같은 발문을 두 번 쓰지 않는다.
+ * ★ 발문 · 안내 · 진행 순서마다 출처(TextOrigin)를 붙인다. 화면 세 곳이 이 값을 그대로 쓴다.
  */
 function buildStages(body: DemoLessonBody, meta: OfficialWeekMeta, plan: OfficialWeekPlan): ClassStage[] {
-  // 공식 도입 제목은 제목 글꼴 서브셋이 못 그리는 주차가 많아 큰 글씨로 쓰지 않는다.
-  // 원문은 버리지 않고 바로 아래 교사 안내에 그대로 남긴다.
-  const openLine = "오늘은 무엇을 만날까요?";
-  const childLine: Record<StageKey, string> = { ...body.childLines, open: openLine };
-  const guide: Record<StageKey, string> = {
-    open: plan.matchesCurrentLesson && plan.introTitle
-      ? `공식 가이드 도입 — ${plan.introTitle}`
-      : `${meta.coreMessage} (도입 문장이 자료에 없어 핵심 메시지로 대신합니다)`,
-    story: body.story,
+  // 큰 글씨 한 줄은 제목 글꼴로 그리므로 짧은 고정 문장을 쓴다. 교사용 도입 멘트는 바로 아래 안내에 둔다.
+  const childLine: Record<StageKey, string> = { ...body.childLines, open: "오늘은 무엇을 만날까요?" };
+  const d = weekDashboard(body.weekNo);
+  const inPdf = pdfText(d);
+  const ask = (q: string, fallback: TextOrigin): TextOrigin => (inPdf(q) ? "source" : fallback);
+  const guide: Record<StageKey, Sourced> = {
+    open: { text: body.openLine, origin: "proposal" },
+    story: { text: body.story, origin: "edited" },
     // explore 를 버리지 않는다 — 몸·감각 탐색 한 단계로 함께 묶는다
-    move: `${body.movement} ${body.explore}`,
-    explore: body.explore,
-    make: body.art,
-    share: body.homeConnection,
+    move: { text: `${body.movement} ${body.explore}`, origin: "edited" },
+    explore: { text: body.explore, origin: "edited" },
+    make: { text: body.art, origin: "edited" },
+    share: { text: body.homeConnection, origin: "edited" },
   };
-  const question: Record<StageKey, string> = {
-    open: body.teacherQuestions[0],
-    story: body.teacherQuestions[0],
-    move: body.teacherQuestions[1] ?? body.teacherQuestions[0],
-    explore: body.teacherQuestions[1] ?? body.teacherQuestions[0],
-    make: body.teacherQuestions[2] ?? body.teacherQuestions[0],
-    share: body.closingQuestion,
+  const question: Record<StageKey, Sourced> = {
+    open: { text: body.openQuestion, origin: "proposal" },
+    story: { text: body.teacherQuestions[0], origin: ask(body.teacherQuestions[0], body.storyQuestionProposed ? "proposal" : "edited") },
+    move: { text: body.teacherQuestions[1] ?? body.teacherQuestions[0], origin: ask(body.teacherQuestions[1] ?? "", "edited") },
+    explore: { text: body.teacherQuestions[1] ?? body.teacherQuestions[0], origin: "edited" },
+    make: { text: body.teacherQuestions[2] ?? body.teacherQuestions[0], origin: ask(body.teacherQuestions[2] ?? "", "edited") },
+    share: { text: body.closingQuestion, origin: ask(body.closingQuestion, "edited") },
   };
   const minutes: Record<StageKey, number> = { ...LESSON_STAGE_MINUTES, explore: 0 };
-  const d = weekDashboard(body.weekNo);
-  const detail = stageDetail(body, meta, d);
+  const detail = stageDetail(body, meta, plan, d);
   return CORE_STAGE_ORDER.map((key) => ({
     key,
     title: STAGE_LABEL[key],
     childLine: childLine[key],
-    guide: guide[key],
-    teacherQuestion: question[key],
+    guide: guide[key].text,
+    guideOrigin: guide[key].origin,
+    teacherQuestion: question[key].text,
+    teacherQuestionOrigin: question[key].origin,
     minutes: minutes[key],
     ...detail[key],
   }));
 }
 
-type StageDetail = Pick<ClassStage, "steps" | "stepsOrigin" | "materials" | "safety" | "tip" | "transition" | "inclusion" | "levels">;
+/** 을/를 — 마지막 한글 글자의 받침으로 고른다 (문장부호 · 괄호는 건너뛴다) */
+function objectParticle(word: string): string {
+  const last = [...word.replace(/\([^)]*\)/g, "")].reverse().find((c) => c >= "가" && c <= "힣");
+  if (!last) return "을(를)";
+  return (last.charCodeAt(0) - 0xac00) % 28 === 0 ? "를" : "을";
+}
+
+/** 이 주차 자료 PDF 문장에 그대로 있는가 (공백 · 문장부호를 빼고 비교) */
+function pdfText(d: WeekDashboard | null): (s: string) => boolean {
+  const squash = (s: string) => s.normalize("NFC").replace(/[\s?.!,·“”"'‘’()]/g, "");
+  const all = squash(JSON.stringify(d ?? {}));
+  return (s) => s.trim().length >= 6 && all.includes(squash(s));
+}
+
+type StageDetail = Pick<ClassStage, "steps" | "materials" | "safety" | "tip" | "transition" | "inclusion" | "levels">;
 
 /**
  * 단계마다 교사가 실제로 보는 것 — 진행 순서 · 준비물 · 안전 · 전환 멘트 · 대체 참여 · 난이도.
  *
- * ★ 진행 순서 · 준비물 · 진행 팁은 자료 PDF 문장을 그대로 쓴다 (stepsOrigin = source).
- *   자료에 단계가 없으면 체험 구성 문장을 한 줄로 두고 교사용 제안으로 표시한다.
+ * ★ 진행 순서는 문장마다 출처를 붙인다. PDF 문장 **그대로**인 것만 source 다
+ *   (「《책》 함께 봐요」 같은 연결 문장 · 마무리 질문은 edited, 도입 멘트는 proposal).
+ *   tests 가 source 문장을 저장소의 PDF 원문 텍스트와 대조한다.
  * ★ 전환 멘트 · 대체 참여 · 연령별 조절은 자료에 없는 **교사용 제안**이다. 화면이 그렇게 표시한다.
  *   주차의 그림책 · 활동 이름만 끼워 넣고, 새 활동을 지어내지 않는다.
  */
-function stageDetail(body: DemoLessonBody, meta: OfficialWeekMeta, d: WeekDashboard | null): Record<StageKey, StageDetail> {
+function stageDetail(body: DemoLessonBody, meta: OfficialWeekMeta, plan: OfficialWeekPlan, d: WeekDashboard | null): Record<StageKey, StageDetail> {
   const book = `《${meta.storybook}》`;
-  const moveSteps = [
-    ...(d?.physicalSteps ?? []).map((s) => (s.guide ? `${s.title} — ${s.guide}` : s.title)),
-    ...(d?.physical2 ? [`이어서 「${d.physical2.title}」`, ...d.physical2.steps.map((s) => `${s.title} — ${s.guide}`)] : []),
+  const src = (text: string): Sourced => ({ text, origin: "source" });
+  const moveSteps: Sourced[] = [
+    ...(d?.physicalSteps ?? []).map((s) => src(s.guide ? `${s.title} — ${s.guide}` : s.title)),
+    ...(d?.physical2 ? [src(d.physical2.title), ...d.physical2.steps.map((s) => src(`${s.title} — ${s.guide}`))] : []),
   ];
   const moveMaterials = [...(d?.physicalMaterials ?? []), ...(d?.physical2?.materials ?? [])];
   const near = (a: string, b: string) => a.split(/[\s·,/()]+/).some((w) => w.length >= 2 && b.includes(w));
   const makeMaterials = [...(d?.kitItems ?? []).filter((k) => !moveMaterials.some((m) => near(k, m))), ...(d?.orgItems ?? [])];
   const artName = d?.artTitle ?? meta.outcome ?? "오늘의 작품";
   const physName = d?.physicalTitle ?? "오늘의 놀이";
+  const openSteps: Sourced[] = [
+    { text: body.openLine, origin: "proposal" },
+    { text: `“${body.openQuestion}” — 말 · 손짓 · 그림 카드 가운데 편한 방법으로 자유롭게 답해요.`, origin: "proposal" },
+    ...(plan.matchesCurrentLesson && plan.introTitle ? [{ text: `이전 공식 가이드의 도입 — ${plan.introTitle}`, origin: "edited" as const }] : []),
+  ];
   return {
     open: {
-      steps: [`그림책 표지를 함께 보며 오늘의 주제 「${meta.coreMessage}」를 떠올려요.`, `“${body.teacherQuestions[0]}”에 생각을 말하거나 손짓으로 답해요.`],
-      stepsOrigin: "proposal",
+      steps: openSteps,
       materials: [body.materials[0]],
       safety: [],
       tip: null,
@@ -120,10 +143,10 @@ function stageDetail(body: DemoLessonBody, meta: OfficialWeekMeta, d: WeekDashbo
     },
     story: {
       steps: [
-        `${book} 함께 보기${d?.storySummary ? ` — ${d.storySummary}` : ""}`,
-        `핵심 메시지 — ${d?.storyMessage ?? meta.coreMessage}`,
+        { text: `${book}${objectParticle(meta.storybook)} 함께 봐요.`, origin: "edited" },
+        ...(d?.storySummary ? [src(d.storySummary)] : []),
+        d?.storyMessage ? src(d.storyMessage) : { text: `핵심 메시지 — ${meta.coreMessage}`, origin: "edited" },
       ],
-      stepsOrigin: d?.storySummary ? "source" : "proposal",
       materials: [body.materials[0]],
       safety: [],
       tip: null,
@@ -132,8 +155,7 @@ function stageDetail(body: DemoLessonBody, meta: OfficialWeekMeta, d: WeekDashbo
       levels: null,
     },
     move: {
-      steps: moveSteps.length ? moveSteps : [body.movement],
-      stepsOrigin: moveSteps.length ? "source" : "proposal",
+      steps: moveSteps.length ? moveSteps : [{ text: body.movement, origin: "edited" }],
       materials: moveMaterials.length ? moveMaterials : body.materials.slice(1),
       safety: body.safety,
       tip: d?.activityTip ?? d?.physical2?.tip ?? null,
@@ -141,10 +163,9 @@ function stageDetail(body: DemoLessonBody, meta: OfficialWeekMeta, d: WeekDashbo
       inclusion: "움직임이 어렵거나 감각이 예민한 친구는 자리에서 손 · 상체로 함께하거나, 신호를 주는 역할로 참여해요.",
       levels: "만 4세: 선생님이 한 단계씩 먼저 보여 주고 따라 해요 · 만 6~7세: 규칙과 순서를 아이들이 함께 정해요.",
     },
-    explore: { steps: [], stepsOrigin: "proposal", materials: [], safety: [], tip: null, transition: null, inclusion: "", levels: null },
+    explore: { steps: [], materials: [], safety: [], tip: null, transition: null, inclusion: "", levels: null },
     make: {
-      steps: d?.artSteps.length ? [...d.artSteps] : [body.art],
-      stepsOrigin: d?.artSteps.length ? "source" : "proposal",
+      steps: d?.artSteps.length ? d.artSteps.map(src) : [{ text: body.art, origin: "edited" }],
       materials: makeMaterials.length ? makeMaterials : body.materials.slice(1),
       safety: body.safety.slice(-1),
       tip: null,
@@ -153,8 +174,10 @@ function stageDetail(body: DemoLessonBody, meta: OfficialWeekMeta, d: WeekDashbo
       levels: "만 4세: 자르기 · 붙이기 재료를 미리 준비해 두어요 · 만 6~7세: 재료와 방법을 스스로 골라요.",
     },
     share: {
-      steps: [`마무리 질문 — “${body.closingQuestion}”`, d?.familyTitle ? `가정연계 안내 — ${d.familyTitle}` : body.homeConnection],
-      stepsOrigin: d?.familyTitle ? "source" : "proposal",
+      steps: [
+        { text: `마무리 질문 — “${body.closingQuestion}”`, origin: "edited" },
+        d?.familyTitle ? src(d.familyTitle) : { text: body.homeConnection, origin: "edited" },
+      ],
       materials: [],
       safety: [],
       tip: null,
@@ -162,6 +185,35 @@ function stageDetail(body: DemoLessonBody, meta: OfficialWeekMeta, d: WeekDashbo
       inclusion: "발표가 부담스러운 친구는 작품을 들어 보이거나 한 낱말로 말해도 충분해요.",
       levels: null,
     },
+  };
+}
+
+/**
+ * 수업 전 준비 · 공간 배치 · 정리 — 교사가 혼자 운영할 때.
+ *
+ * ★ 앞 주차에서 모아 올 것(통합 주차) · 교사 사전 준비(8주차)는 PDF 원문이다.
+ * ★ 공간 배치 · 정리는 자료에 없으면 교사용 제안이다. 진행 팁에 정리 방법이 있으면 원문을 쓴다.
+ */
+function buildPrep(body: DemoLessonBody, meta: OfficialWeekMeta, stages: ClassStage[]): ExperienceWeek["prep"] {
+  const d = weekDashboard(body.weekNo);
+  const move = stages.find((s) => s.key === "move");
+  const make = stages.find((s) => s.key === "make");
+  const before: Sourced[] = [
+    ...gatherForWeek(body.weekNo).map((text) => ({ text, origin: "source" as const })),
+    ...(d?.supportType === "teacherPrep" ? d.homeKitHow.map((text) => ({ text, origin: "source" as const })) : []),
+    { text: `그림책 《${meta.storybook}》(또는 E-BOOK)을 펼칠 자리에 준비해요.`, origin: "edited" },
+    { text: `신체 놀이 준비물 ${move?.materials.length ?? 0}가지 · 만들기 재료 ${make?.materials.length ?? 0}가지를 단계별로 나눠 둬요.`, origin: "edited" },
+  ];
+  const tipWithCleanup = [d?.activityTip, d?.physical2?.tip].find((x) => x && x.includes("정리"));
+  return {
+    before,
+    space: {
+      text: `둥글게 앉는 이야기 자리, ${move?.materials[0] ? `「${move.materials[0]}」${objectParticle(move.materials[0])} 쓰는 ` : ""}신체 놀이 공간, 만들기 책상을 나눠 두고 이동 길에 걸리는 물건을 치워요.`,
+      origin: "proposal",
+    },
+    cleanup: tipWithCleanup
+      ? { text: tipWithCleanup, origin: "source" }
+      : { text: "신체 놀이 교구는 아이들과 함께 바구니에 모으고, 작품은 이름을 붙여 말릴 자리에 둬요. 쓰고 남은 재료는 다음 주를 위해 상자에 정리해요.", origin: "proposal" },
   };
 }
 
@@ -349,6 +401,7 @@ export const EXPERIENCE_WEEKS: ExperienceWeek[] = DEMO_LESSONS.map((body) => {
     duration,
     image: WEEK_MEDIA[body.weekNo] ?? null,
     teacherObservations: teacherObservations(body.weekNo),
+    prep: buildPrep(body, meta, stages),
     totalMinutes,
   };
 }).sort((a, b) => a.weekNo - b.weekNo);

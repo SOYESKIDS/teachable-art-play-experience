@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { cx } from "@/components/ui/cx";
 import { WeekArt } from "@/components/play/WeekArt";
+import { OriginLegend, OriginTag } from "@/components/play/OriginTag";
 import { displayFallback } from "@/components/play/display-font";
 import { weekProposal } from "@/data/experience/teacher-dashboard/proposals";
 import Link from "next/link";
-import { gatherForWeek, weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
+import { gatherForWeek, pdfQuestions, weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
 import { TEXT_ORIGIN_LABEL, type ExperienceWeek, type TextOrigin } from "@/data/experience/types";
 import { LESSON_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
 
@@ -39,18 +40,8 @@ const SUPPORT_LABEL = {
   teacherPrep: "교사 사전 준비",
 } as const;
 
-const ORIGIN_TONE: Record<TextOrigin, string> = {
-  source: "bg-pop-mint-soft text-pop-mint-deep",
-  proposal: "bg-pop-yellow-soft text-pop-ink",
-  review: "bg-pop-pink-soft text-pop-pink-deep",
-};
-
 function OriginBadge({ origin }: { origin: TextOrigin }) {
-  return (
-    <span className={cx("inline-flex rounded-full px-2.5 py-0.5 text-[12px] font-bold", ORIGIN_TONE[origin])}>
-      {TEXT_ORIGIN_LABEL[origin]}
-    </span>
-  );
+  return <OriginTag origin={origin} />;
 }
 
 /**
@@ -274,12 +265,7 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
         <strong className="font-bold text-pop-ink">공식 교안으로 확정된 내용이 아닙니다.</strong>
       </p>
 
-      <p className="mt-3 flex flex-wrap items-center gap-2 text-[13px] text-pop-ink-muted">
-        <span className="font-bold">문장 출처 표시</span>
-        <OriginBadge origin="source" /> 자료 PDF 문장
-        <OriginBadge origin="proposal" /> 빈 곳을 채운 제안
-        <OriginBadge origin="review" /> 아직 비어 있음
-      </p>
+      <OriginLegend className="mt-3" />
 
       {d.missingInSource.length > 0 ? (
         <p className="mt-3 rounded-2xl border-2 bg-pop-cream px-4 py-3 text-[14px] leading-relaxed text-pop-ink" style={tone}>
@@ -311,6 +297,17 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
           <ul className="mt-1.5 grid gap-1 text-[15px] leading-relaxed text-pop-ink">{week.body.safety.map((x) => <li key={x}>· {x}</li>)}</ul>
         </div>
       ) : null}
+
+      <div className="mt-4 rounded-[24px] bg-white px-5 py-4 ring-1 ring-pop-ink/5">
+        <p className="text-[14px] font-extrabold text-pop-ink">수업 전 준비 · 공간 · 정리 — 선생님 혼자 운영할 때</p>
+        <ul className="mt-2 grid gap-1.5 text-[14px] leading-relaxed text-pop-ink">
+          {week.prep.before.filter((x) => !gather.includes(x.text)).map((x) => (
+            <li key={x.text} className="flex flex-wrap items-baseline gap-x-2"><span>· {x.text}</span><OriginTag origin={x.origin} /></li>
+          ))}
+          <li className="flex flex-wrap items-baseline gap-x-2"><span><strong className="font-bold">공간 · </strong>{week.prep.space.text}</span><OriginTag origin={week.prep.space.origin} /></li>
+          <li className="flex flex-wrap items-baseline gap-x-2"><span><strong className="font-bold">정리 · </strong>{week.prep.cleanup.text}</span><OriginTag origin={week.prep.cleanup.origin} /></li>
+        </ul>
+      </div>
 
       {gather.length > 0 ? (
         <div className="mt-4 rounded-[24px] bg-white px-5 py-4 ring-1 ring-pop-ink/5">
@@ -358,10 +355,26 @@ export function TeacherDashboard({ week }: { week: ExperienceWeek }) {
               {d.storyMessage}
             </p>
           ) : null}
-          <Head>교사 발문 (수업 단계 순서)</Head>
-          <List items={week.body.teacherQuestions} empty={NONE} />
-          <Head>마무리 질문</Head>
-          <p className="mt-1.5">“{week.body.closingQuestion}”</p>
+          <Head>교사 발문 — {LESSON_TIME.label} 단계 순서</Head>
+          <ol className="mt-1.5 flex flex-col gap-1.5">
+            {week.stages.map((s) => (
+              <li key={s.key} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                <span className="shrink-0 text-[13px] font-bold text-pop-ink-muted">{s.title}</span>
+                <span>“{s.teacherQuestion}”</span>
+                <OriginTag origin={s.teacherQuestionOrigin} />
+              </li>
+            ))}
+          </ol>
+          {pdfQuestions(week.weekNo).length > 0 ? (
+            <>
+              <Head>자료에 적힌 발문 (진행 팁 · 운영 포인트 속 문장)</Head>
+              <ul className="mt-1.5 flex flex-col gap-1">
+                {pdfQuestions(week.weekNo).map((q) => (
+                  <li key={q} className="flex flex-wrap items-baseline gap-x-2"><span>“{q}”</span><OriginTag origin="source" /></li>
+                ))}
+              </ul>
+            </>
+          ) : null}
           <p className="mt-2 text-[13px] leading-relaxed text-pop-ink-muted">
             정답을 묻지 않고, 아이가 본 것 · 한 것을 자기 말로 하게 돕는 질문입니다. 교실 플레이어 교사 화면에 같은 순서로 나옵니다.
           </p>
