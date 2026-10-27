@@ -15,6 +15,8 @@ export function goTo(ids: readonly string[]) {
   for (const id of ids) {
     const el = document.getElementById(id);
     if (el instanceof HTMLDetailsElement) el.open = true;
+    // 묶음 카드(수업 준비 등) 안의 접힌 확인 목록도 함께 편다
+    else el?.querySelectorAll("details").forEach((x) => { x.open = true; });
     if (el && !first) first = el;
   }
   first?.scrollIntoView({ behavior: "smooth", block: "start" });
