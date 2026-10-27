@@ -23,7 +23,7 @@ const md = `# 24주 실행형 수업 데이터 · 성장 데이터 연결 (2026-
 
 - 만든 방법: \`node --import ./tests/register-hooks.mjs scripts/audit-lesson-engine.mjs\` (데이터에서 자동 생성)
 - 원문: \`D:\\소예키즈\\마케팅\\2026 유치원 영업전략\\프로그램\\대쉬보드 구성안\\\` 24개 PDF (2026-10-22 판) → 저장소 추출 텍스트
-  - ★ 이번 요청에 「첨부한 1~15주 PDF」는 대화 · 다운로드 · 프로젝트 폴더 어디에서도 새 파일을 찾지 못했다. 위 2026-10-22 판(이전 검수와 같은 파일)을 기준으로 했다.
+  - ★ 2026-10-27 받은 최신 1~15주 PDF(ZIP 3개)는 SHA-256 으로 2026-10-22 판과 바이트 단위로 같다 — \`PDF-LATEST-20261027.md\`. 16~24주는 2026-10-22 원본.
 - 코드: \`src/data/experience/lesson-engine/\` (plan · assets · growth-mapping · sequence-notes · classroom-lines) · \`src/lib/growth/demo-analysis.ts\`
 - 출처 표시: PDF 원문 · 35분 편집 · 교사용 제안 · 검수 필요 — 지표 연결 · 순서 운영 · 대체 운영 · 교실 첫 문장은 모두 교사용 제안(본사 검수 전)
 
@@ -77,6 +77,16 @@ ${plans.flatMap((p) => p.growthIndicatorMappings.map((l) => `| ${p.weekNo} | ${c
 ${Object.entries(kinds).map(([k, v]) => `| ${k} | ${v.total} | ${v.ready} | ${v.listed} |`).join("\n")}
 
 ★ 「있음」은 공개 사용이 확인된 1~8주차 그림책 표지 8장뿐이다. 나머지 자리는 교사 화면에 「대체 운영」(교사용 제안)을 함께 보인다.
+
+## 6. 주차별 자료 자리 ID (PDF 원문 ID · 파일 확보 순서표)
+
+파일을 받으면 이 ID 로 \`lesson-engine/assets.ts\` 에 연결한다 — 다른 주차의 그림을 빌려 쓰지 않는다. ✔ = 공개 파일 있음 · ○ = 목록만 · · = 자료 준비 중
+
+${plans.map((p) => {
+  const by = {};
+  for (const a of p.mediaAssets) (by[a.label] ??= []).push(`${a.state === "ready" ? "✔" : a.state === "listed" ? "○" : "·"} \`${a.id}\``);
+  return `### ${p.weekNo}주 「${p.weekTitle}」\n\n${Object.entries(by).map(([k, v]) => `- ${k}: ${v.join(" ")}`).join("\n")}`;
+}).join("\n\n")}
 `;
 writeFileSync(join(ROOT, "docs/completion/LESSON-ENGINE-24W.md"), md);
 console.log("ok", chains.length, "activities", chains.filter((c) => !c.complete).length, "broken");

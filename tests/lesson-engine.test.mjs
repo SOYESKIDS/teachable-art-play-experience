@@ -215,3 +215,55 @@ test("검토 · 승인 흐름 — AI 초안 → 교사 수정 → 검토 완료 
   ai = G.confirmStatement(G.confirmStatement(ai, "st-1"), "st-2");
   assert.deepEqual(G.nextStateBlockers(ai, "approved"), []);
 });
+
+test("미리 준비 · 사전 제작 — 4 · 11 · 22주 견본, 16주 사진 인화, 17주 세계지도 설치, 18~23주 깃발은 원문 조각 + 운영 제안", async () => {
+  const { PREP_NOTES, hasFilming, FILMING_NOTE } = await import("../src/data/experience/lesson-engine/prep-notes.ts");
+  assert.deepEqual(PREP_NOTES.filter((p) => p.when === "before").map((p) => p.weekNo).sort((a, b) => a - b), [4, 11, 16, 17, 22]);
+  assert.deepEqual(PREP_NOTES.filter((p) => p.when === "during").map((p) => p.weekNo), [18, 19, 20, 21, 22, 23]);
+  for (const p of PREP_NOTES) {
+    assert.equal(p.text.origin, "source");
+    assert.equal(p.action.origin, "proposal");
+    const src = sq(sourceText(p.weekNo));
+    assert.ok(src.includes(sq(p.text.text)) || p.text.text.split(/\s+/).filter((w) => sq(w).length >= 2).every((w) => src.includes(sq(w))), `${p.weekNo}주 원문 ${p.text.text}`);
+  }
+  // 19주는 원문 그대로 아프리카 · 스페인 (캐스터네츠) — 21주 스페인과 겹쳐도 원문을 고치지 않는다
+  assert.match(PREP_NOTES.find((p) => p.weekNo === 19).text.text, /아프리카 · 스페인/);
+  assert.ok(hasFilming(16), "16주 영상편지");
+  assert.equal(FILMING_NOTE.origin, "proposal");
+});
+
+test("수업 시간 — PDF 원본(CORE 45 · SHORT 30) · 웹 35분 체험 · 30분 단축(교사용 편집안)을 섞지 않는다", async () => {
+  const { LESSON_TIME, SHORT_TIME, SHORT_STAGE_MINUTES, PDF_DURATION_LABEL } = await import("../src/lib/weeks/lesson-time.ts");
+  assert.equal(LESSON_TIME.totalMinutes, 35);
+  assert.equal(SHORT_TIME.totalMinutes, 30);
+  assert.equal(Object.keys(SHORT_STAGE_MINUTES).join(), "open,story,move,make,share");
+  assert.match(PDF_DURATION_LABEL, /CORE 45분.*SHORT CLASS 30분/);
+  const print = readFileSync(join(ROOT, "src/app/experience/weeks/[weekNo]/print/page.tsx"), "utf8");
+  const dash = readFileSync(join(ROOT, "src/components/play/TeacherDashboard.tsx"), "utf8");
+  for (const f of [print, dash]) assert.match(f, /SHORT_TIME\.label[\s\S]{0,200}origin="proposal"/, "30분 단축은 교사용 제안으로 표시");
+});
+
+test("교사 화면 단계 추가 정보 — 오늘의 목표 · PDF 활동 소개 · 정리 · 가정연계 · 촬영 주의", async () => {
+  const { buildStageExtras } = await import("../src/data/experience/lesson-engine/stage-extras-build.ts");
+  for (const w of EXPERIENCE_WEEKS) {
+    const x = buildStageExtras(w);
+    for (const k of ["open", "story", "move", "make", "share"]) assert.ok(x[k]?.goal?.text, `${w.weekNo}주 ${k} 목표`);
+    assert.ok(x.move.leads.length >= 1 && x.move.leads.every((l) => l.lead.origin === "source"), `${w.weekNo}주 신체활동 소개`);
+    assert.equal(x.move.leads.length, WEEK_DASHBOARDS.find((d) => d.weekNo === w.weekNo).physical2 ? 2 : 1, `${w.weekNo}주 신체활동 소개 개수`);
+    assert.deepEqual(x.share.wrapUp.map((u) => u.label).slice(0, 2), ["정리", "가정연계"], `${w.weekNo}주 정리 · 가정연계`);
+    // PDF 추출본이 단(column)대로 흩어진 주차가 있다 — 문장이 그대로 없으면 낱말이 모두 있어야 한다
+    const src = sq(sourceText(w.weekNo));
+    for (const u of x.share.wrapUp) if (u.item.origin === "source") assert.ok(src.includes(sq(u.item.text)) || u.item.text.split(/\s+/).filter((v) => sq(v).length >= 2).every((v) => src.includes(sq(v))), `${w.weekNo}주 ${u.label} 원문`);
+  }
+  assert.equal(buildStageExtras(EXPERIENCE_WEEKS[15]).move.extraCautions.length, 1, "16주 촬영 주의");
+});
+
+test("사진 자리 ID — 신체활동 단계 · 미술 예시 · 워크북 장 수와 PDF 그림 자리가 맞는다", () => {
+  for (const d of WEEK_DASHBOARDS) {
+    const ids = MEDIA_SLOT_IDS[d.weekNo];
+    const count = (re) => ids.filter((x) => re.test(x)).length;
+    assert.equal(count(/\.physical0\.step\./), d.physicalSteps.length, `${d.weekNo}주 신체 단계 사진 자리`);
+    if (d.physical2) assert.equal(count(/\.physical1\.step\./), d.physical2.steps.length, `${d.weekNo}주 두 번째 활동 사진 자리`);
+    assert.equal(count(/\.workbook\.worksheet\./), d.workbookSheets.length, `${d.weekNo}주 워크북 자리`);
+  }
+});

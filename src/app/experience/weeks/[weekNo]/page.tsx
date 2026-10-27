@@ -3,6 +3,7 @@ import { TeacherDashboard } from "@/components/play/TeacherDashboard";
 import { INTEGRATION_LABEL, SAFETY_ORIGIN, mediaStatus, preLessonChecks, weekGoals } from "@/data/experience/lesson-support";
 import { indicatorLinks } from "@/data/experience/lesson-engine/growth-mapping";
 import { indicatorName } from "@/data/experience/lesson-engine/plan";
+import { MEDIA_SLOT_IDS } from "@/data/experience/lesson-engine/media-slots-generated";
 import { WeekSourcePanel } from "@/components/play/WeekSourcePanel";
 import { ConsultButton } from "@/components/play/ConsultButton";
 import { EmailInquiryButton } from "@/components/play/EmailInquiryButton";
@@ -33,6 +34,13 @@ import { PART_NAME_CANDIDATE_LABEL } from "@/lib/weeks/week-types";
  * ★ 누리과정 5개 영역과 SOYE KIDS 핵심경험은 다른 묶음으로 보인다 (섞어 쓰지 않는다).
  */
 export const dynamicParams = false;
+
+/** PDF 그림 자리 ID — 단계 순서대로 (wN.physical0.step.K …) */
+function slotsOf(n: number) {
+  const ids = MEDIA_SLOT_IDS[n] ?? [];
+  const pick = (re: RegExp) => ids.filter((x) => re.test(x)).sort((a, b) => Number(a.split(".").pop()) - Number(b.split(".").pop()));
+  return { physical0: pick(/\.physical0\.step\./), physical1: pick(/\.physical1\.step\./), art: pick(/\.art\.example\./), workbook: pick(/\.workbook\.worksheet\./) };
+}
 
 /** 앞뒤 주차 — 대시보드 주간 개요의 이동 단추 */
 function neighbor(n: number): { weekNo: number; title: string } | null {
@@ -246,6 +254,7 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
               next: neighbor(week.weekNo + 1),
               integration: INTEGRATION_LABEL[week.weekNo] ?? null,
               indicatorLinks: indicatorLinks(week.teacherObservations.items).map((l) => ({ item: l.item, indicators: l.indicators.map(indicatorName) })),
+              slots: slotsOf(week.weekNo),
             }}
           />
 

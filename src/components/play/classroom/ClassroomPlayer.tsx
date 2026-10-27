@@ -551,6 +551,16 @@ function TeacherPane({ week, stage, stageExtra }: { week: ExperienceWeek; stage:
         </p>
         <span className="shrink-0 rounded-full bg-pop-cream px-3 py-1 text-[14px] font-bold text-pop-ink">약 {stage.minutes}분</span>
       </div>
+      {stageExtra?.goal ? (
+        <p className="mt-3 rounded-2xl bg-pop-cream px-4 py-2.5 text-[14px] leading-relaxed text-pop-ink">
+          <span className="font-bold">오늘의 목표 · </span>{stageExtra.goal.text} <OriginTag origin={stageExtra.goal.origin} className="align-middle" />
+        </p>
+      ) : null}
+      {stageExtra?.leads.map((l) => (
+        <p key={l.title} className="mt-3 text-[15px] leading-relaxed text-pop-ink">
+          <span className="font-bold">「{l.title}」 · </span>{l.lead.text} <OriginTag origin={l.lead.origin} className="align-middle" />
+        </p>
+      ))}
       <p className="mt-4 text-[13px] font-bold text-pop-ink-muted">활동 안내</p>
       <p className="mt-1 text-[18px] font-semibold leading-relaxed text-pop-ink">{stage.guide} <OriginTag origin={stage.guideOrigin} className="align-middle" /></p>
       <div className="mt-5 rounded-3xl bg-pop-sky-soft p-5">
@@ -592,6 +602,18 @@ function TeacherPane({ week, stage, stageExtra }: { week: ExperienceWeek; stage:
           <p className="flex items-center gap-2 text-[13px] font-extrabold text-pop-pink-deep">안전 먼저 <OriginTag origin={SAFETY_ORIGIN} /></p>
           <ul className="mt-1 grid gap-1 text-[15px] leading-relaxed text-pop-ink">{stage.safety.map((x) => <li key={x}>· {x}</li>)}</ul>
         </div>
+      ) : null}
+      {stageExtra?.extraCautions.length ? (
+        <ul className="mt-3 grid gap-1 rounded-2xl bg-pop-pink-soft/60 px-4 py-3 text-[14px] leading-relaxed text-pop-ink">
+          {stageExtra.extraCautions.map((c) => <li key={c.text}>· {c.text} <OriginTag origin={c.origin} className="align-middle" /></li>)}
+        </ul>
+      ) : null}
+      {stageExtra?.wrapUp.length ? (
+        <dl className="mt-4 grid gap-2 rounded-2xl bg-pop-cream px-4 py-3 text-[14px] leading-relaxed text-pop-ink">
+          {stageExtra.wrapUp.map((w) => (
+            <div key={w.label}><dt className="text-[12px] font-extrabold text-pop-ink-muted">{w.label}</dt><dd>{w.item.text} <OriginTag origin={w.item.origin} className="align-middle" /></dd></div>
+          ))}
+        </dl>
       ) : null}
       {stage.tip ? <p className="mt-3 rounded-2xl bg-pop-mint-soft px-4 py-3 text-[14px] leading-relaxed text-pop-ink">진행 팁 (자료 원문) · {stage.tip}</p> : null}
       <div className="mt-4 grid gap-2 rounded-2xl bg-pop-yellow-soft/60 px-4 py-3 text-[14px] leading-relaxed text-pop-ink">

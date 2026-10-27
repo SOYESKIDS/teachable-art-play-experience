@@ -9,7 +9,7 @@ import { TEACHER_POINT_PROPOSALS, weekProposal } from "@/data/experience/teacher
 import Link from "next/link";
 import { gatherForWeek, isEditedLine, pdfQuestions, weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
 import { TEXT_ORIGIN_LABEL, type ExperienceWeek, type TextOrigin } from "@/data/experience/types";
-import { LESSON_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
+import { LESSON_TIME, SHORT_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
 import { CHECK_STATE_NOTE, SAFETY_ORIGIN, type CheckGroup, type MediaRow } from "@/data/experience/lesson-labels";
 import { GROWTH_INDICATORS, REPORT_READING_NOTES } from "@/data/experience/report";
 import type { Sourced } from "@/data/experience/types";
@@ -25,6 +25,14 @@ export interface DashboardSupport {
   integration: string | null;
   /** 관찰 문항 → 5대 지표 (교사용 제안 · lesson-engine/growth-mapping.ts) */
   indicatorLinks: readonly { item: string; indicators: readonly string[] }[];
+  /** PDF 그림 자리 ID — 신체활동 단계 · 미술 예시 · 워크북 (파일은 없다) */
+  slots: { physical0: readonly string[]; physical1: readonly string[]; art: readonly string[]; workbook: readonly string[] };
+}
+
+/** 그림 자리 표시 — 파일이 없다는 것을 숨기지 않고, 어느 자리에 무엇이 들어갈지 ID 로 보인다 */
+function SlotChip({ id }: { id: string | undefined }) {
+  if (!id) return null;
+  return <span className="mt-1 inline-flex rounded-full bg-pop-cream px-2 py-0.5 font-mono text-[11px] text-pop-ink-muted">사진 자리 {id} · 자료 준비 중</span>;
 }
 
 /**
@@ -402,7 +410,8 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
             {d.artTitle ? <OriginTag origin="source" /> : null}
           </li>
           <li className="flex flex-wrap items-baseline gap-x-2">
-            <span><strong className="font-bold">다음 주차로 · </strong>{d.crossWeek ?? NONE}</span>
+            {/* 원문 한 칸에 「이번 주 결과물 → 다음 주」와 「앞 주차 → 이번 주」가 함께 적혀 있다 — 「다음 주차로」라고 줄여 말하지 않는다 */}
+            <span><strong className="font-bold">주차 연계 (자료 원문) · </strong>{d.crossWeek ?? NONE}</span>
             {d.crossWeek ? <OriginTag origin="source" /> : null}
           </li>
         </ul>
@@ -446,6 +455,10 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
             <p className="mt-1">
               운영 기준 <strong className="font-bold">{LESSON_TIME.label}</strong> ({LESSON_TIME.breakdown}) +
               선택 확장활동
+            </p>
+            <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-[14px]">
+              <span><span className="font-bold">{SHORT_TIME.label}</span> ({SHORT_TIME.breakdown}) — {SHORT_TIME.note}</span>
+              <OriginTag origin="proposal" />
             </p>
             <p className="mt-1 text-[14px] text-pop-ink-muted">
               자료 표기 「{week.duration.pdfDurationLabel}」
@@ -509,6 +522,7 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
                   {i + 1}. {s.title}
                 </p>
                 <p className="mt-0.5 text-[14px] leading-relaxed text-pop-ink-muted">{s.guide}</p>
+                <SlotChip id={support.slots.physical0[i]} />
               </li>
             ))}
           </ol>
@@ -529,7 +543,7 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
               <p className={cx("mt-1 font-display text-[19px] text-pop-ink", displayFallback(d.physical2.title))}>{d.physical2.title}</p>
               <p className="mt-1">{d.physical2.lead}</p>
               <ol className="mt-2 flex flex-col gap-1.5">
-                {d.physical2.steps.map((s, i) => <li key={s.title}><span className="font-bold">{i + 1}. {s.title}</span> — {s.guide}</li>)}
+                {d.physical2.steps.map((s, i) => <li key={s.title}><span className="font-bold">{i + 1}. {s.title}</span> — {s.guide} <SlotChip id={support.slots.physical1[i]} /></li>)}
               </ol>
               {d.physical2.tip ? <p className="mt-2 text-[14px] text-pop-ink-muted">진행 팁 · {d.physical2.tip}</p> : null}
             </div>
@@ -554,6 +568,7 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
               {d.artLead ? <p className="mt-1">{d.artLead}</p> : null}
               <Head>만드는 순서</Head>
               <List items={d.artSteps} empty={NONE} />
+              <p className="mt-2 flex flex-wrap gap-1.5">{support.slots.art.map((id) => <SlotChip key={id} id={id} />)}</p>
             </>
           ) : (
             <p className="text-[14px] text-pop-ink-muted">{NONE}</p>
@@ -572,6 +587,7 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
                     {i + 1}. {s.title}
                   </p>
                   <p className="mt-0.5 text-[14px] leading-relaxed text-pop-ink-muted">{s.guide}</p>
+                  <SlotChip id={support.slots.workbook[i]} />
                 </li>
               ))}
             </ul>
