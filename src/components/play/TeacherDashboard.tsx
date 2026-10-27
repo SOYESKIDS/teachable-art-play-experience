@@ -8,6 +8,7 @@ import { displayFallback } from "@/components/play/display-font";
 import { TEACHER_POINT_PROPOSALS, weekProposal } from "@/data/experience/teacher-dashboard/proposals";
 import Link from "next/link";
 import { pdfExtraOf } from "@/data/experience/teacher-dashboard/week-pdf-extra";
+import { KidsBoardPanel, LessonFlow, SlotStatus, area, goTo } from "@/components/play/DashboardLinks";
 import { editedLines, gatherForWeek, isEditedLine, pdfQuestions, weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
 import { TEXT_ORIGIN_LABEL, type ExperienceWeek, type TextOrigin } from "@/data/experience/types";
 import { LESSON_TIME, SHORT_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
@@ -30,11 +31,6 @@ export interface DashboardSupport {
   slots: { physical0: readonly string[]; physical1: readonly string[]; art: readonly string[]; workbook: readonly string[] };
 }
 
-/** 그림 자리 표시 — 파일이 없다는 것을 숨기지 않고, 어느 자리에 무엇이 들어갈지 ID 로 보인다 */
-function SlotChip({ id }: { id: string | undefined }) {
-  if (!id) return null;
-  return <span className="mt-1 inline-flex rounded-full bg-pop-cream px-2 py-0.5 font-mono text-[11px] text-pop-ink-muted">사진 자리 {id} · 자료 준비 중</span>;
-}
 
 /**
  * 교사용 수업 대시보드 — 읽기 전용.
@@ -182,18 +178,6 @@ function List({ items, empty }: { items: readonly string[]; empty?: string }) {
  * ★ 누르면 그 영역을 펼치고 그 자리로 간다. 긴 자료를 처음부터 읽지 않아도 된다.
  * ★ 새 내용을 만들지 않는다 — 아래 영역에 이미 있는 자료 문장 · 개수만 보인다.
  */
-/** 영역(들)을 펼치고 첫 자리로 간다. 영역이 아닌 묶음(id)도 받는다. */
-function goTo(ids: readonly string[]) {
-  let first: HTMLElement | null = null;
-  for (const id of ids) {
-    const el = document.getElementById(id);
-    if (el instanceof HTMLDetailsElement) el.open = true;
-    if (el && !first) first = el;
-  }
-  first?.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-const area = (n: number) => `dash-area-${n}`;
 
 /**
  * 교사 업무 메뉴 — 원본 명세의 여덟 업무(WK · LS · PR · OB · RP · FM · MD · CW).
@@ -206,8 +190,8 @@ const TASKS: readonly { code: string; name: string; hint: string; ids: readonly 
   { code: "LS", name: "수업 진행 가이드", hint: `${LESSON_TIME.totalMinutes}분 단계 · 발문 · 그림책 · 활동`, ids: ["lesson-plan"], areas: [2, 3, 4] },
   { code: "PR", name: "준비 · 물류", hint: "준비물 · 키트 · 안전 · 정리", ids: ["dash-prep", area(6), area(8)], areas: [6, 8] },
   { code: "OB", name: "관찰 포인트", hint: "수업 중 볼 행동 · 운영 포인트", ids: [area(11)], areas: [11] },
-  { code: "RP", name: "성장 리포트", hint: "성장기록 예시 · 가상 리포트", ids: [area(12)], areas: [12] },
-  { code: "FM", name: "가정 연계", hint: "가족 활동 · 부모 안내 문구", ids: [area(7), area(12)], areas: [7, 12] },
+  { code: "RP", name: "성장 리포트", hint: "성장기록 예시 · 가상 분석 · 리포트", ids: [area(12)], areas: [12] },
+  { code: "FM", name: "가정 연계", hint: "가족 활동 · 부모 안내 · 키즈보드", ids: [area(7), "dash-kidsboard", area(12)], areas: [7, 12] },
   { code: "MD", name: "미디어 라이브러리", hint: "그림책 표지 · 음원 · 영상", ids: [area(10)], areas: [10] },
   { code: "CW", name: "주차 연계 산출물", hint: "결과물 · 다음 주차 · 모아 올 것", ids: ["dash-cw"], areas: [4, 12] },
 ];
@@ -360,6 +344,7 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
       <OriginLegend className="mt-3" />
 
       <TaskMenu color={week.themeColor} />
+      <LessonFlow weekNo={week.weekNo} />
 
       {d.missingInSource.length > 0 ? (
         <p className="mt-3 rounded-2xl border-2 bg-pop-cream px-4 py-3 text-[14px] leading-relaxed text-pop-ink" style={tone}>
@@ -436,6 +421,8 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
           </>
         ) : null}
       </div>
+
+      <KidsBoardPanel weekNo={week.weekNo} />
 
       <div className="mt-6 flex flex-col gap-3">
         <Fold no={1} title="주차 기본 정보와 교육 목표" count={d.goals.length || proposal?.goals.length}>
@@ -538,7 +525,6 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
                   {i + 1}. {s.title}
                 </p>
                 <p className="mt-0.5 text-[14px] leading-relaxed text-pop-ink-muted">{s.guide}</p>
-                <SlotChip id={support.slots.physical0[i]} />
               </li>
             ))}
           </ol>
@@ -559,7 +545,7 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
               <p className={cx("mt-1 font-display text-[19px] text-pop-ink", displayFallback(d.physical2.title))}>{d.physical2.title}</p>
               <p className="mt-1">{d.physical2.lead}</p>
               <ol className="mt-2 flex flex-col gap-1.5">
-                {d.physical2.steps.map((s, i) => <li key={s.title}><span className="font-bold">{i + 1}. {s.title}</span> — {s.guide} <SlotChip id={support.slots.physical1[i]} /></li>)}
+                {d.physical2.steps.map((s, i) => <li key={s.title}><span className="font-bold">{i + 1}. {s.title}</span> — {s.guide}</li>)}
               </ol>
               {d.physical2.tip ? <p className="mt-2 text-[14px] text-pop-ink-muted">진행 팁 · {d.physical2.tip}</p> : null}
             </div>
@@ -584,7 +570,6 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
               {d.artLead ? <p className="mt-1">{d.artLead}</p> : null}
               <Head>만드는 순서</Head>
               <List items={d.artSteps} empty={NONE} />
-              <p className="mt-2 flex flex-wrap gap-1.5">{support.slots.art.map((id) => <SlotChip key={id} id={id} />)}</p>
               {x?.artUse.length ? (
                 <>
                   <Head>활용 방법</Head>
@@ -616,7 +601,6 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
                     {i + 1}. {s.title}
                   </p>
                   <p className="mt-0.5 text-[14px] leading-relaxed text-pop-ink-muted">{s.guide}</p>
-                  <SlotChip id={support.slots.workbook[i]} />
                 </li>
               ))}
             </ul>
@@ -762,6 +746,8 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
         <Fold no={10} title="동화책 음원과 뮤직비디오" count={d.media.length}>
           <Head>미디어 보유 상태</Head>
           <div className="mt-1.5"><MediaStatusTable rows={support.media} /></div>
+          <Head>PDF 그림 자리 — 자료 상태</Head>
+          <SlotStatus slots={support.slots} />
           <Head>음원 목록 (자료 원문)</Head>
           <List items={d.media} empty={NONE} />
           {x?.videoDesc ? (
@@ -855,8 +841,8 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
           <Link href="/experience/report" className="mt-3 mr-2 inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">
             성장 리포트 예시 보기 (가상)
           </Link>
-          <Link href="/experience/growth-demo" className="mt-3 mr-2 inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">
-            관찰 → 분석 → 승인 흐름 체험 (가상)
+          <Link href={`/experience/growth-demo?week=${week.weekNo}`} className="mt-3 mr-2 inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">
+            {week.weekNo}주 관찰 → 분석 → 승인 흐름 체험 (가상)
           </Link>
           {week.weekNo < 24 ? (
             <Link href={`/experience/weeks/${week.weekNo + 1}`} className="mt-3 inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">

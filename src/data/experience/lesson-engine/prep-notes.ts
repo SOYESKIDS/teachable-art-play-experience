@@ -23,6 +23,7 @@ const FIXED: readonly PrepNote[] = [
   { weekNo: 11, when: "before", text: src("나의 여권 & 탑승권"), action: prop("여권 · 탑승권은 워크북으로 미리 만들거나, 없으면 선생님이 탑승권 카드를 준비해요. 꽃목걸이는 4단계에서 만들어요.") },
   { weekNo: 22, when: "before", text: src("가면 도안"), action: prop("입장용 견본 가면 · 장식 하나를 미리 만들어 보여 줘요. 아이들 장식 · 가면은 4단계에서 만들어요.") },
   { weekNo: 16, when: "before", text: src("9~15주차 활동 사진 인화본"), action: prop("수업 전에 9~15주차 사진을 인화해 계절별로 나눠 두고, 아이마다 고를 수 있게 펼쳐 둬요.") },
+  { weekNo: 24, when: "before", text: src("각자 꾸민 지구 조각"), action: prop("원아 수만큼 지구 조각을 미리 잘라 두고, 대형 지구 판에 조각 자리를 표시해 둬요. 결석한 아이 조각 자리도 비워 둬요. 아이들 조각은 4단계에서 꾸며요.") },
   { weekNo: 17, when: "before", text: src("우리 반 세계지도 설치 + 출발지 표시"), action: prop("대형 세계지도를 아이 눈높이에 붙이고 우리 원 자리에 출발지를 표시해요. 24주차까지 떼지 않아요.") },
 ];
 

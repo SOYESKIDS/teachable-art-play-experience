@@ -426,7 +426,7 @@ test("수업 전 · 마무리 확인 목록 — 24주 모두 빠진 묶음이 �
     // 24주는 다음 주차가 없다 — 주차 연계 원문은 「다음 주차로」가 아니라 따로 묶는다 (이번 주 → 다음 · 앞 주차 → 이번 주가 함께 적힌 칸)
     assert.equal(close.some((g) => g.key === "next"), w.weekNo < 24, `${w.weekNo}주 다음 주차 준비`);
     assert.equal(close.some((g) => g.key === "crossweek"), Boolean(WEEK_DASHBOARDS.find((d) => d.weekNo === w.weekNo).crossWeek), `${w.weekNo}주 주차 연계 원문`);
-    assert.equal(keys.includes("premake"), [4, 11, 16, 17, 22].includes(w.weekNo), `${w.weekNo}주 미리 준비 · 사전 제작`);
+    assert.equal(keys.includes("premake"), [4, 11, 16, 17, 22, 24].includes(w.weekNo), `${w.weekNo}주 미리 준비 · 사전 제작`);
     assert.equal(close.some((g) => g.key === "worldmap"), w.weekNo >= 18 && w.weekNo <= 23, `${w.weekNo}주 세계지도 깃발`);
     for (const g of [...pre, ...close]) {
       assert.ok(g.items.length > 0 && g.items.every((x) => x.text.trim()), `${w.weekNo}주 ${g.key} 비어 있음`);

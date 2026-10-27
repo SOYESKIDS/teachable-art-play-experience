@@ -89,8 +89,8 @@ test("교실 화면 「이야기 열기」 — 24주 모두 같은 추상 문장
   }
 });
 
-test("순서 주의 — 신체활동이 뒤 단계 결과물을 먼저 쓰는 4 · 11 · 22주에 원문 문장과 운영 제안이 있다", () => {
-  assert.deepEqual(SEQUENCE_NOTES.map((x) => x.weekNo), [4, 11, 22]);
+test("순서 주의 — 신체활동이 뒤 단계 결과물을 먼저 쓰는 4 · 11 · 22 · 24주에 원문 문장과 운영 제안이 있다", () => {
+  assert.deepEqual(SEQUENCE_NOTES.map((x) => x.weekNo), [4, 11, 22, 24]);
   for (const s of SEQUENCE_NOTES) {
     // PDF 추출본은 단(column)대로 뽑혀 한 문장이 여러 줄에 흩어진 곳이 있다 — 낱말이 모두 원문에 있어야 한다
     const src = sq(sourceText(s.weekNo));
@@ -99,10 +99,10 @@ test("순서 주의 — 신체활동이 뒤 단계 결과물을 먼저 쓰는 4 
     }
     assert.equal(s.resolution.origin, "proposal");
   }
-  // 4 · 11 · 22 말고는 신체 단계가 「만든 …」을 먼저 쓰지 않는다
+  // 4 · 11 · 22 · 24 말고는 신체 단계가 「만든 · 꾸민 …」을 먼저 쓰지 않는다
   for (const d of WEEK_DASHBOARDS) {
-    const uses = d.physicalSteps.some((s) => /내가 만든|직접 만든/.test(s.guide));
-    assert.equal(uses, [4, 11, 22].includes(d.weekNo), `${d.weekNo}주`);
+    const uses = d.physicalSteps.some((s) => /내가 만든|직접 만든|각자 꾸민/.test(s.guide));
+    assert.equal(uses, [4, 11, 22, 24].includes(d.weekNo), `${d.weekNo}주`);
   }
 });
 
@@ -216,9 +216,9 @@ test("검토 · 승인 흐름 — AI 초안 → 교사 수정 → 검토 완료 
   assert.deepEqual(G.nextStateBlockers(ai, "approved"), []);
 });
 
-test("미리 준비 · 사전 제작 — 4 · 11 · 22주 견본, 16주 사진 인화, 17주 세계지도 설치, 18~23주 깃발은 원문 조각 + 운영 제안", async () => {
+test("미리 준비 · 사전 제작 — 4 · 11 · 22 · 24주 견본 · 조각, 16주 사진 인화, 17주 세계지도 설치, 18~23주 깃발은 원문 조각 + 운영 제안", async () => {
   const { PREP_NOTES, hasFilming, FILMING_NOTE } = await import("../src/data/experience/lesson-engine/prep-notes.ts");
-  assert.deepEqual(PREP_NOTES.filter((p) => p.when === "before").map((p) => p.weekNo).sort((a, b) => a - b), [4, 11, 16, 17, 22]);
+  assert.deepEqual(PREP_NOTES.filter((p) => p.when === "before").map((p) => p.weekNo).sort((a, b) => a - b), [4, 11, 16, 17, 22, 24]);
   assert.deepEqual(PREP_NOTES.filter((p) => p.when === "during").map((p) => p.weekNo), [18, 19, 20, 21, 22, 23]);
   for (const p of PREP_NOTES) {
     assert.equal(p.text.origin, "source");
@@ -301,5 +301,35 @@ test("사진 자리 ID — 신체활동 단계 · 미술 예시 · 워크북 장
     assert.equal(count(/\.physical0\.step\./), d.physicalSteps.length, `${d.weekNo}주 신체 단계 사진 자리`);
     if (d.physical2) assert.equal(count(/\.physical1\.step\./), d.physical2.steps.length, `${d.weekNo}주 두 번째 활동 사진 자리`);
     assert.equal(count(/\.workbook\.worksheet\./), d.workbookSheets.length, `${d.weekNo}주 워크북 자리`);
+  }
+});
+
+test("키즈보드 — 1~4주 세트 A · 5~8주 세트 B (자료 원문), 9~24주는 미정으로 두고 공유 · 사진은 기관용으로만", async () => {
+  const { kidsboardSetFor, kidsboardRows, KIDSBOARD_SETS } = await import("../src/data/experience/kidsboard.ts");
+  for (const w of EXPERIENCE_WEEKS) {
+    const n = w.weekNo;
+    assert.equal(kidsboardSetFor(n), n <= 4 ? "A" : n <= 8 ? "B" : null, `${n}주 세트`);
+    if (n <= 8) assert.ok(sq(sourceText(n)).includes(sq(`키즈보드 메뉴 ${n <= 4 ? "1~4" : "5~8"}주차 구성 (세트 ${n <= 4 ? "A" : "B"})`)), `${n}주 PDF 세트 표기`);
+    const rows = kidsboardRows(n);
+    assert.equal(rows.length, KIDSBOARD_SETS.A.items.length + KIDSBOARD_SETS.B.items.length);
+    for (const name of ["활동사진", "활동 영상", "활동 사진 공유"]) assert.equal(rows.find((r) => r.name === name).state, "saas", `${n}주 ${name} 는 공개 체험에서 하지 않는다`);
+    assert.equal(rows.find((r) => r.name === "성장데이터").href, `/experience/growth-demo?week=${n}`);
+  }
+});
+
+test("성장 분석 체험 — 주차를 고르면 그 주차 활동 · 관찰 문항으로만 시작한다 (다른 주차 기록 없음)", async () => {
+  const { weekStarter } = await import("../src/lib/growth/week-starter.ts");
+  for (const p of plans) {
+    const acts = [...p.physicalActivities, ...(p.artActivity ? [p.artActivity] : [])];
+    const w = { weekNo: p.weekNo, title: p.weekTitle, storybook: p.storybook.title, familyTitle: null, parentNotice: [], kidsnote: null, itemsOrigin: "source",
+      activities: acts.map((a) => ({ id: a.id, title: a.title, kind: a.kind, stage: a.stage, items: a.observations.map((o) => ({ item: o.item, indicators: o.indicators })) })),
+      items: p.growthIndicatorMappings.map((l) => ({ item: l.item, indicators: l.indicators })) };
+    const s = weekStarter(w);
+    assert.ok(s.observations.length >= 1, `${p.weekNo}주 기록`);
+    for (const o of s.observations) {
+      assert.equal(o.weekNo, p.weekNo);
+      assert.ok(acts.some((a) => a.id === o.activityId), `${p.weekNo}주 활동 ${o.activityId}`);
+      assert.ok(w.items.some((x) => x.item === o.item), `${p.weekNo}주 문항 ${o.item}`);
+    }
   }
 });

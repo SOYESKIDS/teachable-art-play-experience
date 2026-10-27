@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { PrintButton } from "@/components/play/PrintButton";
 import { cx } from "@/components/ui/cx";
 import { popButtonClass } from "@/components/play/PopButton";
 import { displayFallback } from "@/components/play/display-font";
@@ -11,6 +13,7 @@ import {
   analyze, bannedReasons, confirmStatement, deleteStatement, detectPII, editStatement, moveTo, nextStateBlockers,
   REVIEW_LABEL, VIRTUAL_CHILDREN, type AnalysisDraft, type DemoEvidence, type DemoObservation, type ReviewDoc, type ReviewState,
 } from "@/lib/growth/demo-analysis";
+import { weekStarter, type DemoWeek } from "@/lib/growth/week-starter";
 
 /**
  * 가상 성장 분석 시연 — 관찰 기록 → 근거 → 5대 지표 → AI 초안 → 교사 검토 → 승인 → 리포트 미리보기.
@@ -19,14 +22,7 @@ import {
  * ★ 원아는 가상 원아 셋 가운데 고른다 — 이름 칸이 없다. 글 칸에 실명 · 연락처가 보이면 분석을 막는다.
  * ★ 사진 · 작품은 파일이 아니라 「가상 자료 설명」 한 줄이다.
  */
-export interface DemoWeek {
-  weekNo: number;
-  title: string;
-  storybook: string;
-  familyTitle: string | null;
-  activities: readonly { id: string; title: string; kind: "physical" | "art"; stage: string }[];
-  items: readonly { item: string; indicators: readonly GrowthMetricCode[] }[];
-}
+export type { DemoWeek } from "@/lib/growth/week-starter";
 
 const NAME = Object.fromEntries(GROWTH_INDICATORS.map((g) => [g.code, g.name])) as Record<GrowthMetricCode, string>;
 const DEF = Object.fromEntries(GROWTH_INDICATORS.map((g) => [g.code, g.definition])) as Record<GrowthMetricCode, string>;
@@ -75,6 +71,30 @@ export function GrowthDemo({ weeks }: { weeks: readonly DemoWeek[] }) {
     setDoc(null);
     setNotice(null);
   }
+
+  /** 주차 바꾸기 — 그 주차 자료로만 만든 가상 기록에서 다시 시작한다 */
+  function loadWeek(n: number) {
+    const w = weeks.find((x) => x.weekNo === n);
+    if (!w) return;
+    const s = weekStarter(w);
+    setOriginals(new Map(s.observations.map((o) => [o.id, o])));
+    setScenarioKey(`week-${n}`);
+    setWeekNo(n);
+    setObservations(s.observations);
+    setEvidence(s.evidence);
+    setDraft(null);
+    setDoc(null);
+    setNotice(null);
+  }
+
+  // 주차 대시보드에서 넘어오면 (?week=N) 그 주차로 시작한다 — 주소만 읽고 아무것도 저장하지 않는다
+  useEffect(() => {
+    const n = Number(new URLSearchParams(window.location.search).get("week"));
+    if (!Number.isInteger(n) || !weeks.some((w) => w.weekNo === n)) return;
+    const id = window.requestAnimationFrame(() => loadWeek(n));
+    return () => window.cancelAnimationFrame(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 처음 한 번만 주소를 읽는다
+  }, []);
 
   function update(id: string, patch: Partial<DemoObservation>) {
     setObservations((list) => list.map((o) => (o.id === id ? { ...o, ...patch } : o)));
@@ -147,27 +167,48 @@ export function GrowthDemo({ weeks }: { weeks: readonly DemoWeek[] }) {
             </select>
           </label>
           <label className="grid gap-1 text-[13px] font-bold text-pop-ink-muted">주차
-            <select className={field} value={weekNo} onChange={(e) => { setWeekNo(Number(e.target.value)); setDraft(null); setDoc(null); }}>
+            <select className={field} value={weekNo} onChange={(e) => loadWeek(Number(e.target.value))}>
               {weeks.map((w) => <option key={w.weekNo} value={w.weekNo}>{w.weekNo}주 「{w.title}」</option>)}
             </select>
           </label>
+        </div>
+        <div className="mt-4 grid gap-3 rounded-2xl bg-pop-sky-soft/60 px-4 py-3 text-[14px] leading-relaxed text-pop-ink sm:grid-cols-2">
+          <div>
+            <p className="text-[12px] font-extrabold text-pop-ink-muted">{week.weekNo}주 대표활동 (PDF)</p>
+            <ul className="mt-1 grid gap-0.5">{week.activities.map((a) => <li key={a.id}>· {a.kind === "art" ? "미술" : "신체"} · {a.title}</li>)}</ul>
+          </div>
+          <div>
+            <p className="text-[12px] font-extrabold text-pop-ink-muted">{week.weekNo}주 관찰 문항 ({week.itemsOrigin === "source" ? "PDF 원문" : "교사용 제안 · 원문 미작성"}) → 5대 지표 (교사용 제안)</p>
+            <ul className="mt-1 grid gap-0.5">{week.items.map((x) => <li key={x.item}>· {x.item} <span className="font-bold text-pop-lilac-deep">{x.indicators.map((c) => NAME[c]).join(" · ") || "연결 없음"}</span></li>)}</ul>
+          </div>
+          <p className="text-[13px] sm:col-span-2">
+            <Link href={`/experience/weeks/${week.weekNo}`} className="font-bold text-pop-sky-deep underline-offset-4 hover:underline">{week.weekNo}주 수업 대시보드로 돌아가기</Link>
+            {" · "}
+            <Link href={`/experience/weeks/${week.weekNo}/guide`} className="font-bold text-pop-sky-deep underline-offset-4 hover:underline">상세 지도안</Link>
+          </p>
         </div>
         <ol className="mt-4 grid gap-4">
           {observations.map((o) => {
             const w = weeks.find((x) => x.weekNo === o.weekNo) ?? week;
             const itemLink = w.items.find((x) => x.item === o.item);
+            const actItems = w.activities.find((a) => a.id === o.activityId)?.items ?? [];
+            const itemChoices = [...actItems, ...w.items.filter((x) => !actItems.some((y) => y.item === x.item))];
             return (
               <li key={o.id} className="rounded-2xl bg-pop-cream p-4 ring-1 ring-pop-ink/5">
                 <p className="text-[12px] font-extrabold text-pop-ink-muted">관찰 기록 {o.id} · {o.weekNo}주차 · {o.observedAt} · {o.observer}</p>
                 <div className="mt-2 grid gap-3 sm:grid-cols-2">
                   <label className="grid gap-1 text-[13px] font-bold text-pop-ink-muted">활동 (PDF 대표활동)
-                    <select className={field} value={o.activityId} onChange={(e) => { const a = w.activities.find((x) => x.id === e.target.value)!; update(o.id, { activityId: a.id, activityTitle: a.title, stageKey: a.stage }); }}>
+                    <select className={field} value={o.activityId} onChange={(e) => {
+                      const a = w.activities.find((x) => x.id === e.target.value)!;
+                      const it = a.items.find((x) => x.indicators.length) ?? a.items[0];
+                      update(o.id, { activityId: a.id, activityTitle: a.title, stageKey: a.stage, ...(it ? { item: it.item, indicator: it.indicators[0] ?? null } : {}) });
+                    }}>
                       {w.activities.map((a) => <option key={a.id} value={a.id}>{a.kind === "art" ? "미술" : "신체"} · {a.title}</option>)}
                     </select>
                   </label>
                   <label className="grid gap-1 text-[13px] font-bold text-pop-ink-muted">관찰 문항
                     <select className={field} value={o.item} onChange={(e) => { const it = w.items.find((x) => x.item === e.target.value)!; update(o.id, { item: it.item, indicator: it.indicators[0] ?? null }); }}>
-                      {w.items.map((x) => <option key={x.item}>{x.item}</option>)}
+                      {itemChoices.map((x) => <option key={x.item} value={x.item}>{actItems.some((y) => y.item === x.item) ? "이 활동 · " : ""}{x.item}</option>)}
                     </select>
                   </label>
                   <label className="grid gap-1 text-[13px] font-bold text-pop-ink-muted">성장지표 (문항에 연결된 것만 · 교사용 제안)
@@ -304,8 +345,17 @@ export function GrowthDemo({ weeks }: { weeks: readonly DemoWeek[] }) {
             <div><dt className="font-bold text-pop-ink-muted">다음 활동에서 관찰할 점</dt><dd>{draft?.nextObservations.join(" · ") || "—"}</dd></div>
             <div><dt className="font-bold text-pop-ink-muted">가정연계 활동</dt><dd>{week.familyTitle ?? "—"}</dd></div>
             <div><dt className="font-bold text-pop-ink-muted">보호자께 드리는 안내</dt><dd><ul className="grid gap-1">{REPORT_GUARDIAN_NOTES.map((x) => <li key={x}>· {x}</li>)}</ul></dd></div>
+            {week.parentNotice.length ? (
+              <div><dt className="font-bold text-pop-ink-muted">{week.weekNo}주 부모님께 드리는 안내 (자료 원문)</dt><dd><ul className="grid gap-1">{week.parentNotice.map((x) => <li key={x}>· {x}</li>)}</ul></dd></div>
+            ) : null}
+            <div><dt className="font-bold text-pop-ink-muted">{week.weekNo}주 성장기록 예시 (자료 원문 · 다른 아이의 기록이 아닌 작성 예시)</dt><dd>{week.kidsnote ?? "자료에 성장기록 예시가 없습니다 (원문 미작성)."}</dd></div>
             <div><dt className="font-bold text-pop-ink-muted">검토 · 승인 상태</dt><dd>{REVIEW_LABEL[doc.state]} · 체험에서는 보내지 않습니다 (도움 방식 표시: {SUPPORT_NAME.independent} · {SUPPORT_NAME.after_modeling} · {SUPPORT_NAME.with_teacher} · {SUPPORT_NAME.not_observed} — 점수가 아닙니다)</dd></div>
           </dl>
+          <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden">
+            <PrintButton />
+            <Link href={`/experience/weeks/${week.weekNo}/guide`} className={popButtonClass("white", "md")}>{week.weekNo}주 상세 지도안 인쇄</Link>
+            <Link href={`/experience/weeks/${week.weekNo}`} className={popButtonClass("ghost", "md")}>{week.weekNo}주 대시보드</Link>
+          </div>
         </section>
       ) : null}
     </div>
