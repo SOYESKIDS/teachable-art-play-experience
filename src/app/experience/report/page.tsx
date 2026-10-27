@@ -184,6 +184,7 @@ export default function ExperienceReportPage() {
             수업 체험하기
           </PopLink>
           <PopLink href="/experience/weeks" tone="white" size="xl">24주 둘러보기</PopLink>
+          <PopLink href="/experience/growth-demo" tone="white" size="xl">성장 분석 흐름 체험</PopLink>
         </div>
 
         {/* 리포트를 본 다음 행동 (E-4) */}

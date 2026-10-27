@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { TeacherDashboard } from "@/components/play/TeacherDashboard";
 import { INTEGRATION_LABEL, SAFETY_ORIGIN, mediaStatus, preLessonChecks, weekGoals } from "@/data/experience/lesson-support";
+import { indicatorLinks } from "@/data/experience/lesson-engine/growth-mapping";
+import { indicatorName } from "@/data/experience/lesson-engine/plan";
 import { WeekSourcePanel } from "@/components/play/WeekSourcePanel";
 import { ConsultButton } from "@/components/play/ConsultButton";
 import { EmailInquiryButton } from "@/components/play/EmailInquiryButton";
@@ -243,6 +245,7 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
               prev: neighbor(week.weekNo - 1),
               next: neighbor(week.weekNo + 1),
               integration: INTEGRATION_LABEL[week.weekNo] ?? null,
+              indicatorLinks: indicatorLinks(week.teacherObservations.items).map((l) => ({ item: l.item, indicators: l.indicators.map(indicatorName) })),
             }}
           />
 

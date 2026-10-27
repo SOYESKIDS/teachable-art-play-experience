@@ -35,7 +35,7 @@ const MEASURE = `(()=>({
 const measure = () => page.eval(MEASURE);
 
 // 1. key pages x widths
-const PAGES = ["/", "/experience", "/experience/weeks", "/experience/weeks/4", "/experience/classroom/4", "/experience/report"];
+const PAGES = ["/", "/experience", "/experience/weeks", "/experience/weeks/4", "/experience/classroom/4", "/experience/report", "/experience/growth-demo"];
 for (const w of (process.env.SKIP_PART1 ? [] : [360, 390, 768, 1024, 1440, 1920])) {
   for (const p of PAGES) {
     page.requests = []; page.drain();
@@ -135,6 +135,56 @@ note(topicBad.length === 0, "24주 주제 일치 (상세 제목 = 플레이어 �
     if (!intro || !timer || !done.closing || !done.note) bad.push(`${n}:${JSON.stringify({ intro, timer, ...done })}`);
   }
   note(bad.length === 0, "플레이어 수업 전 확인 · 단계 시간 · 수업 마무리 확인 (1 · 8 · 16 · 24주)", bad.join(" "));
+  page.drain();
+}
+
+// 2-4. 가상 성장 분석 흐름 — 근거 충분 → 초안 → 확인 → 검토 · 승인 → 리포트, 개인정보 장면 차단, 공유 막힘, 전송 · 저장 없음
+{
+  await page.viewport(1440, 900);
+  page.requests = []; page.drain();
+  await page.goto(`${base}/experience/growth-demo`).catch(() => {}); await page.idle(500, 8000);
+  const click = (text) => page.eval(`(()=>{const b=[...document.querySelectorAll('button')].find(x=>x.textContent.trim().startsWith(${JSON.stringify(text)}));if(!b)return false;b.click();return true})()`);
+  const r = {};
+  await click("근거가 충분한 경우"); await click("분석 초안 만들기"); await page.idle(300);
+  r.statements = await page.eval(`document.querySelectorAll('article').length`);
+  await click("승인"); await page.idle(200);
+  r.blockedApprove = await page.eval(`document.body.innerText.includes('순서대로만') || document.body.innerText.includes('확인하지 않은 AI 문장')`);
+  await page.eval(`[...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='사실 확인했어요').forEach(b=>b.click())`); await page.idle(200);
+  await click("검토 완료로"); await page.idle(200); await click("승인"); await page.idle(300);
+  r.report = await page.eval(`!!document.getElementById('demo-report') && document.body.innerText.includes('가상 예시 · 실제 아동 아님')`);
+  await click("보호자에게 공유"); await page.idle(200);
+  r.noShare = await page.eval(`document.body.innerText.includes('체험에서는 보호자에게 보내지 않습니다')`);
+  await click("실제 아동 개인정보가 들어간 경우"); await page.idle(200);
+  r.piiAlert = await page.eval(`[...document.querySelectorAll('[role=alert]')].some(x=>x.textContent.includes('개인정보'))`);
+  await click("분석 초안 만들기"); await page.idle(200);
+  r.piiBlocked = await page.eval(`document.body.innerText.includes('분석을 막았습니다') && document.querySelectorAll('article').length===0`);
+  await click("사진만 있고 교사 기록이 없는 경우"); await click("분석 초안 만들기"); await page.idle(200);
+  r.photoOnly = await page.eval(`document.body.innerText.includes('교사 관찰 기록이 없어 분석하지 않았습니다') && document.querySelectorAll('article').length===0`);
+  r.fields = await page.eval(`document.querySelectorAll('form,input,textarea').length`);
+  const s = supa(); const d = page.drain();
+  r.nonGet = page.requests.filter((x) => !["GET", "HEAD"].includes(x.method) || x.postData).length;
+  r.store = await page.eval(`localStorage.length + Object.keys(sessionStorage).filter(k=>!k.startsWith('tap3-demo-classroom:')).length + document.cookie.length`);
+  note(r.statements === 2 && r.blockedApprove && r.report && r.noShare && r.piiAlert && r.piiBlocked && r.photoOnly && r.fields === 0 && r.nonGet === 0 && r.store === 0 && s.any === 0 && !d.consoleErrors.length,
+    "가상 성장 분석 흐름 (초안 2문장 · 확인 전 승인 막힘 · 승인 뒤 리포트 · 공유 막힘 · 개인정보 차단 · 사진만 분석 안 함 · 입력 칸 0 · 전송 · 저장 0)", JSON.stringify({ ...r, ext: s.any, console: d.consoleErrors.length }));
+  page.drain();
+}
+
+// 2-5. 교실 화면 「이야기 열기」가 주차 주제 문장 + 오늘 할 것, 순서 주의(4주)가 교사 화면에 있다
+{
+  await page.viewport(1440, 900);
+  const bad = [];
+  for (const n of [4, 7, 11, 22]) {
+    await page.goto(`${base}/experience/classroom/${n}`).catch(() => {}); await page.eval("sessionStorage.clear()");
+    await page.goto(`${base}/experience/classroom/${n}`).catch(() => {}); await page.idle(400, 6000);
+    await page.clickText("나란히"); await page.clickText("수업 시작", { exact: false }); await page.idle(400);
+    const open = await page.eval(`({line:[...document.querySelectorAll("[aria-label='교실 화면'] p.font-display")][1]?.textContent??'', chips:document.querySelectorAll("ul[aria-label='오늘 할 것'] li").length})`);
+    await page.eval(`window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'}))`); await page.idle(200);
+    await page.eval(`window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'}))`); await page.idle(300);
+    const move = await page.eval(`(()=>{const t=document.querySelector("[aria-label='교사 화면']")?.innerText??'';return {seq:t.includes('순서 주의'), fold:t.includes('이 단계 자료 · 관찰')}})()`);
+    const wantSeq = [4, 11, 22].includes(n);
+    if (!open.line || open.line.includes("무엇을 만날까요") || open.chips < 3 || move.seq !== wantSeq || !move.fold) bad.push(`${n}:${JSON.stringify({ ...open, ...move })}`);
+  }
+  note(bad.length === 0, "교실 화면 주제 문장 · 오늘 할 것 · 순서 주의(4 · 11 · 22주) · 단계 자료/관찰 → 지표", bad.join(" "));
   page.drain();
 }
 

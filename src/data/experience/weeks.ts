@@ -3,6 +3,7 @@ import { LESSON_STAGE_MINUTES, LESSON_TIME, PDF_DURATION_LABEL } from "@/lib/wee
 import { PARTS } from "@/lib/weeks/week-types";
 import { DEMO_LESSONS } from "./demo-lessons";
 import { WEEK_MEDIA } from "./media";
+import { OPEN_CHILD_LINES } from "./lesson-engine/classroom-lines";
 import { officialPlan, type OfficialWeekPlan } from "./official-plan";
 import { gatherForWeek, weekDashboard, type WeekDashboard } from "./teacher-dashboard/week-dashboards";
 import { weekProposal } from "./teacher-dashboard/proposals";
@@ -52,8 +53,9 @@ export function parseDurationMinutes(label: string): number {
  * ★ 발문 · 안내 · 진행 순서마다 출처(TextOrigin)를 붙인다. 화면 세 곳이 이 값을 그대로 쓴다.
  */
 function buildStages(body: DemoLessonBody, meta: OfficialWeekMeta, plan: OfficialWeekPlan): ClassStage[] {
-  // 큰 글씨 한 줄은 제목 글꼴로 그리므로 짧은 고정 문장을 쓴다. 교사용 도입 멘트는 바로 아래 안내에 둔다.
-  const childLine: Record<StageKey, string> = { ...body.childLines, open: "오늘은 무엇을 만날까요?" };
+  // 큰 글씨 한 줄 — 「이야기 열기」는 주차 주제가 보이는 문장(교사용 제안 · lesson-engine/classroom-lines.ts).
+  //   24주 모두 같던 「오늘은 무엇을 만날까요?」를 바꿨다. 교사용 도입 멘트는 바로 아래 안내에 둔다.
+  const childLine: Record<StageKey, string> = { ...body.childLines, open: OPEN_CHILD_LINES[body.weekNo] ?? "오늘은 무엇을 만날까요?" };
   const d = weekDashboard(body.weekNo);
   const inPdf = pdfText(d);
   const ask = (q: string, fallback: TextOrigin): TextOrigin => (inPdf(q) ? "source" : fallback);

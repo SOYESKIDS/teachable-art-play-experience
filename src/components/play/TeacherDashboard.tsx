@@ -23,6 +23,8 @@ export interface DashboardSupport {
   prev: { weekNo: number; title: string } | null;
   next: { weekNo: number; title: string } | null;
   integration: string | null;
+  /** 관찰 문항 → 5대 지표 (교사용 제안 · lesson-engine/growth-mapping.ts) */
+  indicatorLinks: readonly { item: string; indicators: readonly string[] }[];
 }
 
 /**
@@ -705,6 +707,15 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
 
         <Fold no={11} title="관찰 포인트" count={d.observations.length || proposal?.observations.length}>
           <OriginList label="관찰 문항" source={d.observations} proposal={proposal?.observations ?? []} />
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <p className="text-[13px] font-bold text-pop-ink-muted">관찰 문항 → 5대 성장지표</p>
+            <OriginTag origin="proposal" />
+          </div>
+          <ul className="mt-1.5 grid gap-1 text-[14px] leading-relaxed">
+            {support.indicatorLinks.map((l) => (
+              <li key={l.item}>· {l.item} <span className="font-bold text-pop-lilac-deep">{l.indicators.length ? l.indicators.join(" · ") : "연결 없음 (억지로 잇지 않음)"}</span></li>
+            ))}
+          </ul>
           <p className="mt-3 text-[13px] leading-relaxed text-pop-ink-muted">
             보기 예시입니다. 이 화면에는 원아 정보를 적거나 저장하는 자리가 없습니다.
           </p>
@@ -757,6 +768,9 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
           <p className="mt-1.5 text-[12px] text-pop-ink-muted">점수 · 등급이 아니라 그 활동에서 필요했던 도움 방식을 적는 지표입니다. 실제 기록 · 보호자 공유는 기관용 서비스에서만 합니다.</p>
           <Link href="/experience/report" className="mt-3 mr-2 inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">
             성장 리포트 예시 보기 (가상)
+          </Link>
+          <Link href="/experience/growth-demo" className="mt-3 mr-2 inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">
+            관찰 → 분석 → 승인 흐름 체험 (가상)
           </Link>
           {week.weekNo < 24 ? (
             <Link href={`/experience/weeks/${week.weekNo + 1}`} className="mt-3 inline-flex min-h-11 items-center rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/10">

@@ -1,0 +1,217 @@
+// 24주 실행형 수업 데이터 · 관찰 → 5대 지표 · 가상 성장 분석 · 검토 승인 흐름
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { EXPERIENCE_WEEKS } from "../src/data/experience/weeks.ts";
+import { WEEK_DASHBOARDS } from "../src/data/experience/teacher-dashboard/week-dashboards.ts";
+import { buildLessonPlan, connectionCheck } from "../src/data/experience/lesson-engine/plan.ts";
+import { indicatorsFor } from "../src/data/experience/lesson-engine/growth-mapping.ts";
+import { weekAssets } from "../src/data/experience/lesson-engine/assets.ts";
+import { MEDIA_SLOT_IDS } from "../src/data/experience/lesson-engine/media-slots-generated.ts";
+import { OPEN_CHILD_LINES } from "../src/data/experience/lesson-engine/classroom-lines.ts";
+import { SEQUENCE_NOTES } from "../src/data/experience/lesson-engine/sequence-notes.ts";
+import { DEMO_SCENARIOS } from "../src/data/experience/growth-demo-scenarios.ts";
+import { GROWTH_INDICATORS } from "../src/data/experience/report.ts";
+import * as G from "../src/lib/growth/demo-analysis.ts";
+
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const SRC_DIR = join(ROOT, "docs/curriculum-upgrade/TAP_Curriculum_Development_Pack/TeachAble_24Week_Dashboard_DevPack/source_text");
+const sourceText = (n) => readFileSync(n <= 20 ? join(SRC_DIR, `week-${String(n).padStart(2, "0")}.txt`) : join(ROOT, `docs/curriculum-upgrade/dashboard-source-21-24/week-${n}.txt`), "utf8");
+const sq = (s) => s.normalize("NFC").replace(/[\s?.!,·ˮʼ”“"'‘’()~\-–]/g, "");
+const NAME = Object.fromEntries(GROWTH_INDICATORS.map((g) => [g.code, g.name]));
+const DEF = Object.fromEntries(GROWTH_INDICATORS.map((g) => [g.code, g.definition]));
+const plans = EXPERIENCE_WEEKS.map(buildLessonPlan);
+
+test("24주 실행형 데이터 — 요구한 항목이 모두 있고 35분 · 단계 5개다", () => {
+  const KEYS = ["weekNo", "weekTitle", "storybook", "learningGoals", "growthKeyword", "lessonDuration", "lessonStages", "physicalActivities", "artActivity",
+    "workbookActivities", "kitAndMaterials", "safetyGuidance", "teacherQuestions", "observationPoints", "growthIndicatorMappings", "familyActivity",
+    "crossWeekOutputs", "mediaAssets", "sourceReferences", "reviewStatus"];
+  for (const p of plans) {
+    for (const k of KEYS) assert.ok(k in p, `${p.weekNo}주 ${k}`);
+    assert.equal(p.lessonStages.length, 5);
+    assert.equal(p.lessonStages.reduce((a, s) => a + s.minutes, 0), 35, `${p.weekNo}주 35분`);
+    for (const s of p.lessonStages) {
+      assert.match(s.id, new RegExp(`^w${p.weekNo}\\.stage\\.`));
+      assert.ok(s.teacherSays.length && s.teacherDoes.length && s.childrenDo.length, `${s.id} 교사 말 · 행동 · 아이 행동`);
+      assert.ok(s.classroom.line.trim(), `${s.id} 교실 화면`);
+    }
+    assert.ok(p.learningGoals.length && p.storybook.title && p.familyActivity.title, `${p.weekNo}주 목표 · 그림책 · 가정연계`);
+  }
+});
+
+test("PDF 대표활동 개수 그대로 — 7 · 9주는 신체활동 둘, 나머지는 하나, 미술은 24주 모두 하나", () => {
+  for (const p of plans) {
+    const d = WEEK_DASHBOARDS.find((x) => x.weekNo === p.weekNo);
+    assert.equal(p.physicalActivities.length, d.physical2 ? 2 : 1, `${p.weekNo}주 신체활동 개수`);
+    assert.ok(p.artActivity, `${p.weekNo}주 미술`);
+    // 활동 이름 · 단계는 PDF 원문에 있다
+    for (const a of [...p.physicalActivities, p.artActivity]) {
+      assert.ok(sq(sourceText(p.weekNo)).includes(sq(a.title)), `${a.id} 이름이 PDF 에 없다`);
+      for (const s of a.steps) for (const part of s.text.split(" — ")) assert.ok(sq(sourceText(p.weekNo)).includes(sq(part)) || part.split(/\s+/).every((w) => w.length < 2 || sq(sourceText(p.weekNo)).includes(sq(w))), `${a.id} 단계 ${part}`);
+    }
+    assert.deepEqual(plans.filter((x) => x.physicalActivities.length === 2).map((x) => x.weekNo), [7, 9]);
+  }
+});
+
+test("연결 검사 — 24주 50개 활동 모두 PDF 대표활동 → 플레이어 단계 → 자료 → 관찰 문항 → 성장지표 → 리포트 근거가 이어진다", () => {
+  const all = plans.flatMap((p) => connectionCheck(p).map((r) => ({ ...r, weekNo: p.weekNo })));
+  assert.equal(all.length, 50);
+  const broken = all.filter((r) => !r.complete).map((r) => `${r.activityId} ${JSON.stringify(r.links)}`);
+  assert.deepEqual(broken, []);
+});
+
+test("자료 자리 — PDF 의 그림 자리 ID 489개를 그대로 쓰고, 실제 파일은 1~8주 표지만 「있음」", () => {
+  const total = Object.values(MEDIA_SLOT_IDS).reduce((a, x) => a + x.length, 0);
+  assert.equal(total, 489);
+  for (let n = 1; n <= 24; n++) {
+    for (const id of MEDIA_SLOT_IDS[n]) assert.ok(sourceText(n).includes(id), `${id} 가 PDF 에 없다`);
+    const assets = weekAssets(n);
+    for (const a of assets) {
+      assert.equal(a.state === "ready", a.kind === "storybookCover" && n <= 8, `${a.id} 상태`);
+      if (a.state !== "ready") assert.ok(a.fallback && a.fallback.origin === "proposal", `${a.id} 대체 운영`);
+    }
+  }
+});
+
+test("교실 화면 「이야기 열기」 — 24주 모두 같은 추상 문장이 아니라 그 주차 주제 문장이고 오늘 할 것을 보인다", () => {
+  const lines = EXPERIENCE_WEEKS.map((w) => w.stages[0].childLine);
+  assert.equal(new Set(lines).size, 24);
+  assert.ok(!lines.includes("오늘은 무엇을 만날까요?"));
+  for (const w of EXPERIENCE_WEEKS) {
+    assert.equal(w.stages[0].childLine, OPEN_CHILD_LINES[w.weekNo]);
+    assert.ok([...OPEN_CHILD_LINES[w.weekNo]].length <= 18, `${w.weekNo}주 큰 글씨 길이`);
+  }
+  for (const p of plans) {
+    const chips = p.lessonStages[0].classroom.chips;
+    assert.ok(chips.some((c) => c.includes(p.storybook.title)) && chips.some((c) => c.startsWith("몸놀이")) && chips.some((c) => c.startsWith("만들기")), `${p.weekNo}주 오늘 할 것`);
+  }
+});
+
+test("순서 주의 — 신체활동이 뒤 단계 결과물을 먼저 쓰는 4 · 11 · 22주에 원문 문장과 운영 제안이 있다", () => {
+  assert.deepEqual(SEQUENCE_NOTES.map((x) => x.weekNo), [4, 11, 22]);
+  for (const s of SEQUENCE_NOTES) {
+    // PDF 추출본은 단(column)대로 뽑혀 한 문장이 여러 줄에 흩어진 곳이 있다 — 낱말이 모두 원문에 있어야 한다
+    const src = sq(sourceText(s.weekNo));
+    for (const part of s.conflict.text.split(" · ")) for (const piece of part.split(" — ")) {
+      assert.ok(src.includes(sq(piece)) || piece.split(/\s+/).filter((w) => sq(w).length >= 2).every((w) => src.includes(sq(w))), `${s.weekNo}주 원문 ${piece}`);
+    }
+    assert.equal(s.resolution.origin, "proposal");
+  }
+  // 4 · 11 · 22 말고는 신체 단계가 「만든 …」을 먼저 쓰지 않는다
+  for (const d of WEEK_DASHBOARDS) {
+    const uses = d.physicalSteps.some((s) => /내가 만든|직접 만든/.test(s.guide));
+    assert.equal(uses, [4, 11, 22].includes(d.weekNo), `${d.weekNo}주`);
+  }
+});
+
+test("관찰 문항 → 5대 지표 — 많아야 둘, 듣기는 자기 설명이 아니고, 맞지 않으면 연결하지 않는다", () => {
+  assert.deepEqual(indicatorsFor("친구의 이야기를 끝까지 듣는가?"), ["engagement_immersion"]);
+  assert.ok(!indicatorsFor("곤충의 움직임을 몸으로 표현하는가?").includes("self_explanation"));
+  assert.ok(!indicatorsFor("도움이 필요할 때 큰 소리로 어른을 부르는가?").includes("expression_variety"));
+  assert.ok(!indicatorsFor("내 자리와 사물함을 스스로 찾아가는가?").includes("form_space_composition"));
+  assert.deepEqual(indicatorsFor("안전한 행동과 위험한 행동을 구별하는가?"), []);
+  for (const p of plans) {
+    for (const l of p.growthIndicatorMappings) { assert.ok(l.indicators.length <= 2); assert.equal(l.origin, "proposal"); }
+    assert.ok(p.growthIndicatorMappings.some((l) => l.indicators.length), `${p.weekNo}주 연결된 지표 없음`);
+  }
+});
+
+const run = (s) => G.analyze({ childLabel: s.childLabel, weekNo: s.weekNo, observations: s.observations, evidence: s.evidence, indicatorName: (c) => NAME[c], indicatorDefinition: (c) => DEF[c] });
+const scen = (k) => DEMO_SCENARIOS.find((s) => s.key === k);
+
+test("가상 성장 분석 — 장면 8개가 규칙대로 나온다", () => {
+  const enough = run(scen("enough"));
+  assert.equal(enough.statements.length, 2);
+  assert.ok(enough.statements.every((s) => s.origin === "ai" && s.observationIds.length === 1 && s.flags.length === 0));
+  assert.deepEqual(enough.statements[0].evidenceIds, ["ev-4-1"]);
+  assert.ok(enough.parentExperience);
+
+  const none = run(scen("none"));
+  assert.equal(none.statements.length, 0);
+  assert.equal(none.parentExperience, null);
+
+  const photo = run(scen("photoOnly"));
+  assert.equal(photo.statements.length, 0);
+  assert.match(photo.warnings.join(), /사진 · 작품 자료만 있고 교사 관찰 기록이 없어/);
+
+  const conflict = run(scen("conflict"));
+  assert.equal(conflict.statements.length, 1);
+  assert.match(conflict.statements[0].flags.join(), /사실을 확인/);
+  assert.equal(conflict.parentExperience, null, "확인 안 된 문장은 보호자 설명에 쓰지 않는다");
+
+  const miss = run(scen("missingIndicator"));
+  assert.deepEqual(miss.statements.map((s) => s.indicator), ["creative_attempt"]);
+  assert.equal(miss.noRecord.length, 4);
+
+  const two = run(scen("twoActivities"));
+  assert.equal(two.statements.length, 2);
+  assert.match(two.warnings.join(), /대표활동 2개/);
+  assert.ok(two.statements[0].text.includes("나비놀이") && two.statements[1].text.includes("벌놀이"));
+
+  const integ = run(scen("integration"));
+  assert.match(integ.statements[1].text, /5주차 결과물/);
+
+  const pii = run(scen("pii"));
+  assert.ok(pii.blocked.length >= 2);
+  assert.equal(pii.statements.length, 0);
+});
+
+test("시연 장면의 활동 ID · 관찰 문항 · 지표는 실행형 데이터와 같다 (지어낸 활동이 없다)", () => {
+  for (const s of DEMO_SCENARIOS) {
+    for (const o of s.observations) {
+      const p = plans.find((x) => x.weekNo === o.weekNo);
+      const act = [...p.physicalActivities, p.artActivity].find((a) => a.id === o.activityId);
+      assert.ok(act, `${o.id} 활동 ${o.activityId}`);
+      assert.equal(act.title, o.activityTitle, `${o.id} 활동 이름`);
+      const link = p.growthIndicatorMappings.find((l) => l.item === o.item);
+      assert.ok(link, `${o.id} 관찰 문항이 ${o.weekNo}주 문항에 없다: ${o.item}`);
+      if (o.indicator) assert.ok(link.indicators.includes(o.indicator), `${o.id} 지표 ${o.indicator} ∉ ${link.indicators}`);
+      for (const e of o.evidenceIds) assert.ok(s.evidence.some((x) => x.id === e), `${o.id} 근거 ${e}`);
+    }
+    assert.ok(G.VIRTUAL_CHILDREN.includes(s.childLabel));
+  }
+});
+
+test("개인정보 차단 — 전화 · 이메일 · 주민번호 · 생년월일 · 주소 · 실명은 막고, 가상 원아 이름은 통과", () => {
+  assert.deepEqual(G.detectPII("하늘이가 씨앗을 골랐다."), []);
+  assert.deepEqual(G.detectPII("친구가 먼저 흔드는 것을 보았다."), []);
+  assert.deepEqual(G.detectPII("선생님이 스티커 붙이는 것을 함께 도와주는 장면"), []);
+  for (const [t, r] of [["엄마 번호 010-2222-3333", "전화번호"], ["mail me a@b.com", "이메일"], ["901010-1234567", "주민등록번호"],
+    ["2020년 3월 5일 생", "생년월일"], ["서울시 강남구 역삼동 12", "주소"], ["김민준이가 이름표를 만들었다", "실명으로 보이는 이름"], ["박서연 원아", "실명으로 보이는 이름"]]) {
+    assert.ok(G.detectPII(t).includes(r), `${t} → ${r}`);
+  }
+  const blocked = G.analyze({ ...scen("enough"), childLabel: "김서연", indicatorName: (c) => NAME[c], indicatorDefinition: (c) => DEF[c] });
+  assert.ok(blocked.blocked.length > 0, "가상 원아가 아닌 이름은 막는다");
+});
+
+test("쓰면 안 되는 표현 — 진단 · 비교 · 점수 · 성격 단정 · 감정 단정을 찾아낸다", () => {
+  for (const t of ["ADHD 같아요", "또래보다 느려요", "오늘 8점", "원래 내성적인 아이", "속으로 슬퍼했다", "항상 잘해요"]) assert.ok(G.bannedReasons(t).length, t);
+  assert.deepEqual(G.bannedReasons("친구를 본 뒤 리듬에 맞춰 흔들었다."), []);
+  // AI 초안 문장 자체에도 금지 표현이 없다
+  for (const s of DEMO_SCENARIOS) for (const st of run(s).statements) assert.deepEqual(G.bannedReasons(st.text), [], st.text);
+});
+
+test("검토 · 승인 흐름 — AI 초안 → 교사 수정 → 검토 완료 → 승인, 체험에서는 공유하지 않는다", () => {
+  let doc = { state: "ai_draft", statements: run(scen("conflict")).statements, demo: true };
+  assert.ok(G.nextStateBlockers(doc, "approved").length, "순서를 건너뛸 수 없다");
+  assert.match(G.nextStateBlockers(doc, "reviewed").join(), /사실 확인/);
+  doc = G.editStatement(doc, "st-1", "튜브 무늬는 스스로 그렸고, 스티커는 선생님과 함께 붙였다.");
+  assert.equal(doc.state, "teacher_edited");
+  assert.equal(doc.statements[0].origin, "teacher");
+  doc = G.moveTo(doc, "reviewed");
+  assert.equal(doc.state, "reviewed");
+  doc = G.moveTo(doc, "approved");
+  assert.equal(doc.state, "approved");
+  assert.match(G.nextStateBlockers(doc, "shared").join(), /보내지 않습니다/);
+  assert.equal(G.moveTo(doc, "shared").state, "approved");
+  // 고친 문장에 금지 표현이 있으면 다시 막힌다
+  const bad = G.editStatement(doc, "st-1", "또래보다 잘했다");
+  assert.ok(bad.statements[0].flags.length);
+  // AI 문장이 남아 있으면 승인할 수 없다
+  let ai = { state: "reviewed", statements: run(scen("enough")).statements, demo: true };
+  assert.match(G.nextStateBlockers(ai, "approved").join(), /확인하지 않은 AI 문장/);
+  ai = G.confirmStatement(G.confirmStatement(ai, "st-1"), "st-2");
+  assert.deepEqual(G.nextStateBlockers(ai, "approved"), []);
+});

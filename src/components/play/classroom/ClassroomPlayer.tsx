@@ -16,7 +16,8 @@ import { CoverTitleNote, WeekArt } from "../WeekArt";
 import { OriginTag } from "../OriginTag";
 import { displayFallback } from "../display-font";
 import { LESSON_TIME } from "@/lib/weeks/lesson-time";
-import { MATERIALS_ORIGIN, SAFETY_ORIGIN, type CheckGroup } from "@/data/experience/lesson-labels";
+import { MATERIALS_ORIGIN, MEDIA_STATE_LABEL, SAFETY_ORIGIN, type CheckGroup } from "@/data/experience/lesson-labels";
+import type { StageExtra, StageExtras } from "@/data/experience/lesson-engine/stage-extras";
 import { LessonChecks } from "../LessonChecks";
 
 /**
@@ -105,7 +106,7 @@ export interface LessonCheckSet {
   closing: readonly CheckGroup[];
 }
 
-export function ClassroomPlayer({ week, nextWeekNo, checks }: { week: ExperienceWeek; nextWeekNo: number | null; checks: LessonCheckSet }) {
+export function ClassroomPlayer({ week, nextWeekNo, checks, extras }: { week: ExperienceWeek; nextWeekNo: number | null; checks: LessonCheckSet; extras: StageExtras }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<Phase>({ kind: "intro" });
   const [view, setView] = useState<View>("classroom");
@@ -340,10 +341,18 @@ export function ClassroomPlayer({ week, nextWeekNo, checks }: { week: Experience
                     {phase.index + 1}. {current.title}
                   </p>
                 </div>
-                <div className="flex flex-1 items-center justify-center px-6 pb-28 text-center sm:px-10 [@media(max-height:700px)]:pb-14">
+                <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 pb-28 text-center sm:px-10 [@media(max-height:700px)]:pb-14">
                   <p className={cx("max-w-[18ch] font-display leading-[1.15] text-pop-ink", displayFallback(current.childLine), effectiveView === "split" ? "text-[40px] sm:text-[52px]" : isFullscreen ? "text-[clamp(56px,6.4vw,124px)]" : "text-[44px] sm:text-[64px] lg:text-[76px] [@media(max-height:700px)]:text-[36px]")}>
                     {current.childLine}
                   </p>
+                  {/* 오늘 할 것 — 이야기 열기에서만. 그 주차 PDF 의 그림책 · 대표활동 이름 */}
+                  {extras[current.key]?.chips.length ? (
+                    <ul aria-label="오늘 할 것" className="flex max-w-[60ch] flex-wrap justify-center gap-2">
+                      {extras[current.key]!.chips.map((c) => (
+                        <li key={c} className="rounded-full bg-white/85 px-4 py-2 text-[16px] font-bold text-pop-ink shadow-pop sm:text-[18px]">{c}</li>
+                      ))}
+                    </ul>
+                  ) : null}
                 </div>
                 {/* 주차 주제 그림 — 큰 장면. 아이들이 오늘의 이야기를 한눈에 알아본다 */}
                 <div aria-hidden="true" className="pointer-events-none absolute -right-12 bottom-[-8%] -z-10 h-[52%] opacity-70 sm:right-[1%] sm:h-[58%]">
@@ -356,7 +365,7 @@ export function ClassroomPlayer({ week, nextWeekNo, checks }: { week: Experience
               </section>
             ) : null}
 
-            {showTeacher ? <TeacherPane key={`t-${phase.index}`} week={week} stage={current} /> : null}
+            {showTeacher ? <TeacherPane key={`t-${phase.index}`} week={week} stage={current} stageExtra={extras[current.key] ?? null} /> : null}
           </div>
         ) : null}
       </div>
@@ -519,7 +528,7 @@ function Fold({ title, badge, children, defaultOpen = false }: { title: string; 
   );
 }
 
-function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage }) {
+function TeacherPane({ week, stage, stageExtra }: { week: ExperienceWeek; stage: ClassStage; stageExtra: StageExtra | null }) {
   const extra: Record<StageKey, { label: string; text: string }[]> = {
     open: [{ label: "오늘 여는 말", text: week.body.goal }],
     story: [{ label: "그림책 활동", text: week.body.story }],
@@ -548,6 +557,13 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
         <p className="flex items-center gap-2 text-[13px] font-bold text-pop-sky-deep">교사 발문 <OriginTag origin={stage.teacherQuestionOrigin} /></p>
         <p className="mt-1 text-[20px] font-bold leading-relaxed text-pop-ink">“{stage.teacherQuestion}”</p>
       </div>
+      {stageExtra?.sequence ? (
+        <div className="mt-4 rounded-2xl border-2 border-pop-orange/40 bg-pop-yellow-soft px-4 py-3 text-[14px] leading-relaxed text-pop-ink">
+          <p className="text-[13px] font-extrabold">순서 주의 — 자료의 이 단계는 뒤 단계에서 만들 것을 먼저 써요</p>
+          <p className="mt-1">{stageExtra.sequence.conflict.text} <OriginTag origin={stageExtra.sequence.conflict.origin} className="align-middle" /></p>
+          <p className="mt-1"><span className="font-bold">이렇게 운영해요 · </span>{stageExtra.sequence.resolution.text} <OriginTag origin={stageExtra.sequence.resolution.origin} className="align-middle" /></p>
+        </div>
+      ) : null}
 
       {/* 진행 순서 — 아이가 하는 일. 자료 PDF 단계가 있으면 원문이다 */}
       <div className="mt-5">
@@ -628,6 +644,33 @@ function TeacherPane({ week, stage }: { week: ExperienceWeek; stage: ClassStage 
             {week.teacherObservations.items.map((o) => <li key={o}>· {o}</li>)}
           </ul>
         </Fold>
+        {stageExtra && (stageExtra.assets.length || stageExtra.observable.length) ? (
+          <Fold title="이 단계 자료 · 관찰 → 5대 지표">
+            {stageExtra.observable.length ? (
+              <>
+                <p className="flex items-center gap-2 text-[13px] font-bold text-pop-ink-muted">관찰할 행동 → 성장지표 <OriginTag origin="proposal" /></p>
+                <ul className="mt-1.5 grid gap-1.5 text-[15px] leading-relaxed text-pop-ink">
+                  {stageExtra.observable.map((o) => (
+                    <li key={o.item}>· {o.item} <span className="text-[13px] font-bold text-pop-lilac-deep">{o.indicators.join(" · ")}</span></li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+            {stageExtra.assets.length ? (
+              <>
+                <p className="mt-3 text-[13px] font-bold text-pop-ink-muted">이 단계 자료 (PDF 그림 자리)</p>
+                <ul className="mt-1.5 grid gap-1.5 text-[14px] leading-relaxed text-pop-ink">
+                  {stageExtra.assets.map((a) => (
+                    <li key={a.id}>
+                      <span className="font-bold">{a.label}</span> <span className="text-pop-ink-muted">· {MEDIA_STATE_LABEL[a.state]}</span>
+                      {a.fallback ? <span className="block text-[13px] text-pop-ink-muted">대체 운영 · {a.fallback} <OriginTag origin="proposal" className="align-middle" /></span> : null}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+          </Fold>
+        ) : null}
         <Fold title="안전 안내" badge={TEXT_ORIGIN_LABEL[SAFETY_ORIGIN]}>
           <ul className="grid gap-1 text-[15px] leading-relaxed text-pop-ink">
             {week.body.safety.map((x) => <li key={x}>· {x}</li>)}

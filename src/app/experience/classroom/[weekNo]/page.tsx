@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ClassroomPlayer } from "@/components/play/classroom/ClassroomPlayer";
 import { EXPERIENCE_WEEKS, experienceWeek } from "@/data/experience/weeks";
 import { closingChecks, preLessonChecks } from "@/data/experience/lesson-support";
+import { buildStageExtras } from "@/data/experience/lesson-engine/stage-extras-build";
 
 /**
  * 공개 체험 · 교실 플레이어 (1~24주, 빌드 때 모두 생성).
@@ -46,7 +47,7 @@ export default async function ExperienceClassroomPage({ params }: PageProps<"/ex
           <span className="hidden md:inline">키보드 → 다음 · ← 이전 · F 전체 화면</span>
         </div>
         <h1 className="sr-only">{week.weekNo}주차 「{week.title}」 교실 플레이어 체험</h1>
-        <ClassroomPlayer week={week} nextWeekNo={nextWeekNo} checks={checks} />
+        <ClassroomPlayer week={week} nextWeekNo={nextWeekNo} checks={checks} extras={buildStageExtras(week)} />
       </div>
     </main>
   );

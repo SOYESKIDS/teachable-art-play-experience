@@ -123,6 +123,16 @@ export class Page {
     await this.send("Page.navigate", { url });
     await Promise.race([loaded, sleep(60000)]);
     await this.idle();
+    // 앞 페이지의 load 이벤트를 받고 일찍 돌아오는 경우가 있었다 (2026-10-27 배포 QA: /director 검사가 앞 페이지를 잼).
+    // 주소가 바뀌지 않았으면 한 번 더 이동한다.
+    const want = new URL(url);
+    for (let i = 0; i < 2; i++) {
+      const now = await this.eval("location.pathname + location.search").catch(() => "");
+      if (now === want.pathname + want.search) break;
+      await this.send("Page.navigate", { url });
+      await sleep(1500);
+      await this.idle();
+    }
   }
 
   async eval(expression) {
