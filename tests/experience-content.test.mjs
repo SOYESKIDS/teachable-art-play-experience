@@ -501,3 +501,20 @@ test("교사 대시보드 12개 영역의 자료 문장은 모두 그 주차 PDF
     assert.ok(e.reason.trim(), `${e.weekNo}주 고친 까닭`);
   }
 });
+
+test("접근성 회귀 — 주차 번호 단추의 보이는 숫자가 접근 이름에 낱말로 들어가고, 주차 색 위 흰 글자를 흐리게 하지 않는다", () => {
+  const explorer = readFileSync(join(ROOT, "src/components/play/WeekExplorer.tsx"), "utf8");
+  assert.match(explorer, /aria-label=\{`\$\{w\.weekNo\} 주차 /, "WCAG 2.5.3 Label in Name");
+  const dash = readFileSync(join(ROOT, "src/components/play/TeacherDashboard.tsx"), "utf8");
+  // 주차 색 배경 + 흰 글자 블록 안에서 opacity 를 쓰면 대비가 4.5:1 아래로 떨어진다 (2026-10-27 axe 4.06:1)
+  const block = dash.slice(dash.indexOf("학부모 안내 카드 미리보기"), dash.indexOf("학부모 안내 카드 미리보기") + 900);
+  assert.doesNotMatch(block, /opacity-\d+/);
+});
+
+test("원문 「미작성」 칸과 자료에서 찾지 못한 칸을 화면에서 다른 말로 적는다", () => {
+  const dash = readFileSync(join(ROOT, "src/components/play/TeacherDashboard.tsx"), "utf8");
+  assert.match(dash, /BLANK_IN_SOURCE = "자료 원문에 「미작성」으로 적혀 있습니다/);
+  assert.match(dash, /missingInSource\.includes\("준비물"\) \? BLANK_IN_SOURCE : NONE/);
+  assert.match(dash, /missingInSource\.includes\("성장기록 예시"\) \? BLANK_IN_SOURCE : NONE/);
+  for (const n of [1, 2, 3, 4]) assert.ok(WEEK_DASHBOARDS.find((d) => d.weekNo === n).missingInSource.includes("준비물"), `${n}주 준비물 미작성`);
+});

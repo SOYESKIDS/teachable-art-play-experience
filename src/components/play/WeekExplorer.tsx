@@ -60,7 +60,7 @@ export function WeekExplorer({ parts, weeks }: { parts: ExperiencePart[]; weeks:
                       href={`/experience/weeks/${w.weekNo}`}
                       prefetch={false}
                       title={`${w.weekNo}주차 ${w.title}`}
-                      aria-label={`${w.weekNo}주차 ${w.title}`}
+                      aria-label={`${w.weekNo} 주차 ${w.title}`}
                       className="flex h-11 min-w-11 w-full items-center justify-center rounded-full font-display text-[17px] text-white transition-transform hover:scale-105 focus-visible:scale-105"
                       style={{ backgroundColor: w.themeColor }}
                     >

@@ -48,6 +48,9 @@ export interface DashboardSupport {
 
 const NONE = "자료에서 확인하지 못했습니다.";
 
+/** 원문에 「미작성」이라고 적힌 칸 — 자료를 못 읽은 것(NONE)과 구분한다 */
+const BLANK_IN_SOURCE = "자료 원문에 「미작성」으로 적혀 있습니다. 본사 검수 때 채울 자리입니다.";
+
 const SUPPORT_LABEL = {
   homeKit: "가정용 교구 (가정에서 쓰는 것)",
   teacherPrint: "교사용 출력 자료 (교실 게시용)",
@@ -581,12 +584,8 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
         <Fold no={6} title="교구와 놀이자료 키트" count={d.kitItems.length}>
           <Head>키트 구성품</Head>
           <List items={d.kitItems} empty={NONE} />
-          {d.orgItems.length > 0 ? (
-            <>
-              <Head>기관 준비물</Head>
-              <List items={d.orgItems} />
-            </>
-          ) : null}
+          <Head>기관 준비물</Head>
+          <List items={d.orgItems} empty={d.missingInSource.includes("준비물") ? BLANK_IN_SOURCE : NONE} />
           <Head>활동 준비물 체크리스트</Head>
           <CheckList items={moveStage?.materials ?? d.physicalMaterials} />
           <Head>언제 쓰나요 · 교구 사용 시점</Head>
@@ -637,7 +636,7 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
               <Head>학부모 안내 카드 미리보기 (자료 원문으로 만든 예시)</Head>
               <div className="mt-2 max-w-[440px] overflow-hidden rounded-[24px] bg-white shadow-pop ring-1 ring-pop-ink/5">
                 <div className="px-5 py-3 text-white" style={{ backgroundColor: week.themeColor }}>
-                  <p className="text-[12px] font-bold opacity-90">{week.weekNo}주차 가정 연계 · {week.title}</p>
+                  <p className="text-[12px] font-bold">{week.weekNo}주차 가정 연계 · {week.title}</p>
                   <p className={cx("mt-0.5 font-display text-[20px]", displayFallback(d.familyTitle))}>{d.familyTitle}</p>
                 </div>
                 <div className="grid gap-2 px-5 py-4 text-[14px] leading-relaxed text-pop-ink">
@@ -738,7 +737,7 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
           {d.kidsnote ? (
             <p className="mt-1 rounded-2xl bg-pop-cream px-4 py-3 leading-relaxed">{d.kidsnote}</p>
           ) : (
-            <p className="mt-1 text-[14px] text-pop-ink-muted">{NONE}</p>
+            <p className="mt-1 text-[14px] text-pop-ink-muted">{d.missingInSource.includes("성장기록 예시") ? BLANK_IN_SOURCE : NONE}</p>
           )}
           {d.parentNotice.length > 0 ? (
             <>
