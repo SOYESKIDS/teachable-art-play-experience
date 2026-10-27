@@ -82,6 +82,9 @@ export default async function WeekPrintPage({ params }: PageProps<"/experience/w
           <Link href={`/experience/weeks/${week.weekNo}`} className="inline-flex min-h-11 items-center text-[14px] font-semibold text-pop-ink-muted hover:text-pop-ink">
             ← {week.weekNo}주차 수업 안내
           </Link>
+          <Link href={`/experience/weeks/${week.weekNo}/guide`} className="inline-flex min-h-11 items-center text-[14px] font-semibold text-pop-ink-muted hover:text-pop-ink">
+            상세 수업 지도안 (12개 영역 전체) →
+          </Link>
           <PrintButton />
         </div>
 

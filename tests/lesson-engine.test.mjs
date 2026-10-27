@@ -253,9 +253,45 @@ test("교사 화면 단계 추가 정보 — 오늘의 목표 · PDF 활동 소�
     assert.deepEqual(x.share.wrapUp.map((u) => u.label).slice(0, 2), ["정리", "가정연계"], `${w.weekNo}주 정리 · 가정연계`);
     // PDF 추출본이 단(column)대로 흩어진 주차가 있다 — 문장이 그대로 없으면 낱말이 모두 있어야 한다
     const src = sq(sourceText(w.weekNo));
-    for (const u of x.share.wrapUp) if (u.item.origin === "source") assert.ok(src.includes(sq(u.item.text)) || u.item.text.split(/\s+/).filter((v) => sq(v).length >= 2).every((v) => src.includes(sq(v))), `${w.weekNo}주 ${u.label} 원문`);
+    for (const u of ["move", "make", "share"].flatMap((k) => x[k].wrapUp)) if (u.item.origin === "source") assert.ok(src.includes(sq(u.item.text)) || u.item.text.split(/\s+/).filter((v) => sq(v).length >= 2).every((v) => src.includes(sq(v))), `${w.weekNo}주 ${u.label} 원문`);
   }
   assert.equal(buildStageExtras(EXPERIENCE_WEEKS[15]).move.extraCautions.length, 1, "16주 촬영 주의");
+});
+
+const inSource = (src, text) => src.includes(sq(text)) || text.split(/\s+/).filter((v) => sq(v).length >= 2).every((v) => src.includes(sq(v)));
+
+test("PDF 추가 칸 — 미술 활용 · 예시 · TIP, 교구 안내 · 미션 · 활용, 가족연계 안내 · TIP, 가정용 교구 안내, 뮤직비디오 — 모두 원문", async () => {
+  const { WEEK_PDF_EXTRA } = await import("../src/data/experience/teacher-dashboard/week-pdf-extra.ts");
+  assert.equal(WEEK_PDF_EXTRA.length, 24);
+  let n = 0;
+  for (const w of WEEK_PDF_EXTRA) {
+    const src = sq(sourceText(w.weekNo));
+    for (const [k, v] of Object.entries(w)) {
+      if (k === "weekNo") continue;
+      for (const s of Array.isArray(v) ? v : v ? [v] : []) {
+        assert.ok(inSource(src, s), `${w.weekNo}주 ${k} 원문: ${s}`);
+        assert.doesNotMatch(s, /w\d+\.|physical\[|nuri\[|px|썸네일/,`${w.weekNo}주 ${k} 기계 표기 섞임`);
+        n++;
+      }
+    }
+    assert.ok(w.videoDesc, `${w.weekNo}주 뮤직비디오 설명`);
+    assert.equal(w.videoUrl, null, "PDF 에 실제 영상 주소가 없다 — 주소처럼 보이게 하지 않는다");
+  }
+  assert.ok(n > 250, `추가 칸 ${n}개`);
+  // 다른 영역 이름이 이어 붙지 않는다
+  for (const w of WEEK_PDF_EXTRA) for (const s of [w.topicElements, w.makesKit, w.kitUse, w.familyNote, w.artTip]) if (s) assert.doesNotMatch(s, /교사가 기억할 핵심|키즈보드 메뉴|데이터 출처/, `${w.weekNo}주 ${s}`);
+});
+
+test("상세 수업 지도안 (인쇄) — 12개 영역을 모두 싣고 검색에서 뺀다 · 플레이어는 PDF 단계를 하나씩 넘긴다", () => {
+  const guide = readFileSync(join(ROOT, "src/app/experience/weeks/[weekNo]/guide/page.tsx"), "utf8");
+  for (const [i, title] of ["주차 기본 정보", "그림책", "대표 신체활동", "미술활동", "워크북", "교구 · 놀이자료 키트", "가족연계 활동", "가정용 교구 · 교사 지원자료", "누리과정 연계", "동화책 음원 · 캐릭터 뮤직비디오", "교사 운영 · 관찰 · 성장 기록", "주차 연계 산출물"].entries())
+    assert.ok(guide.includes(`no={${i + 1}} title="${title}"`), `영역 ${i + 1} ${title}`);
+  assert.ok(guide.includes("robots: { index: false"));
+  for (const k of ["artUse", "artExamples", "artTip", "kitMissions", "kitUse", "familyNote", "familyTip", "homeKitNote", "videoDesc"]) assert.ok(guide.includes(`x?.${k}`), `지도안 ${k}`);
+  const player = readFileSync(join(ROOT, "src/components/play/classroom/ClassroomPlayer.tsx"), "utf8");
+  assert.ok(player.includes(`SUB_STEP_STAGES: readonly StageKey[] = ["move", "make"]`));
+  assert.ok(player.includes(`aria-current={activeStep === i ? "step"`));
+  assert.ok(player.includes("다음 활동 ▶"));
 });
 
 test("사진 자리 ID — 신체활동 단계 · 미술 예시 · 워크북 장 수와 PDF 그림 자리가 맞는다", () => {

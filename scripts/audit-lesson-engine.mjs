@@ -23,7 +23,8 @@ const md = `# 24주 실행형 수업 데이터 · 성장 데이터 연결 (2026-
 
 - 만든 방법: \`node --import ./tests/register-hooks.mjs scripts/audit-lesson-engine.mjs\` (데이터에서 자동 생성)
 - 원문: \`D:\\소예키즈\\마케팅\\2026 유치원 영업전략\\프로그램\\대쉬보드 구성안\\\` 24개 PDF (2026-10-22 판) → 저장소 추출 텍스트
-  - ★ 2026-10-27 받은 최신 1~15주 PDF(ZIP 3개)는 SHA-256 으로 2026-10-22 판과 바이트 단위로 같다 — \`PDF-LATEST-20261027.md\`. 16~24주는 2026-10-22 원본.
+  - ★ 2026-10-27 받은 최신 PDF(1~15주 ZIP 3개 · 1~24주 묶음 1개, 39개 파일)는 SHA-256 으로 2026-10-22 판과 바이트 단위로 같다 — \`PDF-LATEST-20261027.md\`.
+  - PDF 추가 칸(미술 활용 · 예시 · TIP · 교구 이름 · 미션 · 활용 · 가족연계 소개 · 안내 · TIP · 가정용 교구 안내 · 뮤직비디오 설명 등)은 \`teacher-dashboard/week-pdf-extra.ts\`, 화면 대조는 \`PDF-WEB-COVERAGE.md\`.
 - 코드: \`src/data/experience/lesson-engine/\` (plan · assets · growth-mapping · sequence-notes · classroom-lines) · \`src/lib/growth/demo-analysis.ts\`
 - 출처 표시: PDF 원문 · 35분 편집 · 교사용 제안 · 검수 필요 — 지표 연결 · 순서 운영 · 대체 운영 · 교실 첫 문장은 모두 교사용 제안(본사 검수 전)
 

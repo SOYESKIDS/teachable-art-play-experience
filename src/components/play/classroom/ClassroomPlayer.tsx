@@ -33,12 +33,22 @@ import { LessonChecks } from "../LessonChecks";
  *   넓은 화면에서는 나란히 볼 수 있다.
  *
  * ★ 키보드: → / Space 다음 · ← 이전 · F 전체 화면 · Esc 닫기.
+ * ★ 몸으로 놀기 · 만들기는 자료 PDF 단계를 하나씩 넘겨 본다 (「앞 활동 · 다음 활동」). → 와 「다음 단계」는 언제나 수업 단계를 넘긴다.
+ *   지금 활동 번호는 저장하지 않는다 (단계가 바뀌면 1번부터).
  */
 type Phase = { kind: "intro" } | { kind: "stage"; index: number } | { kind: "done" };
 type View = "classroom" | "teacher" | "split";
 type Sheet = null | "stages" | "materials" | "questions" | "end";
 
 const STORAGE_PREFIX = "tap3-demo-classroom:";
+/** 자료 PDF 단계를 하나씩 넘겨 보는 수업 단계 */
+const SUB_STEP_STAGES: readonly StageKey[] = ["move", "make"];
+
+/** 「제목 — 설명」 으로 적힌 PDF 단계를 둘로 나눈다 */
+function splitStep(text: string): { title: string; detail: string | null } {
+  const i = text.indexOf(" — ");
+  return i < 0 ? { title: text, detail: null } : { title: text.slice(0, i), detail: text.slice(i + 3) };
+}
 const noopSubscribe = () => () => {};
 const WIDE_QUERY = "(min-width: 1024px)";
 const subscribeWide = (onChange: () => void) => {
@@ -129,10 +139,13 @@ export function ClassroomPlayer({ week, nextWeekNo, checks, extras }: { week: Ex
   // 이 단계에 머문 시간 — 단계가 바뀌면 0 부터. 계획 시간을 넘겨도 소리 · 깜빡임 없이 글자로만 알린다
   const [stageElapsed, setStageElapsed] = useState(0);
   const [announce, setAnnounce] = useState("");
+  const [sub, setSub] = useState(0);
 
   const stages = week.stages;
   const stageIndex = phase.kind === "stage" ? phase.index : phase.kind === "done" ? stages.length : -1;
   const current: ClassStage | null = phase.kind === "stage" ? stages[phase.index] : null;
+  const subSteps = current && SUB_STEP_STAGES.includes(current.key) && current.steps.length > 1 ? current.steps : null;
+  const subIndex = subSteps ? Math.min(sub, subSteps.length - 1) : 0;
   const progress = phase.kind === "done" ? 100 : phase.kind === "stage" ? Math.round((phase.index / stages.length) * 100) : 0;
 
   // 복원 — 이 탭에서 하던 단계로 돌아온다.
@@ -175,6 +188,7 @@ export function ClassroomPlayer({ week, nextWeekNo, checks, extras }: { week: Ex
       setPhase(next);
       setSheet(null);
       setStageElapsed(0);
+      setSub(0);
       // 단계가 바뀌면 플레이어 머리로 맞춘다 — 진행 화면은 화면 높이에 맞춰 있으므로
       // 머리를 맞추면 그림 · 문장 · 아래 조작 막대가 한 화면에 모두 들어온다.
       // (머리말은 플레이어에서 고정되지 않아 위로 사라진다 → 가리는 것이 없다)
@@ -199,6 +213,13 @@ export function ClassroomPlayer({ week, nextWeekNo, checks, extras }: { week: Ex
     if (phase.kind === "stage") goTo(phase.index > 0 ? { kind: "stage", index: phase.index - 1 } : { kind: "intro" });
     else if (phase.kind === "done") goTo({ kind: "stage", index: stages.length - 1 });
   }, [goTo, phase, stages.length]);
+
+  const goSub = (i: number) => {
+    if (!subSteps) return;
+    const n = Math.max(0, Math.min(subSteps.length - 1, i));
+    setSub(n);
+    setAnnounce(`활동 ${n + 1} / ${subSteps.length} ${splitStep(subSteps[n].text).title}`);
+  };
 
   const toggleFullscreen = useCallback(async () => {
     try {
@@ -331,7 +352,8 @@ export function ClassroomPlayer({ week, nextWeekNo, checks, extras }: { week: Ex
               <section
                 key={`c-${phase.index}`}
                 aria-label="교실 화면"
-                className={cx("relative isolate flex animate-stage-in flex-col overflow-hidden rounded-[36px] shadow-pop-lg", STAGE_TONE[current.key].soft, isFullscreen ? "min-h-[max(360px,calc(100dvh-var(--player-chrome-fs)))]" : "min-h-[max(240px,calc(100dvh-var(--player-chrome)))]")}
+                // 나란히 보기 — 교사 화면이 길어도 교실 화면은 늘어나지 않고 화면 높이에 머문다 (가운데 문장이 화면 밖으로 밀리지 않게)
+                className={cx("relative isolate flex animate-stage-in flex-col overflow-hidden rounded-[36px] shadow-pop-lg", effectiveView === "split" && "lg:sticky lg:top-3 lg:self-start", STAGE_TONE[current.key].soft, isFullscreen ? "min-h-[max(360px,calc(100dvh-var(--player-chrome-fs)))]" : "min-h-[max(240px,calc(100dvh-var(--player-chrome)))]")}
               >
                 <div aria-hidden="true" className="dots absolute inset-0 -z-10 opacity-50" />
                 {/* 낮은 화면(높이 700px 이하 — 작은 휴대폰 · 가로 태블릿)은 여백 · 글자를 줄여 조작 막대와 겹치지 않게 */}
@@ -342,9 +364,21 @@ export function ClassroomPlayer({ week, nextWeekNo, checks, extras }: { week: Ex
                   </p>
                 </div>
                 <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 pb-28 text-center sm:px-10 [@media(max-height:700px)]:pb-14">
-                  <p className={cx("max-w-[18ch] font-display leading-[1.15] text-pop-ink", displayFallback(current.childLine), effectiveView === "split" ? "text-[40px] sm:text-[52px]" : isFullscreen ? "text-[clamp(56px,6.4vw,124px)]" : "text-[44px] sm:text-[64px] lg:text-[76px] [@media(max-height:700px)]:text-[36px]")}>
+                  <p className={cx("max-w-[18ch] font-display leading-[1.15] text-pop-ink", displayFallback(current.childLine), subSteps ? (isFullscreen ? "text-[clamp(36px,3.6vw,72px)]" : "text-[30px] sm:text-[40px] [@media(max-height:700px)]:text-[26px]") : effectiveView === "split" ? "text-[40px] sm:text-[52px]" : isFullscreen ? "text-[clamp(56px,6.4vw,124px)]" : "text-[44px] sm:text-[64px] lg:text-[76px] [@media(max-height:700px)]:text-[36px]")}>
                     {current.childLine}
                   </p>
+                  {/* 지금 하는 활동 — 자료 PDF 단계 하나 */}
+                  {subSteps ? (
+                    <div key={`s-${subIndex}`} className="w-full max-w-[34ch] animate-stage-in rounded-[28px] bg-white/90 px-6 py-5 shadow-pop">
+                      <p className="text-[15px] font-extrabold text-pop-ink-muted sm:text-[17px]">활동 {subIndex + 1} / {subSteps.length}</p>
+                      <p className={cx("mt-1 font-display leading-tight text-pop-ink", displayFallback(splitStep(subSteps[subIndex].text).title), isFullscreen ? "text-[clamp(40px,4.4vw,88px)]" : "text-[34px] sm:text-[46px] [@media(max-height:700px)]:text-[28px]")}>
+                        {splitStep(subSteps[subIndex].text).title}
+                      </p>
+                      {splitStep(subSteps[subIndex].text).detail ? (
+                        <p className="mt-2 text-[18px] font-semibold leading-relaxed text-pop-ink sm:text-[22px]">{splitStep(subSteps[subIndex].text).detail}</p>
+                      ) : null}
+                    </div>
+                  ) : null}
                   {/* 오늘 할 것 — 이야기 열기에서만. 그 주차 PDF 의 그림책 · 대표활동 이름 */}
                   {extras[current.key]?.chips.length ? (
                     <ul aria-label="오늘 할 것" className="flex max-w-[60ch] flex-wrap justify-center gap-2">
@@ -365,7 +399,7 @@ export function ClassroomPlayer({ week, nextWeekNo, checks, extras }: { week: Ex
               </section>
             ) : null}
 
-            {showTeacher ? <TeacherPane key={`t-${phase.index}`} week={week} stage={current} stageExtra={extras[current.key] ?? null} /> : null}
+            {showTeacher ? <TeacherPane key={`t-${phase.index}`} week={week} stage={current} stageExtra={extras[current.key] ?? null} activeStep={subSteps ? subIndex : null} /> : null}
           </div>
         ) : null}
       </div>
@@ -381,6 +415,17 @@ export function ClassroomPlayer({ week, nextWeekNo, checks, extras }: { week: Ex
               {phase.index < stages.length - 1 ? "다음 단계" : "수업 마치기"}
               <ArrowRight />
             </button>
+            {subSteps ? (
+              <div className="col-span-2 flex items-center justify-center gap-2 sm:order-first sm:w-full" role="group" aria-label="이 단계 활동 넘기기">
+                <button type="button" onClick={() => goSub(subIndex - 1)} disabled={subIndex === 0} className="min-h-11 rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/15 disabled:opacity-40 sm:min-h-12 sm:text-[15px]">
+                  ◀ 앞 활동
+                </button>
+                <span className="tabular min-w-[5.5em] text-center text-[14px] font-extrabold text-pop-ink-muted">활동 {subIndex + 1} / {subSteps.length}</span>
+                <button type="button" onClick={() => goSub(subIndex + 1)} disabled={subIndex === subSteps.length - 1} className="min-h-11 rounded-full bg-white px-4 text-[14px] font-bold text-pop-ink ring-1 ring-pop-ink/15 disabled:opacity-40 sm:min-h-12 sm:text-[15px]">
+                  다음 활동 ▶
+                </button>
+              </div>
+            ) : null}
             <div className="col-span-2 grid grid-cols-4 gap-1.5 sm:flex sm:flex-1 sm:justify-center sm:gap-2">
               {(
                 [
@@ -528,7 +573,7 @@ function Fold({ title, badge, children, defaultOpen = false }: { title: string; 
   );
 }
 
-function TeacherPane({ week, stage, stageExtra }: { week: ExperienceWeek; stage: ClassStage; stageExtra: StageExtra | null }) {
+function TeacherPane({ week, stage, stageExtra, activeStep }: { week: ExperienceWeek; stage: ClassStage; stageExtra: StageExtra | null; activeStep: number | null }) {
   const extra: Record<StageKey, { label: string; text: string }[]> = {
     open: [{ label: "오늘 여는 말", text: week.body.goal }],
     story: [{ label: "그림책 활동", text: week.body.story }],
@@ -578,13 +623,13 @@ function TeacherPane({ week, stage, stageExtra }: { week: ExperienceWeek; stage:
       {/* 진행 순서 — 아이가 하는 일. 자료 PDF 단계가 있으면 원문이다 */}
       <div className="mt-5">
         <p className="flex flex-wrap items-center gap-2 text-[13px] font-bold text-pop-ink-muted">
-          진행 순서 · 아이가 하는 일
+          진행 순서 · 아이가 하는 일{activeStep !== null ? ` — 교실 화면은 지금 ${activeStep + 1}번을 보여 줘요` : ""}
         </p>
         <ol className="mt-2 grid gap-1.5">
           {stage.steps.map((s, i) => (
-            <li key={s.text} className="flex gap-2.5 text-[16px] leading-relaxed text-pop-ink">
-              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pop-cream text-[12px] font-extrabold text-pop-ink-muted">{i + 1}</span>
-              <span>{s.text} <OriginTag origin={s.origin} className="align-middle" /></span>
+            <li key={s.text} aria-current={activeStep === i ? "step" : undefined} className={cx("flex gap-2.5 rounded-2xl text-[16px] leading-relaxed text-pop-ink", activeStep !== null && "-mx-2 px-2 py-1", activeStep === i && "bg-pop-yellow-soft ring-2 ring-pop-orange/40")}>
+              <span className={cx("mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold", activeStep === i ? "bg-pop-ink text-white" : "bg-pop-cream text-pop-ink-muted")}>{i + 1}</span>
+              <span>{activeStep === i ? <span className="font-extrabold">지금 · </span> : null}{s.text} <OriginTag origin={s.origin} className="align-middle" /></span>
             </li>
           ))}
         </ol>
