@@ -128,8 +128,12 @@ note(topicBad.length === 0, "24주 주제 일치 (상세 제목 = 플레이어 �
     await page.goto(`${base}/experience/classroom/${n}`).catch(() => {}); await page.eval("sessionStorage.clear()");
     await page.goto(`${base}/experience/classroom/${n}`).catch(() => {}); await page.idle(400, 6000);
     const intro = await page.eval(`document.body.innerText.includes('수업 전 확인')`);
-    await page.clickText("수업 시작", { exact: false }); await page.idle(400, 4000);
-    const timer = await page.eval(`/이 단계 \\d+:\\d\\d \\/ \\d+분/.test(document.body.innerText)`);
+    // 화면이 막 그려진 직후에는 단추가 아직 반응하지 않을 수 있다 — 단계 시간이 보일 때까지 기다리고, 안 보이면 한 번 더 누른다
+    let timer = false;
+    for (let i = 0; i < 2 && !timer; i++) {
+      await page.clickText("수업 시작", { exact: false }).catch(() => {});
+      timer = await page.waitFor(`/이 단계 \\d+:\\d\\d \\/ \\d+분/.test(document.body.innerText)`, 4000);
+    }
     for (let i = 0; i < 5; i++) { await page.eval(`window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'}))`); await page.idle(200, 2000); }
     const done = await page.eval(`({closing:document.body.innerText.includes('수업 마무리 확인'), note:document.body.innerText.includes('새로고침하면 사라집니다')})`);
     if (!intro || !timer || !done.closing || !done.note) bad.push(`${n}:${JSON.stringify({ intro, timer, ...done })}`);

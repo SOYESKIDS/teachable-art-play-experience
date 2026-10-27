@@ -110,7 +110,7 @@ export class Page {
     }
   }
 
-  async goto(url) {
+  async goto(url, attempt = 0) {
     const loaded = new Promise((resolve) => {
       const listener = (method) => {
         if (method === "Page.loadEventFired") {
@@ -123,16 +123,19 @@ export class Page {
     await this.send("Page.navigate", { url });
     await Promise.race([loaded, sleep(60000)]);
     await this.idle();
-    // 앞 페이지의 load 이벤트를 받고 일찍 돌아오는 경우가 있었다 (2026-10-27 배포 QA: /director 검사가 앞 페이지를 잼).
-    // 주소가 바뀌지 않았으면 한 번 더 이동한다.
+    // 앞 페이지의 load 이벤트를 받고 일찍 돌아오는 경우가 있었다 (2026-10-27 배포 QA: 이동 중인 빈 문서 · 앞 페이지를 잼).
+    // 주소가 맞고 문서가 다 읽힐 때까지(readyState complete) 기다린다. 10초 안에 안 되면 한 번만 다시 이동한다.
     const want = new URL(url);
-    for (let i = 0; i < 2; i++) {
-      const now = await this.eval("location.pathname + location.search").catch(() => "");
-      if (now === want.pathname + want.search) break;
-      await this.send("Page.navigate", { url });
-      await sleep(1500);
-      await this.idle();
+    const target = want.pathname + want.search;
+    const deadline = Date.now() + 10000;
+    let ok = false;
+    while (Date.now() < deadline) {
+      const s = await this.eval("({p: location.pathname + location.search, r: document.readyState})").catch(() => null);
+      if (s && s.r === "complete" && (s.p === target || s.p === `${want.pathname}/${want.search}`)) { ok = true; break; }
+      await sleep(200);
     }
+    if (ok) await this.idle(300, 5000);
+    else if (attempt === 0) await this.goto(url, 1);
   }
 
   async eval(expression) {
