@@ -40,3 +40,25 @@ export const PDF_DURATION_LABEL = "CORE 45분 (단축 운영 시 SHORT CLASS 30�
 
 /** 원본 시간 표기를 화면에 적을 때 함께 붙이는 말 */
 export const SOURCE_TIME_NOTE = "출처 기록 · 현재 운영 시간이 아닙니다";
+
+/**
+ * 30분 단축 운영 — 교사용 편집안 (본사 검수 전).
+ * ★ 자료 PDF 의 「SHORT CLASS 30분」에는 단계별 시간이 없다. 아래 배분은 35분 체험을 줄인 제안이며 원문이 아니다.
+ * ★ 줄어든 미술 마무리 · 워크북 · 가정연계는 지우지 않고 확장활동으로 넘긴다.
+ */
+export const SHORT_STAGE_MINUTES = {
+  open: 4,
+  story: 6,
+  move: 11,
+  make: 6,
+  share: 3,
+} as const;
+
+export const SHORT_TOTAL_MINUTES = Object.values(SHORT_STAGE_MINUTES).reduce((sum, m) => sum + m, 0);
+
+export const SHORT_TIME = {
+  totalMinutes: SHORT_TOTAL_MINUTES,
+  label: `${SHORT_TOTAL_MINUTES}분 단축 운영`,
+  breakdown: `${Object.values(SHORT_STAGE_MINUTES).join(" + ")}분`,
+  note: "미술 작품 마무리 · 워크북 · 가정연계는 확장활동으로 넘겨요.",
+} as const;

@@ -6,6 +6,7 @@ import { cx } from "@/components/ui/cx";
 import { GrowthDemo, type DemoWeek } from "@/components/play/GrowthDemo";
 import { buildLessonPlan } from "@/data/experience/lesson-engine/plan";
 import { EXPERIENCE_WEEKS } from "@/data/experience/weeks";
+import { weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
 
 export const metadata: Metadata = {
   title: "성장 분석 흐름 체험 (가상) | TeachAble Art Play",
@@ -25,8 +26,13 @@ export default function GrowthDemoPage() {
       title: w.title,
       storybook: w.storybook,
       familyTitle: p.familyActivity.title,
-      activities: [...p.physicalActivities, ...(p.artActivity ? [p.artActivity] : [])].map((a) => ({ id: a.id, title: a.title, kind: a.kind, stage: a.stage })),
+      activities: [...p.physicalActivities, ...(p.artActivity ? [p.artActivity] : [])].map((a) => ({
+        id: a.id, title: a.title, kind: a.kind, stage: a.stage, items: a.observations.map((o) => ({ item: o.item, indicators: o.indicators })),
+      })),
       items: p.growthIndicatorMappings.map((l) => ({ item: l.item, indicators: l.indicators })),
+      itemsOrigin: p.observationPoints.origin,
+      parentNotice: weekDashboard(w.weekNo)?.parentNotice ?? [],
+      kidsnote: weekDashboard(w.weekNo)?.kidsnote ?? null,
     };
   });
   return (

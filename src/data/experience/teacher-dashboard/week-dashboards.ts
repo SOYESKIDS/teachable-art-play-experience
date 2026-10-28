@@ -806,7 +806,7 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
     physicalTitle: "하나씩 모이면 숲이 돼요! (숲을 완성해요)",
     physicalLead: "지금까지 만든 자연 친구들을 들고 이동하며 우리 반 숲을 완성해요!",
     coreExperience: null,
-    activityTip: "아이들이 자신의 작품을 직접 들고 이동하며 붙일 수 있도록 공간을 충분히 확보해주세요. 친구들과 함께 만들어 가는 과정에서 협력하고 성취감을",
+    activityTip: "아이들이 자신의 작품을 직접 들고 이동하며 붙일 수 있도록 공간을 충분히 확보해주세요. 친구들과 함께 만들어 가는 과정에서 협력하고 성취감을 느낄 수 있어요.",
     artTitle: "모이면 숲이 되는 우리",
     artLead: "지금까지 만든 모든 것을 모아 우리 반 숲을 완성해요!",
     workbookTitle: null,
@@ -1850,7 +1850,11 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
       "촬영 안내 카드 1장",
       "질문 예시 카드 1장",
     ],
-    homeKitHow: [],
+    homeKitHow: [
+      "안내 카드의 질문을 참고해 촬영해요.",
+      "1분 내외로 찍어요.",
+      "원으로 보내주세요.",
+    ],
     mediaPending: true,
     missingInSource: [],
   },
@@ -2862,7 +2866,30 @@ export const EDITED_LINES: readonly { weekNo: number; text: string; original: st
     original: "아이 몰래 1분 영상편지를 촬영해요.",
     reason: "교사 검토 — 공개 화면에 「몰래 촬영」 표현을 쓰지 않는다",
   },
+  {
+    weekNo: 16,
+    text: "부모님이 아이에게 전할 1분 영상편지를 찍어 보내주시면, 원에서 함께 상영해요!",
+    original: "부모님이 아이 몰래 1분 영상편지를 찍어 보내주시면, 원에서 함께 상영해요!",
+    reason: "교사 검토 — 공개 화면에 「몰래 촬영」 표현을 쓰지 않는다",
+  },
+  {
+    weekNo: 2,
+    text: "가족 응원 메시지 칸",
+    original: "아빠·엄마 응원 메시지 칸",
+    reason: "가족 형태가 다양하다 — 「아빠·엄마」 대신 「가족」",
+  },
+  {
+    weekNo: 24,
+    text: "가족은 저마다 어떤 별에서 왔을까?",
+    original: "엄마는 어떤 별에서 왔을까?",
+    reason: "가족 형태가 다양하다 — 「엄마」 대신 「가족」",
+  },
 ];
+
+/** 이 주차에서 고쳐 쓴 문장 (원문 · 까닭과 함께) */
+export function editedLines(weekNo: number) {
+  return EDITED_LINES.filter((x) => x.weekNo === weekNo);
+}
 
 /** 이 주차 문장이 고쳐 쓴 문장인가 */
 export function isEditedLine(weekNo: number, text: string): boolean {

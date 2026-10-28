@@ -2,7 +2,8 @@
 
 - 만든 방법: `node --import ./tests/register-hooks.mjs scripts/audit-lesson-engine.mjs` (데이터에서 자동 생성)
 - 원문: `D:\소예키즈\마케팅\2026 유치원 영업전략\프로그램\대쉬보드 구성안\` 24개 PDF (2026-10-22 판) → 저장소 추출 텍스트
-  - ★ 이번 요청에 「첨부한 1~15주 PDF」는 대화 · 다운로드 · 프로젝트 폴더 어디에서도 새 파일을 찾지 못했다. 위 2026-10-22 판(이전 검수와 같은 파일)을 기준으로 했다.
+  - ★ 2026-10-27 받은 최신 PDF(1~15주 ZIP 3개 · 1~24주 묶음 1개, 39개 파일)는 SHA-256 으로 2026-10-22 판과 바이트 단위로 같다 — `PDF-LATEST-20261027.md`.
+  - PDF 추가 칸(미술 활용 · 예시 · TIP · 교구 이름 · 미션 · 활용 · 가족연계 소개 · 안내 · TIP · 가정용 교구 안내 · 뮤직비디오 설명 등)은 `teacher-dashboard/week-pdf-extra.ts`, 화면 대조는 `PDF-WEB-COVERAGE.md`.
 - 코드: `src/data/experience/lesson-engine/` (plan · assets · growth-mapping · sequence-notes · classroom-lines) · `src/lib/growth/demo-analysis.ts`
 - 출처 표시: PDF 원문 · 35분 편집 · 교사용 제안 · 검수 필요 — 지표 연결 · 순서 운영 · 대체 운영 · 교실 첫 문장은 모두 교사용 제안(본사 검수 전)
 
@@ -14,8 +15,9 @@
 | 2 | 4 | 신체활동 단계가 뒤 단계(예술 표현)에서 만들 것을 먼저 씀 — 「마라카스 꺼내기 — 내가 만든 마라카스를 꺼내요.」 | 교사 화면 「순서 주의」 + 운영 제안 |
 | 3 | 11 | 신체활동 단계가 뒤 단계(예술 표현)에서 만들 것을 먼저 씀 — 「여권을 보여주세요! — 내가 만든 여권을 들고 탑승 줄에 서요. · 찰칵! 여행 사진 — 꽃목걸이를 걸고 친구들과 포즈를 취해요.」 | 교사 화면 「순서 주의」 + 운영 제안 |
 | 4 | 22 | 신체활동 단계가 뒤 단계(예술 표현)에서 만들 것을 먼저 씀 — 「변신하고 입장! — 직접 만든 가면을 쓰거나 들고 파티장에 들어가요.」 | 교사 화면 「순서 주의」 + 운영 제안 |
-| 5 | 16 | 가정연계 1문장이 원문에서 고쳐 쓴 문장인데 원문처럼 보였음 (2026-10-26 수정 · 편집 표시) | 유지 |
-| 6 | 1~24 | 안전 문장이 PDF 에 없는데 출처 표시가 없었음 (2026-10-26 수정 · 교사용 제안) | 유지 |
+| 5 | 24 | 신체활동 단계가 뒤 단계(예술 표현)에서 만들 것을 먼저 씀 — 「내 조각을 들고 모여요 — 각자 꾸민 지구 조각을 들고 가운데로 모여요. · 우리 지구가 완성! — 조각을 맞춰 대형 지구를 완성하고, 다 함께 손을 잡고 둘러서요.」 | 교사 화면 「순서 주의」 + 운영 제안 |
+| 6 | 16 | 가정연계 1문장이 원문에서 고쳐 쓴 문장인데 원문처럼 보였음 (2026-10-26 수정 · 편집 표시) | 유지 |
+| 7 | 1~24 | 안전 문장이 PDF 에 없는데 출처 표시가 없었음 (2026-10-26 수정 · 교사용 제안) | 유지 |
 
 이번 요청의 확인 항목: 7주 대표활동 2개 · 9주 2개 (둘 다 플레이어 3단계에 원문 단계로 들어감) · 8주 4~7주 결과물 통합(CW 체크 · 시연 장면) ·
 10주 「여름 곤충 자석 꾸미기」 · 12주 「가을 산물 허수아비」 · 13주 「복을 담은 복주머니」(PDF 추출 깨짐 — 제목 검수 필요 표시 유지) ·
@@ -430,7 +432,7 @@
 - 교실 첫 문장: 「너는 어디 별에서 왔니?」 · 오늘 할 것: 그림책 《어디 별에서 왔니?》 · 몸놀이 「다 다른 우리가 모여 지구가 돼요」 · 만들기 「우리 지구 조각 꾸미기」
 - 대표활동: `w24.physical0` 다 다른 우리가 모여 지구가 돼요 (단계 5) · 미술 `w24.art` 우리 지구 조각 꾸미기 (순서 4)
 - 워크북 4장 · 교구 6 · 원 준비물 5 · 가정연계 「우리 가족은 어떤 별에서 왔을까?」 · 앞 주차에서 모아 올 것 7
-
+- 순서 주의: 지구 조각은 4단계(우리 지구 조각 꾸미기)에서 꾸며요. 3단계에서는 내 별 소개 · 같은 점 다른 점 찾기까지 하고, 빈 조각(꾸미기 전)을 들고 모이는 자리만 익혀요. 꾸민 조각을 맞춰 지구를 완성하고 손잡고 둘러서는 것은 5단계 나누기에서 해요.
 
 | 단계 | 분 | 교사가 할 말 (출처) | 아이들이 할 일 | 준비물 | 안전 | 자료 있음/전체 | 관찰 → 지표 |
 |---|---:|---|---:|---:|---:|---:|---|
@@ -586,3 +588,486 @@
 | supportStep | 4 | 0 | 0 |
 
 ★ 「있음」은 공개 사용이 확인된 1~8주차 그림책 표지 8장뿐이다. 나머지 자리는 교사 화면에 「대체 운영」(교사용 제안)을 함께 보인다.
+
+## 6. 주차별 자료 자리 ID (PDF 원문 ID · 파일 확보 순서표)
+
+파일을 받으면 이 ID 로 `lesson-engine/assets.ts` 에 연결한다 — 다른 주차의 그림을 빌려 쓰지 않는다. ✔ = 공개 파일 있음 · ○ = 목록만 · · = 자료 준비 중
+
+### 1주 「유치원 가는 날」
+
+- 주차 대표 그림: · `w1.meta.hero.0`
+- 그림책 표지: ✔ `w1.storybook.cover.0`
+- 신체활동 단계 사진: · `w1.physical0.step.0` · `w1.physical0.step.1` · `w1.physical0.step.2` · `w1.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w1.art.example.0` · `w1.art.example.1`
+- 워크북 페이지: · `w1.workbook.worksheet.0` · `w1.workbook.worksheet.1` · `w1.workbook.worksheet.2` · `w1.workbook.worksheet.3`
+- 교구 키트 사진: · `w1.kit.kit.0`
+- 교구 활용 예시: · `w1.kit.example.0`
+- 가족 활동 대표 그림: · `w1.family.hero.0`
+- 가족 활동 완성 예시: · `w1.family.example.0`
+- 지원자료 구성품: · `w1.support0.kit.0`
+- 지원자료 완성 예시: · `w1.support0.example.0`
+- 뮤직비디오: · `w1.media.video.0`
+- 음원 캐릭터 그림: · `w1.media.character.0`
+- 동화 음원 · 유치원 가는 길 — 설레는 마음을 담은 신나는 노래: ○ `w1.media.audio.0`
+- 동화 음원 · 안녕! 친구야 — 친구에게 인사하는 행복한 노래: ○ `w1.media.audio.1`
+- 동화 음원 · 우리 반을 소개해요 — 교실과 친구를 소개하는 노래: ○ `w1.media.audio.2`
+- 동화 음원 · 함께라서 좋아 — 함께 하는 즐거움을 전하는 노래: ○ `w1.media.audio.3`
+
+### 2주 「끝까지 해보자」
+
+- 주차 대표 그림: · `w2.meta.hero.0`
+- 그림책 표지: ✔ `w2.storybook.cover.0`
+- 신체활동 단계 사진: · `w2.physical0.step.0` · `w2.physical0.step.1` · `w2.physical0.step.2`
+- 미술 과정 · 완성 예시: · `w2.art.example.0` · `w2.art.example.1`
+- 워크북 페이지: · `w2.workbook.worksheet.0` · `w2.workbook.worksheet.1` · `w2.workbook.worksheet.2` · `w2.workbook.worksheet.3`
+- 교구 키트 사진: · `w2.kit.kit.0`
+- 교구 활용 예시: · `w2.kit.example.0`
+- 가족 활동 대표 그림: · `w2.family.hero.0`
+- 가족 활동 완성 예시: · `w2.family.example.0`
+- 지원자료 구성품: · `w2.support0.kit.0`
+- 지원자료 완성 예시: · `w2.support0.example.0`
+- 뮤직비디오: · `w2.media.video.0`
+- 음원 캐릭터 그림: · `w2.media.character.0`
+- 동화 음원 · 끝까지 해보자 송 — 포기하지 않고 도전하는 마루의 이야기: ○ `w2.media.audio.0`
+- 동화 음원 · 할 수 있어! — 마루의 응원가로 용기를 주는 신나는 노래: ○ `w2.media.audio.1`
+- 동화 음원 · 도전! 마루! — 도전하는 마루를 응원하는 노래: ○ `w2.media.audio.2`
+- 동화 음원 · 우리 함께 — 멋진 우리 모두 함께 해낼 수 있는 노래: ○ `w2.media.audio.3`
+
+### 3주 「마음을 말해줘」
+
+- 주차 대표 그림: · `w3.meta.hero.0`
+- 그림책 표지: ✔ `w3.storybook.cover.0`
+- 신체활동 단계 사진: · `w3.physical0.step.0` · `w3.physical0.step.1` · `w3.physical0.step.2` · `w3.physical0.step.3` · `w3.physical0.step.4`
+- 미술 과정 · 완성 예시: · `w3.art.example.0` · `w3.art.example.1`
+- 워크북 페이지: · `w3.workbook.worksheet.0` · `w3.workbook.worksheet.1` · `w3.workbook.worksheet.2`
+- 교구 키트 사진: · `w3.kit.kit.0`
+- 교구 활용 예시: · `w3.kit.example.0`
+- 가족 활동 대표 그림: · `w3.family.hero.0`
+- 가족 활동 완성 예시: · `w3.family.example.0`
+- 지원자료 구성품: · `w3.support0.kit.0`
+- 지원자료 완성 예시: · `w3.support0.example.0`
+- 뮤직비디오: · `w3.media.video.0`
+- 음원 캐릭터 그림: · `w3.media.character.0`
+- 동화 음원 · 마음을 말해요 송 — 내 마음을 말해요 솔직하게 말해요: ○ `w3.media.audio.0`
+- 동화 음원 · 마음 친구 송 — 너의 이야기 내가 들어줄게: ○ `w3.media.audio.1`
+- 동화 음원 · 고마운 마음 송 — 고마워! 고마워! 따뜻한 마음 전해요: ○ `w3.media.audio.2`
+- 동화 음원 · 우리 함께 송 — 함께하면 좋아 우리는 친구야: ○ `w3.media.audio.3`
+
+### 4주 「씨앗과 새싹」
+
+- 주차 대표 그림: · `w4.meta.hero.0`
+- 그림책 표지: ✔ `w4.storybook.cover.0`
+- 신체활동 단계 사진: · `w4.physical0.step.0` · `w4.physical0.step.1` · `w4.physical0.step.2` · `w4.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w4.art.example.0` · `w4.art.example.1`
+- 워크북 페이지: · `w4.workbook.worksheet.0` · `w4.workbook.worksheet.1` · `w4.workbook.worksheet.2` · `w4.workbook.worksheet.3`
+- 교구 키트 사진: · `w4.kit.kit.0`
+- 교구 활용 예시: · `w4.kit.example.0`
+- 가족 활동 대표 그림: · `w4.family.hero.0`
+- 가족 활동 완성 예시: · `w4.family.example.0`
+- 지원자료 구성품: · `w4.support0.kit.0`
+- 지원자료 완성 예시: · `w4.support0.example.0`
+- 뮤직비디오: · `w4.media.video.0`
+- 음원 캐릭터 그림: · `w4.media.character.0`
+- 동화 음원 · 씨앗이 톡! — 작은 씨앗이 톡! 새싹이 되었어요: ○ `w4.media.audio.0`
+- 동화 음원 · 물을 주세요 — 쪼르르 물을 주면 쑥쑥 자라요: ○ `w4.media.audio.1`
+- 동화 음원 · 햇살이 좋아요 — 따뜻한 햇살 아래 쑥쑥 자라요 (원문 판독 확인 필요): ○ `w4.media.audio.2`
+- 동화 음원 · 우리는 친구 새싹 — 우리 모두 함께 쑥쑥 자라요: ○ `w4.media.audio.3`
+
+### 5주 「우린 모두 특별해」
+
+- 주차 대표 그림: · `w5.meta.hero.0`
+- 그림책 표지: ✔ `w5.storybook.cover.0`
+- 신체활동 단계 사진: · `w5.physical0.step.0` · `w5.physical0.step.1` · `w5.physical0.step.2`
+- 미술 과정 · 완성 예시: · `w5.art.example.0` · `w5.art.example.1`
+- 워크북 페이지: · `w5.workbook.worksheet.0` · `w5.workbook.worksheet.1` · `w5.workbook.worksheet.2` · `w5.workbook.worksheet.3`
+- 교구 키트 사진: · `w5.kit.kit.0`
+- 교구 활용 예시: · `w5.kit.example.0`
+- 가족 활동 대표 그림: · `w5.family.hero.0`
+- 가족 활동 완성 예시: · `w5.family.example.0`
+- 지원자료 구성품: · `w5.support0.kit.0`
+- 지원자료 완성 예시: · `w5.support0.example.0`
+- 뮤직비디오: · `w5.media.video.0`
+- 음원 캐릭터 그림: · `w5.media.character.0`
+- 동화 음원 · 씨앗이 톡!: ○ `w5.media.audio.0`
+- 동화 음원 · 물을 주세요: ○ `w5.media.audio.1`
+- 동화 음원 · 햇살이 좋아요: ○ `w5.media.audio.2`
+- 동화 음원 · 우리는 친구 새싹: ○ `w5.media.audio.3`
+
+### 6주 「우리들의 비밀기지」
+
+- 주차 대표 그림: · `w6.meta.hero.0`
+- 그림책 표지: ✔ `w6.storybook.cover.0`
+- 신체활동 단계 사진: · `w6.physical0.step.0` · `w6.physical0.step.1` · `w6.physical0.step.2`
+- 미술 과정 · 완성 예시: · `w6.art.example.0` · `w6.art.example.1`
+- 워크북 페이지: · `w6.workbook.worksheet.0` · `w6.workbook.worksheet.1` · `w6.workbook.worksheet.2` · `w6.workbook.worksheet.3`
+- 교구 키트 사진: · `w6.kit.kit.0`
+- 교구 활용 예시: · `w6.kit.example.0`
+- 가족 활동 대표 그림: · `w6.family.hero.0`
+- 가족 활동 완성 예시: · `w6.family.example.0`
+- 지원자료 구성품: · `w6.support0.kit.0`
+- 지원자료 완성 예시: · `w6.support0.example.0`
+- 뮤직비디오: · `w6.media.video.0`
+- 음원 캐릭터 그림: · `w6.media.character.0`
+- 동화 음원 · 톡톡! 비가 와요: ○ `w6.media.audio.0`
+- 동화 음원 · 따뜻한 햇살: ○ `w6.media.audio.1`
+- 동화 음원 · 함께하면 할 수 있어: ○ `w6.media.audio.2`
+- 동화 음원 · 우리들의 비밀기지: ○ `w6.media.audio.3`
+
+### 7주 「나비 · 벌」
+
+- 주차 대표 그림: · `w7.meta.hero.0`
+- 그림책 표지: ✔ `w7.storybook.cover.0`
+- 신체활동 단계 사진: · `w7.physical0.step.0` · `w7.physical0.step.1` · `w7.physical0.step.2` · `w7.physical1.step.0` · `w7.physical1.step.1` · `w7.physical1.step.2`
+- 미술 과정 · 완성 예시: · `w7.art.example.0` · `w7.art.example.1`
+- 워크북 페이지: · `w7.workbook.worksheet.0` · `w7.workbook.worksheet.1` · `w7.workbook.worksheet.2` · `w7.workbook.worksheet.3`
+- 교구 키트 사진: · `w7.kit.kit.0`
+- 교구 활용 예시: · `w7.kit.example.0`
+- 가족 활동 대표 그림: · `w7.family.hero.0`
+- 가족 활동 완성 예시: · `w7.family.example.0`
+- 지원자료 구성품: · `w7.support0.kit.0`
+- 지원자료 완성 예시: · `w7.support0.example.0`
+- 뮤직비디오: · `w7.media.video.0`
+- 음원 캐릭터 그림: · `w7.media.character.0`
+- 동화 음원 · 나비야 놀자: ○ `w7.media.audio.0`
+- 동화 음원 · 윙윙 꿀벌 친구: ○ `w7.media.audio.1`
+- 동화 음원 · 팔랑팔랑 나비야: ○ `w7.media.audio.2`
+- 동화 음원 · 기다리면 만날 수 있어: ○ `w7.media.audio.3`
+
+### 8주 「우리가 만드는 숲」
+
+- 주차 대표 그림: · `w8.meta.hero.0`
+- 그림책 표지: ✔ `w8.storybook.cover.0`
+- 신체활동 단계 사진: · `w8.physical0.step.0` · `w8.physical0.step.1` · `w8.physical0.step.2` · `w8.physical0.step.3` · `w8.physical0.step.4`
+- 미술 과정 · 완성 예시: · `w8.art.example.0` · `w8.art.example.1`
+- 워크북 페이지: · `w8.workbook.worksheet.0` · `w8.workbook.worksheet.1` · `w8.workbook.worksheet.2` · `w8.workbook.worksheet.3`
+- 교구 키트 사진: · `w8.kit.kit.0`
+- 교구 활용 예시: · `w8.kit.example.0`
+- 가족 활동 대표 그림: · `w8.family.hero.0`
+- 가족 활동 완성 예시: · `w8.family.example.0`
+- 지원자료 준비 단계: · `w8.support0.step.0` · `w8.support0.step.1` · `w8.support0.step.2` · `w8.support0.step.3`
+- 뮤직비디오: · `w8.media.video.0`
+- 음원 캐릭터 그림: · `w8.media.character.0`
+- 동화 음원 · 모이면 숲이 되는 우리: ○ `w8.media.audio.0`
+- 동화 음원 · 함께라면 할 수 있어: ○ `w8.media.audio.1`
+- 동화 음원 · 숲으로 가요: ○ `w8.media.audio.2`
+- 동화 음원 · 우리의 숲: ○ `w8.media.audio.3`
+
+### 9주 「안녕? 봄아!」
+
+- 주차 대표 그림: · `w9.meta.hero.0`
+- 그림책 표지: · `w9.storybook.cover.0`
+- 신체활동 단계 사진: · `w9.physical0.step.0` · `w9.physical0.step.1` · `w9.physical0.step.2` · `w9.physical0.step.3` · `w9.physical0.step.4` · `w9.physical1.step.0` · `w9.physical1.step.1` · `w9.physical1.step.2` · `w9.physical1.step.3`
+- 미술 과정 · 완성 예시: · `w9.art.example.0` · `w9.art.example.1`
+- 워크북 페이지: · `w9.workbook.worksheet.0` · `w9.workbook.worksheet.1` · `w9.workbook.worksheet.2` · `w9.workbook.worksheet.3`
+- 교구 키트 사진: · `w9.kit.kit.0`
+- 교구 활용 예시: · `w9.kit.example.0`
+- 가족 활동 대표 그림: · `w9.family.hero.0`
+- 가족 활동 완성 예시: · `w9.family.example.0`
+- 지원자료 구성품: · `w9.support0.kit.0`
+- 지원자료 완성 예시: · `w9.support0.example.0`
+- 뮤직비디오: · `w9.media.video.0`
+- 음원 캐릭터 그림: · `w9.media.character.0`
+- 동화 음원 · 팔랑팔랑 봄바람 — 스카프를 흔들며 부르는 노래: ○ `w9.media.audio.0`
+- 동화 음원 · 봄바람 살랑 — 살랑이는 봄바람을 표현한 노래: ○ `w9.media.audio.1`
+- 동화 음원 · 봄바람이 불어옵니다 — 자리 바꾸기 놀이 노래: ○ `w9.media.audio.2`
+- 동화 음원 · 안녕? 봄아! — 봄을 맞이하는 인사 노래: ○ `w9.media.audio.3`
+
+### 10주 「너무 뜨겁잖아!」
+
+- 주차 대표 그림: · `w10.meta.hero.0`
+- 그림책 표지: · `w10.storybook.cover.0`
+- 신체활동 단계 사진: · `w10.physical0.step.0` · `w10.physical0.step.1` · `w10.physical0.step.2` · `w10.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w10.art.example.0` · `w10.art.example.1`
+- 워크북 페이지: · `w10.workbook.worksheet.0` · `w10.workbook.worksheet.1` · `w10.workbook.worksheet.2` · `w10.workbook.worksheet.3`
+- 교구 키트 사진: · `w10.kit.kit.0`
+- 교구 활용 예시: · `w10.kit.example.0`
+- 가족 활동 대표 그림: · `w10.family.hero.0`
+- 가족 활동 완성 예시: · `w10.family.example.0`
+- 지원자료 구성품: · `w10.support0.kit.0`
+- 지원자료 완성 예시: · `w10.support0.example.0`
+- 뮤직비디오: · `w10.media.video.0`
+- 음원 캐릭터 그림: · `w10.media.character.0`
+- 동화 음원 · 여름 친구를 찾아라 — 곤충을 찾아 떠나는 탐험 노래: ○ `w10.media.audio.0`
+- 동화 음원 · 매미가 맴맴 — 매미 소리를 따라 부르는 노래: ○ `w10.media.audio.1`
+- 동화 음원 · 잠자리 비행 — 잠자리처럼 날아보는 움직임 노래: ○ `w10.media.audio.2`
+- 동화 음원 · 너무 뜨겁잖아! — 더운 여름을 즐겁게 표현한 노래: ○ `w10.media.audio.3`
+
+### 11주 「자! 떠나자!」
+
+- 주차 대표 그림: · `w11.meta.hero.0`
+- 그림책 표지: · `w11.storybook.cover.0`
+- 신체활동 단계 사진: · `w11.physical0.step.0` · `w11.physical0.step.1` · `w11.physical0.step.2` · `w11.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w11.art.example.0` · `w11.art.example.1`
+- 워크북 페이지: · `w11.workbook.worksheet.0` · `w11.workbook.worksheet.1` · `w11.workbook.worksheet.2` · `w11.workbook.worksheet.3`
+- 교구 키트 사진: · `w11.kit.kit.0`
+- 교구 활용 예시: · `w11.kit.example.0`
+- 가족 활동 대표 그림: · `w11.family.hero.0`
+- 가족 활동 완성 예시: · `w11.family.example.0`
+- 지원자료 구성품: · `w11.support0.kit.0`
+- 지원자료 완성 예시: · `w11.support0.example.0`
+- 뮤직비디오: · `w11.media.video.0`
+- 음원 캐릭터 그림: · `w11.media.character.0`
+- 동화 음원 · 자! 떠나자! — 여행을 떠나는 설레는 노래: ○ `w11.media.audio.0`
+- 동화 음원 · 비행기 타고 — 하늘을 나는 상상 노래: ○ `w11.media.audio.1`
+- 동화 음원 · 알로하 훌라 — 훌라댄스를 추며 부르는 노래: ○ `w11.media.audio.2`
+- 동화 음원 · 새로운 곳으로 — 낯선 곳의 즐거움을 담은 노래: ○ `w11.media.audio.3`
+
+### 12주 「세상은 알록달록」
+
+- 주차 대표 그림: · `w12.meta.hero.0`
+- 그림책 표지: · `w12.storybook.cover.0`
+- 신체활동 단계 사진: · `w12.physical0.step.0` · `w12.physical0.step.1` · `w12.physical0.step.2` · `w12.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w12.art.example.0` · `w12.art.example.1`
+- 워크북 페이지: · `w12.workbook.worksheet.0` · `w12.workbook.worksheet.1` · `w12.workbook.worksheet.2` · `w12.workbook.worksheet.3`
+- 교구 키트 사진: · `w12.kit.kit.0`
+- 교구 활용 예시: · `w12.kit.example.0`
+- 가족 활동 대표 그림: · `w12.family.hero.0`
+- 가족 활동 완성 예시: · `w12.family.example.0`
+- 지원자료 구성품: · `w12.support0.kit.0`
+- 지원자료 완성 예시: · `w12.support0.example.0`
+- 뮤직비디오: · `w12.media.video.0`
+- 음원 캐릭터 그림: · `w12.media.character.0`
+- 동화 음원 · 세상은 알록달록 — 가을 색을 노래하는 신나는 노래: ○ `w12.media.audio.0`
+- 동화 음원 · 낙엽이 데굴데굴 — 떨어지는 낙엽을 표현한 노래: ○ `w12.media.audio.1`
+- 동화 음원 · 가을 바구니 — 가을 산물을 모으는 노래: ○ `w12.media.audio.2`
+- 동화 음원 · 허수아비 친구 — 허수아비와 인사하는 노래: ○ `w12.media.audio.3`
+
+### 13주 「동글동글 보름달」
+
+- 주차 대표 그림: · `w13.meta.hero.0`
+- 그림책 표지: · `w13.storybook.cover.0`
+- 신체활동 단계 사진: · `w13.physical0.step.0` · `w13.physical0.step.1` · `w13.physical0.step.2` · `w13.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w13.art.example.0` · `w13.art.example.1`
+- 워크북 페이지: · `w13.workbook.worksheet.0` · `w13.workbook.worksheet.1` · `w13.workbook.worksheet.2` · `w13.workbook.worksheet.3`
+- 교구 키트 사진: · `w13.kit.kit.0`
+- 교구 활용 예시: · `w13.kit.example.0`
+- 가족 활동 대표 그림: · `w13.family.hero.0`
+- 가족 활동 완성 예시: · `w13.family.example.0`
+- 지원자료 구성품: · `w13.support0.kit.0`
+- 지원자료 완성 예시: · `w13.support0.example.0`
+- 뮤직비디오: · `w13.media.video.0`
+- 음원 캐릭터 그림: · `w13.media.character.0`
+- 동화 음원 · 동글동글 보름달 — 둥근 보름달을 노래해요: ○ `w13.media.audio.0`
+- 동화 음원 · 달이 따라와 — 어디든 따라오는 달 이야기: ○ `w13.media.audio.1`
+- 동화 음원 · 강강술래 — 손잡고 도는 전통 놀이 노래: ○ `w13.media.audio.2`
+- 동화 음원 · 소원을 담아 — 마음을 담아 전하는 노래: ○ `w13.media.audio.3`
+
+### 14주 「온 세상은 하얀 도화지」
+
+- 주차 대표 그림: · `w14.meta.hero.0`
+- 그림책 표지: · `w14.storybook.cover.0`
+- 신체활동 단계 사진: · `w14.physical0.step.0` · `w14.physical0.step.1` · `w14.physical0.step.2` · `w14.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w14.art.example.0` · `w14.art.example.1`
+- 워크북 페이지: · `w14.workbook.worksheet.0` · `w14.workbook.worksheet.1` · `w14.workbook.worksheet.2` · `w14.workbook.worksheet.3`
+- 교구 키트 사진: · `w14.kit.kit.0`
+- 교구 활용 예시: · `w14.kit.example.0`
+- 가족 활동 대표 그림: · `w14.family.hero.0`
+- 가족 활동 완성 예시: · `w14.family.example.0`
+- 지원자료 구성품: · `w14.support0.kit.0`
+- 지원자료 완성 예시: · `w14.support0.example.0`
+- 뮤직비디오: · `w14.media.video.0`
+- 음원 캐릭터 그림: · `w14.media.character.0`
+- 동화 음원 · 온 세상은 하얀 도화지 — 하얀 겨울을 노래해요: ○ `w14.media.audio.0`
+- 동화 음원 · 눈이 펑펑 — 눈 내리는 날의 신나는 노래: ○ `w14.media.audio.1`
+- 동화 음원 · 눈사람 친구 — 눈사람을 만드는 노래: ○ `w14.media.audio.2`
+- 동화 음원 · 따뜻하게 입어요 — 겨울 옷차림 노래: ○ `w14.media.audio.3`
+
+### 15주 「따뜻한 소리가 들려요」
+
+- 주차 대표 그림: · `w15.meta.hero.0`
+- 그림책 표지: · `w15.storybook.cover.0`
+- 신체활동 단계 사진: · `w15.physical0.step.0` · `w15.physical0.step.1` · `w15.physical0.step.2` · `w15.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w15.art.example.0` · `w15.art.example.1`
+- 워크북 페이지: · `w15.workbook.worksheet.0` · `w15.workbook.worksheet.1` · `w15.workbook.worksheet.2` · `w15.workbook.worksheet.3`
+- 교구 키트 사진: · `w15.kit.kit.0`
+- 교구 활용 예시: · `w15.kit.example.0`
+- 가족 활동 대표 그림: · `w15.family.hero.0`
+- 가족 활동 완성 예시: · `w15.family.example.0`
+- 지원자료 구성품: · `w15.support0.kit.0`
+- 지원자료 완성 예시: · `w15.support0.example.0`
+- 뮤직비디오: · `w15.media.video.0`
+- 음원 캐릭터 그림: · `w15.media.character.0`
+- 동화 음원 · 따뜻한 소리가 들려요 — 온기벨 소리를 담은 노래: ○ `w15.media.audio.0`
+- 동화 음원 · 고마워요 — 감사를 전하는 노래: ○ `w15.media.audio.1`
+- 동화 음원 · 딸랑딸랑 온기벨 — 방울 소리와 함께 부르는 노래: ○ `w15.media.audio.2`
+- 동화 음원 · 나눠요 우리 — 마음을 나누는 노래: ○ `w15.media.audio.3`
+
+### 16주 「우리 그리고 모두의 사계절」
+
+- 주차 대표 그림: · `w16.meta.hero.0`
+- 그림책 표지: · `w16.storybook.cover.0`
+- 신체활동 단계 사진: · `w16.physical0.step.0` · `w16.physical0.step.1` · `w16.physical0.step.2` · `w16.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w16.art.example.0` · `w16.art.example.1`
+- 워크북 페이지: · `w16.workbook.worksheet.0` · `w16.workbook.worksheet.1` · `w16.workbook.worksheet.2` · `w16.workbook.worksheet.3`
+- 교구 키트 사진: · `w16.kit.kit.0`
+- 교구 활용 예시: · `w16.kit.example.0`
+- 가족 활동 대표 그림: · `w16.family.hero.0`
+- 가족 활동 완성 예시: · `w16.family.example.0`
+- 지원자료 구성품: · `w16.support0.kit.0`
+- 지원자료 완성 예시: · `w16.support0.example.0`
+- 뮤직비디오: · `w16.media.video.0`
+- 음원 캐릭터 그림: · `w16.media.character.0`
+- 동화 음원 · 우리 그리고 모두의 사계절 — 8주를 돌아보는 노래: ○ `w16.media.audio.0`
+- 동화 음원 · 봄여름가을겨울 — 사계절을 노래해요: ○ `w16.media.audio.1`
+- 동화 음원 · 한 뼘 더 자랐어 — 성장을 축하하는 노래: ○ `w16.media.audio.2`
+- 동화 음원 · 고마워 우리 — 함께한 친구들에게 전하는 노래: ○ `w16.media.audio.3`
+
+### 17주 「첨벙첨벙, 안전하게!」
+
+- 주차 대표 그림: · `w17.meta.hero.0`
+- 그림책 표지: · `w17.storybook.cover.0`
+- 신체활동 단계 사진: · `w17.physical0.step.0` · `w17.physical0.step.1` · `w17.physical0.step.2` · `w17.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w17.art.example.0` · `w17.art.example.1`
+- 워크북 페이지: · `w17.workbook.worksheet.0` · `w17.workbook.worksheet.1` · `w17.workbook.worksheet.2` · `w17.workbook.worksheet.3`
+- 교구 키트 사진: · `w17.kit.kit.0`
+- 교구 활용 예시: · `w17.kit.example.0`
+- 가족 활동 대표 그림: · `w17.family.hero.0`
+- 가족 활동 완성 예시: · `w17.family.example.0`
+- 지원자료 구성품: · `w17.support0.kit.0`
+- 지원자료 완성 예시: · `w17.support0.example.0`
+- 뮤직비디오: · `w17.media.video.0`
+- 음원 캐릭터 그림: · `w17.media.character.0`
+- 동화 음원 · 첨벙첨벙 물놀이 — 물놀이를 떠나는 신나는 노래: ○ `w17.media.audio.0`
+- 동화 음원 · 준비운동 먼저 — 물에 들어가기 전 부르는 노래: ○ `w17.media.audio.1`
+- 동화 음원 · 어른 손 꼭 잡고 — 안전하게 들어가는 약속 노래: ○ `w17.media.audio.2`
+- 동화 음원 · 조심조심 선풍기 — 여름철 전기 안전 노래: ○ `w17.media.audio.3`
+
+### 18주 「색이 섞이면 무슨 색?」
+
+- 주차 대표 그림: · `w18.meta.hero.0`
+- 그림책 표지: · `w18.storybook.cover.0`
+- 신체활동 단계 사진: · `w18.physical0.step.0` · `w18.physical0.step.1` · `w18.physical0.step.2` · `w18.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w18.art.example.0` · `w18.art.example.1`
+- 워크북 페이지: · `w18.workbook.worksheet.0` · `w18.workbook.worksheet.1` · `w18.workbook.worksheet.2` · `w18.workbook.worksheet.3`
+- 교구 키트 사진: · `w18.kit.kit.0`
+- 교구 활용 예시: · `w18.kit.example.0`
+- 가족 활동 대표 그림: · `w18.family.hero.0`
+- 가족 활동 완성 예시: · `w18.family.example.0`
+- 지원자료 구성품: · `w18.support0.kit.0`
+- 지원자료 완성 예시: · `w18.support0.example.0`
+- 뮤직비디오: · `w18.media.video.0`
+- 음원 캐릭터 그림: · `w18.media.character.0`
+- 동화 음원 · 색이 섞이면 — 색이 만나는 순간을 노래해요: ○ `w18.media.audio.0`
+- 동화 음원 · 빨강 노랑 파랑 — 삼원색을 익히는 노래: ○ `w18.media.audio.1`
+- 동화 음원 · 알록달록 축제 — 스카프를 흔들며 부르는 축제 노래: ○ `w18.media.audio.2`
+- 동화 음원 · 나만의 색 — 내가 만든 색을 소개하는 노래: ○ `w18.media.audio.3`
+
+### 19주 「리듬탐험대, 출발!」
+
+- 주차 대표 그림: · `w19.meta.hero.0`
+- 그림책 표지: · `w19.storybook.cover.0`
+- 신체활동 단계 사진: · `w19.physical0.step.0` · `w19.physical0.step.1` · `w19.physical0.step.2` · `w19.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w19.art.example.0` · `w19.art.example.1`
+- 워크북 페이지: · `w19.workbook.worksheet.0` · `w19.workbook.worksheet.1` · `w19.workbook.worksheet.2` · `w19.workbook.worksheet.3`
+- 교구 키트 사진: · `w19.kit.kit.0`
+- 교구 활용 예시: · `w19.kit.example.0`
+- 가족 활동 대표 그림: · `w19.family.hero.0`
+- 가족 활동 완성 예시: · `w19.family.example.0`
+- 지원자료 구성품: · `w19.support0.kit.0`
+- 지원자료 완성 예시: · `w19.support0.example.0`
+- 뮤직비디오: · `w19.media.video.0`
+- 음원 캐릭터 그림: · `w19.media.character.0`
+- 동화 음원 · 리듬탐험대 — 소리를 찾아 떠나는 출발 노래: ○ `w19.media.audio.0`
+- 동화 음원 · 둥둥 젬베 — 아프리카 북 리듬 노래: ○ `w19.media.audio.1`
+- 동화 음원 · 딸깍딸깍 캐스터네츠 — 스페인 악기 리듬 노래: ○ `w19.media.audio.2`
+- 동화 음원 · 다 함께 합주 — 모두 함께 연주하는 노래: ○ `w19.media.audio.3`
+
+### 20주 「복을 전해요」
+
+- 주차 대표 그림: · `w20.meta.hero.0`
+- 그림책 표지: · `w20.storybook.cover.0`
+- 신체활동 단계 사진: · `w20.physical0.step.0` · `w20.physical0.step.1` · `w20.physical0.step.2` · `w20.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w20.art.example.0` · `w20.art.example.1`
+- 워크북 페이지: · `w20.workbook.worksheet.0` · `w20.workbook.worksheet.1` · `w20.workbook.worksheet.2` · `w20.workbook.worksheet.3`
+- 교구 키트 사진: · `w20.kit.kit.0`
+- 교구 활용 예시: · `w20.kit.example.0`
+- 가족 활동 대표 그림: · `w20.family.hero.0`
+- 가족 활동 완성 예시: · `w20.family.example.0`
+- 지원자료 구성품: · `w20.support0.kit.0`
+- 지원자료 완성 예시: · `w20.support0.example.0`
+- 뮤직비디오: · `w20.media.video.0`
+- 음원 캐릭터 그림: · `w20.media.character.0`
+- 동화 음원 · 복을 전해요 — 복을 나누는 명절 노래: ○ `w20.media.audio.0`
+- 동화 음원 · 새해 복 많이 받으세요 — 세배 인사 노래: ○ `w20.media.audio.1`
+- 동화 음원 · 꽁시파차이 — 중국 새해 인사 노래: ○ `w20.media.audio.2`
+- 동화 음원 · 모여 모여 명절날 — 가족이 모이는 날의 노래: ○ `w20.media.audio.3`
+
+### 21주 「동글동글 토마토」
+
+- 주차 대표 그림: · `w21.meta.hero.0`
+- 그림책 표지: · `w21.storybook.cover.0`
+- 신체활동 단계 사진: · `w21.physical0.step.0` · `w21.physical0.step.1` · `w21.physical0.step.2` · `w21.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w21.art.example.0` · `w21.art.example.1`
+- 워크북 페이지: · `w21.workbook.worksheet.0` · `w21.workbook.worksheet.1` · `w21.workbook.worksheet.2` · `w21.workbook.worksheet.3`
+- 교구 키트 사진: · `w21.kit.kit.0`
+- 교구 활용 예시: · `w21.kit.example.0`
+- 가족 활동 대표 그림: · `w21.family.hero.0`
+- 가족 활동 완성 예시: · `w21.family.example.0`
+- 지원자료 구성품: · `w21.support0.kit.0`
+- 지원자료 완성 예시: · `w21.support0.example.0`
+- 뮤직비디오: · `w21.media.video.0`
+- 음원 캐릭터 그림: · `w21.media.character.0`
+- 동화 음원 · 동글동글 토마토 — 토마토를 노래하는 신나는 노래: ○ `w21.media.audio.0`
+- 동화 음원 · 쑥쑥 자라라 — 성장 과정을 담은 노래: ○ `w21.media.audio.1`
+- 동화 음원 · 빨갛게 익었네 — 수확의 기쁨을 담은 노래: ○ `w21.media.audio.2`
+- 동화 음원 · 토마토 축제 — 축제를 즐기는 노래: ○ `w21.media.audio.3`
+
+### 22주 「우리 반 할로윈 파티」
+
+- 주차 대표 그림: · `w22.meta.hero.0`
+- 그림책 표지: · `w22.storybook.cover.0`
+- 신체활동 단계 사진: · `w22.physical0.step.0` · `w22.physical0.step.1` · `w22.physical0.step.2` · `w22.physical0.step.3` · `w22.physical0.step.4`
+- 미술 과정 · 완성 예시: · `w22.art.example.0` · `w22.art.example.1`
+- 워크북 페이지: · `w22.workbook.worksheet.0` · `w22.workbook.worksheet.1` · `w22.workbook.worksheet.2` · `w22.workbook.worksheet.3`
+- 교구 키트 사진: · `w22.kit.kit.0`
+- 교구 활용 예시: · `w22.kit.example.0`
+- 가족 활동 대표 그림: · `w22.family.hero.0`
+- 가족 활동 완성 예시: · `w22.family.example.0`
+- 지원자료 구성품: · `w22.support0.kit.0`
+- 지원자료 완성 예시: · `w22.support0.example.0`
+- 뮤직비디오: · `w22.media.video.0`
+- 음원 캐릭터 그림: · `w22.media.character.0`
+- 동화 음원 · 우리 반 할로윈 파티 — 파티를 여는 신나는 노래: ○ `w22.media.audio.0`
+- 동화 음원 · 트릭 오어 트릿 — 친구를 만나 부르는 노래: ○ `w22.media.audio.1`
+- 동화 음원 · 호박 랜턴 — 잭오랜턴을 노래해요: ○ `w22.media.audio.2`
+- 동화 음원 · 세계의 축제 — 여러 나라 축제를 소개하는 노래: ○ `w22.media.audio.3`
+
+### 23주 「산타는 어디서 올까?」
+
+- 주차 대표 그림: · `w23.meta.hero.0`
+- 그림책 표지: · `w23.storybook.cover.0`
+- 신체활동 단계 사진: · `w23.physical0.step.0` · `w23.physical0.step.1` · `w23.physical0.step.2` · `w23.physical0.step.3`
+- 미술 과정 · 완성 예시: · `w23.art.example.0` · `w23.art.example.1`
+- 워크북 페이지: · `w23.workbook.worksheet.0` · `w23.workbook.worksheet.1` · `w23.workbook.worksheet.2` · `w23.workbook.worksheet.3`
+- 교구 키트 사진: · `w23.kit.kit.0`
+- 교구 활용 예시: · `w23.kit.example.0`
+- 가족 활동 대표 그림: · `w23.family.hero.0`
+- 가족 활동 완성 예시: · `w23.family.example.0`
+- 지원자료 구성품: · `w23.support0.kit.0`
+- 지원자료 완성 예시: · `w23.support0.example.0`
+- 뮤직비디오: · `w23.media.video.0`
+- 음원 캐릭터 그림: · `w23.media.character.0`
+- 동화 음원 · 산타는 어디서 올까? — 산타의 여행을 상상하는 노래: ○ `w23.media.audio.0`
+- 동화 음원 · 딸랑딸랑 썰매 — 썰매를 끄는 신나는 노래: ○ `w23.media.audio.1`
+- 동화 음원 · 우리 반 트리 — 함께 트리를 꾸미는 노래: ○ `w23.media.audio.2`
+- 동화 음원 · 메리 크리스마스 — 인사를 나누는 노래: ○ `w23.media.audio.3`
+
+### 24주 「친구야, 너는 어디 별에서 왔니?」
+
+- 주차 대표 그림: · `w24.meta.hero.0`
+- 그림책 표지: · `w24.storybook.cover.0`
+- 신체활동 단계 사진: · `w24.physical0.step.0` · `w24.physical0.step.1` · `w24.physical0.step.2` · `w24.physical0.step.3` · `w24.physical0.step.4`
+- 미술 과정 · 완성 예시: · `w24.art.example.0` · `w24.art.example.1`
+- 워크북 페이지: · `w24.workbook.worksheet.0` · `w24.workbook.worksheet.1` · `w24.workbook.worksheet.2` · `w24.workbook.worksheet.3`
+- 교구 키트 사진: · `w24.kit.kit.0`
+- 교구 활용 예시: · `w24.kit.example.0`
+- 가족 활동 대표 그림: · `w24.family.hero.0`
+- 가족 활동 완성 예시: · `w24.family.example.0`
+- 지원자료 구성품: · `w24.support0.kit.0`
+- 지원자료 완성 예시: · `w24.support0.example.0`
+- 뮤직비디오: · `w24.media.video.0`
+- 음원 캐릭터 그림: · `w24.media.character.0`
+- 동화 음원 · 어디 별에서 왔니? — 서로를 소개하는 상상 노래: ○ `w24.media.audio.0`
+- 동화 음원 · 반짝반짝 나의 별 — 내 별을 노래해요: ○ `w24.media.audio.1`
+- 동화 음원 · 모이면 지구가 돼요 — 조각이 모여 지구가 되는 노래: ○ `w24.media.audio.2`
+- 동화 음원 · 두근두근 세계여행 — 8주 여행을 마무리하는 노래: ○ `w24.media.audio.3`

@@ -185,10 +185,10 @@ note(topicBad.length === 0, "24주 주제 일치 (상세 제목 = 플레이어 �
     await page.eval(`window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'}))`); await page.idle(200);
     await page.eval(`window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'}))`); await page.idle(300);
     const move = await page.eval(`(()=>{const t=document.querySelector("[aria-label='교사 화면']")?.innerText??'';return {seq:t.includes('순서 주의'), fold:t.includes('이 단계 자료 · 관찰')}})()`);
-    const wantSeq = [4, 11, 22].includes(n);
+    const wantSeq = [4, 11, 22, 24].includes(n);
     if (!open.line || open.line.includes("무엇을 만날까요") || open.chips < 3 || move.seq !== wantSeq || !move.fold) bad.push(`${n}:${JSON.stringify({ ...open, ...move })}`);
   }
-  note(bad.length === 0, "교실 화면 주제 문장 · 오늘 할 것 · 순서 주의(4 · 11 · 22주) · 단계 자료/관찰 → 지표", bad.join(" "));
+  note(bad.length === 0, "교실 화면 주제 문장 · 오늘 할 것 · 순서 주의(4 · 11 · 22 · 24주) · 단계 자료/관찰 → 지표", bad.join(" "));
   page.drain();
 }
 

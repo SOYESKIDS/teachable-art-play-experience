@@ -2,6 +2,7 @@ import type { ExperienceWeek, Sourced } from "./types";
 import { MATERIALS_ORIGIN, MEDIA_STATE_LABEL, SAFETY_ORIGIN, type CheckGroup, type MediaRow } from "./lesson-labels";
 import { gatherForWeek, weekDashboard } from "./teacher-dashboard/week-dashboards";
 import { weekProposal } from "./teacher-dashboard/proposals";
+import { prepNotes } from "./lesson-engine/prep-notes";
 
 /**
  * 수업 전 · 수업 뒤 확인 목록과 미디어 보유 상태.
@@ -47,6 +48,9 @@ export function preLessonChecks(week: ExperienceWeek): readonly CheckGroup[] {
     { key: "safety", label: "안전 유의사항", items: week.body.safety.map((text) => ({ text, origin: SAFETY_ORIGIN })) },
   ];
   if (gather.length) groups.push({ key: "gather", label: "앞 주차 결과물 준비", items: gather });
+  // 미리 만들 것 · 미리 설치할 것 — 본 활동(4단계)에서 만드는 것과 나눠 적는다
+  const before = prepNotes(week.weekNo).filter((p) => p.when === "before");
+  if (before.length) groups.push({ key: "premake", label: "미리 준비 · 사전 제작", items: before.flatMap((p) => [p.text, p.action]) });
   groups.push({
     key: "script",
     label: "여는 말 · 발문",
@@ -70,6 +74,8 @@ export function closingChecks(week: ExperienceWeek, next: ExperienceWeek | null)
   const groups: CheckGroup[] = [];
   if (share) groups.push({ key: "share", label: "나누기 질문", items: [{ text: `“${share.teacherQuestion}”`, origin: share.teacherQuestionOrigin }] });
   groups.push({ key: "cleanup", label: "재료 정리", items: [week.prep.cleanup] });
+  const during = prepNotes(week.weekNo).filter((p) => p.when === "during");
+  if (during.length) groups.push({ key: "worldmap", label: "우리 반 세계지도 (17~24주 공동작품)", items: during.flatMap((p) => [p.text, p.action]) });
   groups.push({ key: "observe", label: "관찰 포인트 확인", items: week.teacherObservations.items.map((text) => ({ text, origin: week.teacherObservations.origin })) });
   if (d?.familyTitle) {
     groups.push({
@@ -80,12 +86,13 @@ export function closingChecks(week: ExperienceWeek, next: ExperienceWeek | null)
   }
   const nd = next ? weekDashboard(next.weekNo) : null;
   const nextItems: Sourced[] = [];
-  if (d?.crossWeek) nextItems.push(src(d.crossWeek));
   if (next) {
     nextItems.push({ text: `${next.weekNo}주차 「${next.title}」 — 그림책 《${next.storybook}》`, origin: "edited" });
     for (const k of (nd?.kitItems ?? []).slice(0, 3)) nextItems.push(src(`${next.weekNo}주차 교구 · ${k}`));
   }
   if (nextItems.length) groups.push({ key: "next", label: "다음 주차 준비", items: nextItems });
+  // 원문 한 칸에 「이번 주 결과물 → 다음 주」와 「앞 주차 → 이번 주」가 함께 적혀 있어 따로 둔다
+  if (d?.crossWeek) groups.push({ key: "crossweek", label: "주차 연계 (자료 원문)", items: [src(d.crossWeek)] });
   if (week.extensions.length) {
     groups.push({
       key: "extension",

@@ -11,6 +11,14 @@ export interface StageExtra {
   assets: readonly { id: string; label: string; state: MediaState; fallback: string | null }[];
   observable: readonly { item: string; indicators: readonly string[] }[];
   sequence: { conflict: Sourced; resolution: Sourced } | null;
+  /** 오늘의 수업 목표 (자료 원문 → 교사용 제안 → 주차 핵심 문장) */
+  goal: Sourced | null;
+  /** 이 단계 PDF 활동 설명 — 신체활동 · 미술활동 소개 문장 */
+  leads: readonly { title: string; lead: Sourced }[];
+  /** 단계 메모 (PDF 원문 칸) — 몸으로 놀기: 교구 활용 · 만들기: 활용 방법 · 예시 · TIP · 나누고 정리: 정리 방법 · 가정연계 · 안내 */
+  wrapUp: readonly { label: string; item: Sourced }[];
+  /** 이 단계에서 더 지킬 것 (촬영 등) — 교사용 제안 */
+  extraCautions: readonly Sourced[];
 }
 
 export type StageExtras = Partial<Record<StageKey, StageExtra>>;

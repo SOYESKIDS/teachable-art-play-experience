@@ -9,7 +9,8 @@ import { closingChecks, preLessonChecks, weekGoals, type CheckGroup } from "@/da
 import { isEditedLine, weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
 import { TEXT_ORIGIN_LABEL } from "@/data/experience/types";
 import { EXPERIENCE_WEEKS, experienceWeek } from "@/data/experience/weeks";
-import { LESSON_TIME } from "@/lib/weeks/lesson-time";
+import { LESSON_TIME, PDF_DURATION_LABEL, SHORT_TIME } from "@/lib/weeks/lesson-time";
+import { buildLessonPlan, indicatorName } from "@/data/experience/lesson-engine/plan";
 
 /**
  * 인쇄용 수업 요약 (A4) — 교사용 수업 요약 · 준비물 체크리스트 · 기본 수업 진행표 · 가족연계 안내문.
@@ -72,6 +73,7 @@ export default async function WeekPrintPage({ params }: PageProps<"/experience/w
   if (!week || !d) notFound();
   const next = experienceWeek(week.weekNo + 1) ?? null;
   const goals = weekGoals(week);
+  const plan = buildLessonPlan(week);
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 bg-pop-cream focus:outline-none print:bg-white">
@@ -79,6 +81,9 @@ export default async function WeekPrintPage({ params }: PageProps<"/experience/w
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3 print:hidden">
           <Link href={`/experience/weeks/${week.weekNo}`} className="inline-flex min-h-11 items-center text-[14px] font-semibold text-pop-ink-muted hover:text-pop-ink">
             ← {week.weekNo}주차 수업 안내
+          </Link>
+          <Link href={`/experience/weeks/${week.weekNo}/guide`} className="inline-flex min-h-11 items-center text-[14px] font-semibold text-pop-ink-muted hover:text-pop-ink">
+            상세 수업 지도안 (12개 영역 전체) →
           </Link>
           <PrintButton />
         </div>
@@ -95,6 +100,14 @@ export default async function WeekPrintPage({ params }: PageProps<"/experience/w
               {(["source", "edited", "proposal", "review"] as const).map((o) => ` [${TEXT_ORIGIN_LABEL[o]}]`).join("")}
             </p>
           </header>
+
+          <Section title="수업 시간">
+            <ul className="grid gap-1 text-[13px]">
+              <li>· 자료 PDF 원본 운영시간 — {PDF_DURATION_LABEL} <OriginTag origin="source" className="align-middle" /></li>
+              <li>· 웹사이트 체험 — {LESSON_TIME.label} ({LESSON_TIME.breakdown}) <OriginTag origin="edited" className="align-middle" /></li>
+              <li>· {SHORT_TIME.label} ({SHORT_TIME.breakdown}) — {SHORT_TIME.note} <OriginTag origin="proposal" className="align-middle" /></li>
+            </ul>
+          </Section>
 
           <Section title="오늘의 목표">
             <ul className="grid gap-1 text-[14px]">
@@ -132,6 +145,26 @@ export default async function WeekPrintPage({ params }: PageProps<"/experience/w
               </tbody>
             </table>
             <p className="mt-2 text-[12px] text-pop-ink-muted">워크북 · 확장활동은 {LESSON_TIME.label} 밖의 선택 활동입니다. 워크북 도안 · 음원 · 영상 파일은 자료 준비 중이라 이 인쇄물에 넣지 않았습니다.</p>
+          </Section>
+
+          <Section title="활동별 관찰 포인트 · 5대 성장지표">
+            <div className="grid gap-3 sm:grid-cols-2 print:grid-cols-2">
+              {[...plan.physicalActivities, ...(plan.artActivity ? [plan.artActivity] : [])].map((a) => (
+                <div key={a.id} className="break-inside-avoid">
+                  <p className="text-[13px] font-extrabold">{a.kind === "art" ? "미술" : "신체"} · {a.title}</p>
+                  <ul className="mt-1 grid gap-0.5 text-[13px] leading-snug">
+                    {a.observations.map((o) => (
+                      <li key={o.item}>· {o.item} <span className="font-bold">{o.indicators.map(indicatorName).join(" · ") || "지표 연결 없음"}</span></li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+            <p className="mt-2 text-[12px] text-pop-ink-muted">
+              관찰 문항 출처 [{TEXT_ORIGIN_LABEL[plan.observationPoints.origin]}] · 지표 연결 [{TEXT_ORIGIN_LABEL.proposal}] — 점수 · 등급이 아니라 그 활동에서 본 모습을 적는 기준입니다.
+            </p>
+            <p className="mt-3 text-[13px] font-extrabold">성장기록 예시</p>
+            <p className="mt-1 text-[13px] leading-snug">{d.kidsnote ?? (d.missingInSource.includes("성장기록 예시") ? "자료 원문에 「미작성」으로 적혀 있습니다." : "자료에서 확인하지 못했습니다.")}{d.kidsnote ? <> <OriginTag origin="source" className="align-middle" /></> : null}</p>
           </Section>
 
           <Section title="수업 마무리 확인">
