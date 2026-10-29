@@ -1,6 +1,6 @@
 import { GROWTH_INDICATORS } from "../report";
 import { SAFETY_ORIGIN } from "../lesson-labels";
-import { gatherForWeek, pdfQuestions, weekDashboard } from "../teacher-dashboard/week-dashboards";
+import { gatherForWeek, isOfficialGuideWeek, pdfQuestions, weekDashboard } from "../teacher-dashboard/week-dashboards";
 import { curriculumBadge } from "../teacher-dashboard/source-register";
 import { CORE_STAGE_FLOW, type ExperienceWeek, type Sourced, type StageKey, type TextOrigin } from "../types";
 import { weekGoals } from "../lesson-support";
@@ -132,7 +132,7 @@ export function buildLessonPlan(week: ExperienceWeek): WeekLessonPlan {
     const sa = stageAssets(s.key);
     const chips =
       s.key === "open"
-        ? [`그림책 《${week.storybook}》`, ...physical.map((p) => `몸놀이 「${p.title}」`), ...(art ? [`만들기 「${art.title}」`] : [])]
+        ? [`동화책 《${week.storybook}》`, ...physical.map((p) => `신체활동 「${p.title}」`), ...(art ? [`만들기 「${art.title}」`] : [])]
         : acts.map((a) => a.title);
     const observable =
       s.key === "move" ? bodyLinks : s.key === "make" ? makeLinks : s.key === "share" ? links.filter((l) => l.indicators.includes("self_explanation")) : [];
@@ -201,10 +201,12 @@ export function connectionCheck(plan: WeekLessonPlan): readonly ChainResult[] {
     // PDF 단계가 있으면 그 단계가 모두 플레이어에 있어야 한다. PDF 에 단계가 없으면(1주 미술) 단계가 있기만 하면 된다
     const playerOk = !!stage && (a.steps.length ? a.steps.every((x) => stageText.includes(squash(x.text))) : stage.childrenDo.length > 0);
     const mapped = a.observations.filter((o) => o.indicators.length > 0);
+    // 공식 가이드 기준 주차(14 · 17~24)는 원문에 그림 자리 ID 가 없다 — 자리를 지어내지 않고 「해당 없음」으로 본다
+    const guide = isOfficialGuideWeek(plan.weekNo);
     const links: Record<ChainLink, boolean> = {
       pdf: !!a.title,
       player: playerOk,
-      assets: a.assetIds.length > 0,
+      assets: a.assetIds.length > 0 || guide,
       observation: a.observations.length > 0,
       indicator: mapped.length > 0,
       report: mapped.length > 0 && a.evidence.some((e) => e.required),
@@ -214,7 +216,7 @@ export function connectionCheck(plan: WeekLessonPlan): readonly ChainResult[] {
       title: a.title,
       links,
       complete: Object.values(links).every(Boolean),
-      note: a.steps.length ? null : "PDF 에 만드는 순서가 없어 웹 체험 편집 문장으로 진행",
+      note: guide && a.assetIds.length === 0 ? "공식 가이드에는 그림 자리가 없어 그림 자료 연결은 해당 없음" : a.steps.length ? null : "PDF 에 만드는 순서가 없어 웹 체험 편집 문장으로 진행",
     };
   });
 }

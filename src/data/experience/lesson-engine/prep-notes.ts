@@ -1,5 +1,5 @@
 import type { Sourced } from "../types";
-import { weekDashboard } from "../teacher-dashboard/week-dashboards";
+import { isOfficialGuideWeek, weekDashboard } from "../teacher-dashboard/week-dashboards";
 
 /**
  * 미리 준비할 것 · 수업 안에서 이어 붙일 것 — 여러 주차에 걸친 공동작품과 사전 제작을 본 활동과 나눠 적는다.
@@ -40,6 +40,8 @@ function flagNotes(): PrepNote[] {
 export const PREP_NOTES: readonly PrepNote[] = [...FIXED, ...flagNotes()];
 
 export function prepNotes(weekNo: number): readonly PrepNote[] {
+  // 14 · 17~24주는 공식 가이드 기준 수업이다 — 위 메모는 같은 주차 자료 PDF(다른 주제) 활동에 붙인 것이라 쓰지 않는다
+  if (isOfficialGuideWeek(weekNo)) return [];
   return PREP_NOTES.filter((x) => x.weekNo === weekNo);
 }
 

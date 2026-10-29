@@ -1,3 +1,5 @@
+import { guideDashboard } from "./guide-dashboards";
+
 /**
  * 24주 교사용 수업 대시보드 — 자료 PDF 12개 영역을 그대로 담는다.
  *
@@ -71,9 +73,16 @@ export interface WeekDashboard {
   mediaPending: boolean;
   /** 원문에 「미작성」이라고 적힌 항목 */
   missingInSource: readonly string[];
+  /** 이 주차 자료가 공식 교사용 수업가이드 전사본에서 왔으면 "officialGuide" (없으면 자료 PDF) */
+  sourceKind?: "officialGuide";
 }
 
-export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
+/**
+ * 자료 PDF 24개 — 원본 그대로 보관.
+ * ★ 14 · 17~24주는 2026-10-29 승인 제목이 공식 가이드의 수업이라, 화면은 아래 WEEK_DASHBOARDS 에서
+ *   공식 가이드 전사본(guide-dashboards.ts)을 쓴다. 이 배열의 그 주차 값은 다른 주제의 PDF 수업이다 (보관용).
+ */
+export const PDF_WEEK_DASHBOARDS: readonly WeekDashboard[] = [
   {
     weekNo: 1,
     pdfTitle: "유치원 가는 날",
@@ -2831,8 +2840,16 @@ export const WEEK_DASHBOARDS: readonly WeekDashboard[] = [
   },
 ];
 
+/** 화면이 쓰는 24주 대시보드 — 14 · 17~24주는 공식 가이드 전사본, 나머지는 자료 PDF */
+export const WEEK_DASHBOARDS: readonly WeekDashboard[] = PDF_WEEK_DASHBOARDS.map((d) => guideDashboard(d.weekNo) ?? d);
+
 export function weekDashboard(weekNo: number): WeekDashboard | null {
   return WEEK_DASHBOARDS.find((w) => w.weekNo === weekNo) ?? null;
+}
+
+/** 이 주차 대시보드가 공식 가이드 전사본에서 왔는가 */
+export function isOfficialGuideWeek(weekNo: number): boolean {
+  return weekDashboard(weekNo)?.sourceKind === "officialGuide";
 }
 
 /**
@@ -2888,10 +2905,12 @@ export const EDITED_LINES: readonly { weekNo: number; text: string; original: st
 
 /** 이 주차에서 고쳐 쓴 문장 (원문 · 까닭과 함께) */
 export function editedLines(weekNo: number) {
+  // 고쳐 쓴 문장은 자료 PDF 문장에 붙는다 — 공식 가이드 기준 주차(14 · 17~24)는 해당 없다
+  if (isOfficialGuideWeek(weekNo)) return [];
   return EDITED_LINES.filter((x) => x.weekNo === weekNo);
 }
 
 /** 이 주차 문장이 고쳐 쓴 문장인가 */
 export function isEditedLine(weekNo: number, text: string): boolean {
-  return EDITED_LINES.some((x) => x.weekNo === weekNo && x.text === text);
+  return editedLines(weekNo).some((x) => x.text === text);
 }

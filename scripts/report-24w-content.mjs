@@ -15,7 +15,8 @@ const { buildLessonPlan, connectionCheck } = await imp("src/data/experience/less
 const cell = (s) => String(s ?? "—").replace(/\|/g, "/");
 const rows = EXPERIENCE_WEEKS.map((w) => {
   const d = weekDashboard(w.weekNo);
-  const x = pdfExtraOf(w.weekNo);
+  // 14 · 17~24주는 공식 가이드 기준 수업 — PDF 추가 칸이 없다
+  const x = pdfExtraOf(w.weekNo) ?? { artUse: [], artExamples: [], kitLead: [], kitMissions: [] };
   const p = buildLessonPlan(w);
   const chains = connectionCheck(p);
   const ready = p.mediaAssets.filter((a) => a.state === "ready").length;

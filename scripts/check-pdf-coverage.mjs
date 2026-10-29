@@ -33,17 +33,36 @@ const NOT_SHOWN = [
   [/\d+ ?· ?\d+ ?px|A4 세로|썸네일/, "그림 자리 크기 표기 — 그림 자리는 「자료 준비 중」으로 보인다"],
 ];
 
+// 14 · 17~24주 — 2026-10-29 승인 제목이 공식 교사용 수업가이드의 수업이라 화면은 가이드의 공개 요약을 쓴다
+// (가이드 원문 전사본은 비공개 — 공개 저장소에 없다). 그 주차의 자료 PDF 줄은 「보관(다른 주제)」으로 세고,
+// 대신 공개 요약 문장이 화면에 있는지 본다.
+const { GUIDE_SUMMARIES } = await import(pathToFileURL(join(ROOT, "src/data/experience/teacher-dashboard/guide-summaries.ts")).href);
+const GUIDE = Object.fromEntries(GUIDE_SUMMARIES.map((s) => [s.weekNo, s]));
+const strings = (v) => (typeof v === "string" ? [v] : Array.isArray(v) ? v.flatMap(strings) : v && typeof v === "object" ? Object.values(v).flatMap(strings) : []);
+const guideRows = [];
 const rows = [];
 const missing = [];
 for (let n = 1; n <= 24; n++) {
   const web = sq(htmlText(join(ROOT, `out/experience/weeks/${n}.html`)) + htmlText(join(ROOT, `out/experience/weeks/${n}/guide.html`)));
+  if (GUIDE[n]) {
+    const g = { n, total: 0, whole: 0, missing: 0 };
+    for (const t of [...new Set(strings(GUIDE[n]))]) {
+      if (!/[가-힣]/.test(t) || sq(t).length < 3) continue;
+      g.total++;
+      if (web.includes(sq(t))) { g.whole++; continue; }
+      g.missing++;
+      missing.push({ n, area: "공식 가이드", line: t, hit: "-" });
+    }
+    guideRows.push(g);
+  }
   const s = sections(readFileSync(sourcePath(ROOT, n), "utf8"), n > 20);
-  const r = { n, total: 0, whole: 0, words: 0, label: 0, edited: 0, notShown: 0, missing: 0 };
+  const r = { n, total: 0, whole: 0, words: 0, label: 0, edited: 0, notShown: 0, archived: 0, missing: 0 };
   for (const [area, lines] of Object.entries(s)) {
     for (const raw of lines) {
       const l = raw.replace(/^\d+[.)]?\s+/, "").trim();
       if (!/[가-힣]/.test(l) || sq(l).length < 3) continue;
       r.total++;
+      if (GUIDE[n]) { r.archived++; continue; }
       if (web.includes(sq(l)) || web.includes(sq(l.replace(PREFIX, "")))) { r.whole++; continue; }
       if (EDITED_LINES.some((e) => e.weekNo === n && sq(e.original) === sq(l))) { r.edited++; continue; }
       if (LABELS.test(l) || LABELS.test(l.replace(/\s*\S+\[\d*\]$/, ""))) { r.label++; continue; }
@@ -72,10 +91,20 @@ const md = `# PDF ↔ 웹 화면 대조 (2026-10-27)
 
 ## 결과 — 확인한 줄 ${sum("total")}개 · 없음 **${sum("missing")}개**
 
-| 주 | 줄 | 문장 그대로 | 낱말 85%+ | 칸 이름 | 고쳐 쓴 원문 | 싣지 않는 칸 | 없음 |
-|---:|---:|---:|---:|---:|---:|---:|---:|
-${rows.map((r) => `| ${r.n} | ${r.total} | ${r.whole} | ${r.words} | ${r.label} | ${r.edited} | ${r.notShown} | ${r.missing ? `**${r.missing}**` : 0} |`).join("\n")}
-| 합계 | ${sum("total")} | ${sum("whole")} | ${sum("words")} | ${sum("label")} | ${sum("edited")} | ${sum("notShown")} | ${sum("missing")} |
+| 주 | 줄 | 문장 그대로 | 낱말 85%+ | 칸 이름 | 고쳐 쓴 원문 | 싣지 않는 칸 | 보관 (공식 가이드 주차) | 없음 |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+${rows.map((r) => `| ${r.n} | ${r.total} | ${r.whole} | ${r.words} | ${r.label} | ${r.edited} | ${r.notShown} | ${r.archived} | ${r.missing ? `**${r.missing}**` : 0} |`).join("\n")}
+| 합계 | ${sum("total")} | ${sum("whole")} | ${sum("words")} | ${sum("label")} | ${sum("edited")} | ${sum("notShown")} | ${sum("archived")} | ${sum("missing")} |
+
+## 공식 교사용 수업가이드 공개 요약 ↔ 웹 화면 (14 · 17~24주, 2026-10-29)
+
+승인 제목이 공식 가이드의 수업이라 이 주차는 가이드의 **공개 요약**(\`src/data/experience/teacher-dashboard/guide-summaries.ts\`)이 원문이다. 가이드 원문 전체는 회사 지식재산이라 공개 저장소에 없다. 같은 주차 자료 PDF 줄은 위 표의 「보관」이다 (다른 주제 · 화면에 쓰지 않음).
+공개 요약 문장(한글이 있는 모든 문자열)이 주차 상세 · 상세 수업 지도안 화면에 그대로 있는지 본다.
+
+| 주 | 요약 문장 | 화면에 그대로 | 없음 |
+|---:|---:|---:|---:|
+${guideRows.map((g) => `| ${g.n} | ${g.total} | ${g.whole} | ${g.missing ? `**${g.missing}**` : 0} |`).join("\n")}
+| 합계 | ${guideRows.reduce((a, g) => a + g.total, 0)} | ${guideRows.reduce((a, g) => a + g.whole, 0)} | ${guideRows.reduce((a, g) => a + g.missing, 0)} |
 
 ## 고쳐 쓴 원문 (화면은 고친 문장 + 「편집」 표시 + 원문 · 까닭)
 

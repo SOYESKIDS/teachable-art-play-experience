@@ -1,8 +1,15 @@
 import type { MediaState } from "../lesson-labels";
 import type { Sourced, StageKey } from "../types";
 import { WEEK_MEDIA } from "../media";
-import { weekDashboard } from "../teacher-dashboard/week-dashboards";
+import { isOfficialGuideWeek, weekDashboard } from "../teacher-dashboard/week-dashboards";
 import { MEDIA_SLOT_IDS } from "./media-slots-generated";
+
+/**
+ * 이 주차 PDF 그림 자리 ID. 14 · 17~24주는 공식 가이드 기준 수업이라 같은 주차 PDF(다른 주제)의 그림 자리를 쓰지 않는다.
+ */
+export function mediaSlotIds(weekNo: number): readonly string[] {
+  return isOfficialGuideWeek(weekNo) ? [] : MEDIA_SLOT_IDS[weekNo] ?? [];
+}
 
 /**
  * 주차 자료 등록부 — 그림 자리 ID 는 PDF 원문의 ID 를 그대로 쓴다 (w4.physical0.step.0 …).
@@ -97,7 +104,7 @@ export function weekAssets(weekNo: number): readonly LessonAsset[] {
     };
   };
   const out: LessonAsset[] = [];
-  for (const id of MEDIA_SLOT_IDS[weekNo] ?? []) {
+  for (const id of mediaSlotIds(weekNo)) {
     const kind = kindOf(id);
     if (kind) out.push(make(id, kind, false));
   }

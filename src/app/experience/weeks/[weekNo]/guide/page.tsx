@@ -130,7 +130,7 @@ export default async function WeekGuidePage({ params }: PageProps<"/experience/w
             <Line label="핵심 주제" text={d.coreTheme} />
             <Line label="성장 키워드" text={d.keyword} />
             <Line label="파트" text={`PART ${week.partNo} · ${experiencePart(week.partNo)?.title ?? ""}`} origin="edited" />
-            <Line label="파트 (자료 PDF 표기)" text={d.part} />
+            {d.sourceKind === "officialGuide" ? null : <Line label="파트 (자료 PDF 표기)" text={d.part} />}
             <Line label="계절 · 방문지" text={d.place ?? x?.seasonPlace} />
             {x?.topicElements ? <Line label="주제 요소 (원안)" text={x.topicElements} /> : null}
             <Line label="교사가 기억할 핵심" text={d.teacherKey} />
@@ -308,7 +308,7 @@ export default async function WeekGuidePage({ params }: PageProps<"/experience/w
             {plan.crossWeekOutputs.gather.length ? <><Label>앞 주차에서 모아 올 것</Label><Items items={plan.crossWeekOutputs.gather} /></> : null}
           </Section>
 
-          <Section no={13} title="자료 파일 상태 (PDF 그림 자리)">
+          <Section no={13} title="자료 파일 상태 (그림 자리)">
             <ul className="grid gap-1">
               {[...assetsBy.entries()].map(([label, list]) => (
                 <li key={label}>

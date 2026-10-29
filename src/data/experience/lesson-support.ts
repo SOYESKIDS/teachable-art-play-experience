@@ -24,11 +24,12 @@ export function weekGoals(week: ExperienceWeek): readonly Sourced[] {
   return [{ text: week.coreMessage, origin: "edited" }];
 }
 
-/** 통합 주차(8 · 16 · 24) — 앞 주차 결과물을 모아 완성한다. 이름은 화면 안내용(35분 체험 편집) */
+/** 통합 주차(8 · 16 · 24) — 앞 주차 결과물을 모아 완성한다. 이름은 화면 안내용(웹 체험 편집) */
 export const INTEGRATION_LABEL: Partial<Record<number, string>> = {
   8: "PART 1 통합 활동 — 4~7주차 결과물로 숲을 완성해요",
   16: "PART 2 통합 활동 — 9~15주차를 돌아보며 한 뼘 자란 나를 만나요",
-  24: "PART 3 마무리 활동 — 17~23주차를 모아 우리 지구를 완성해요",
+  // 24주 — 공식 가이드(17~23주 활동사진을 지구촌 판에 붙이기)
+  24: "PART 3 마무리 활동 — 17~23주 활동사진을 지구촌 판에 모아요",
 };
 
 /** 수업 시작 전 확인 — 목표 · 교구 · 공간 · 안전 · 앞 주차 결과물 · 발문 · 미디어 */
@@ -87,7 +88,7 @@ export function closingChecks(week: ExperienceWeek, next: ExperienceWeek | null)
   const nd = next ? weekDashboard(next.weekNo) : null;
   const nextItems: Sourced[] = [];
   if (next) {
-    nextItems.push({ text: `${next.weekNo}주차 「${next.title}」 — 그림책 《${next.storybook}》`, origin: "edited" });
+    nextItems.push({ text: `${next.weekNo}주차 「${next.title}」 — 동화책 《${next.storybook}》`, origin: "edited" });
     for (const k of (nd?.kitItems ?? []).slice(0, 3)) nextItems.push(src(`${next.weekNo}주차 교구 · ${k}`));
   }
   if (nextItems.length) groups.push({ key: "next", label: "다음 주차 준비", items: nextItems });

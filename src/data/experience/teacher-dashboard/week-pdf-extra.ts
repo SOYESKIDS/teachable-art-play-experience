@@ -1,4 +1,4 @@
-import { EDITED_LINES } from "./week-dashboards";
+import { EDITED_LINES, isOfficialGuideWeek } from "./week-dashboards";
 
 /**
  * 주차 PDF 추가 칸 — scripts/extract-week-pdf-extra.mjs 가 저장소 원문 추출 텍스트에서 만든다 (손으로 고치지 않는다).
@@ -795,6 +795,8 @@ export const WEEK_PDF_EXTRA: readonly WeekPdfExtra[] = [
 ];
 
 export function pdfExtraOf(weekNo: number): WeekPdfExtra | undefined {
+  // 14 · 17~24주는 공식 가이드 기준 수업이다 — 같은 주차 PDF 의 추가 칸(다른 주제)은 화면에 쓰지 않는다
+  if (isOfficialGuideWeek(weekNo)) return undefined;
   const w = WEEK_PDF_EXTRA.find((x) => x.weekNo === weekNo);
   const edits = EDITED_LINES.filter((e) => e.weekNo === weekNo);
   if (!w || !edits.length) return w;

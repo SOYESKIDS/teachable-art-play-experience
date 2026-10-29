@@ -83,7 +83,8 @@ export interface OptionalExtension {
 export type TextOrigin = "source" | "edited" | "proposal" | "review";
 
 export const TEXT_ORIGIN_LABEL: Record<TextOrigin, string> = {
-  source: "PDF 원문",
+  // 자료 PDF 원문 · 공식 교사용 수업가이드 원문(14 · 17~24주) 모두 「자료 원문」
+  source: "자료 원문",
   edited: "웹 체험 편집",
   proposal: "교사용 제안",
   review: "검수 필요",

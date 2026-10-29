@@ -722,7 +722,7 @@ function TeacherPane({ week, stage, stageExtra, activeStep }: { week: Experience
             ) : null}
             {stageExtra.assets.length ? (
               <>
-                <p className="mt-3 text-[13px] font-bold text-pop-ink-muted">이 단계 자료 (PDF 그림 자리)</p>
+                <p className="mt-3 text-[13px] font-bold text-pop-ink-muted">이 단계 자료 (그림 자리)</p>
                 <ul className="mt-1.5 grid gap-1.5 text-[14px] leading-relaxed text-pop-ink">
                   {stageExtra.assets.map((a) => (
                     <li key={a.id}>

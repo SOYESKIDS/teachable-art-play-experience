@@ -5,7 +5,7 @@ import { DEMO_LESSONS } from "./demo-lessons";
 import { WEEK_MEDIA } from "./media";
 import { OPEN_CHILD_LINES } from "./lesson-engine/classroom-lines";
 import { officialPlan, type OfficialWeekPlan } from "./official-plan";
-import { gatherForWeek, weekDashboard, type WeekDashboard } from "./teacher-dashboard/week-dashboards";
+import { gatherForWeek, isOfficialGuideWeek, weekDashboard, type WeekDashboard } from "./teacher-dashboard/week-dashboards";
 import { weekProposal } from "./teacher-dashboard/proposals";
 import {
   CORE_STAGE_ORDER,
@@ -139,7 +139,7 @@ function stageDetail(body: DemoLessonBody, meta: OfficialWeekMeta, plan: Officia
       materials: [body.materials[0]],
       safety: [],
       tip: null,
-      transition: `이제 ${book} 그림책 속으로 들어가 볼까요?`,
+      transition: `이제 ${book} 동화책 속으로 들어가 볼까요?`,
       inclusion: "말로 답하기 어려운 친구는 손짓 · 표정 · 그림 카드로 고르게 해요.",
       levels: null,
     },
@@ -152,7 +152,7 @@ function stageDetail(body: DemoLessonBody, meta: OfficialWeekMeta, plan: Officia
       materials: [body.materials[0]],
       safety: [],
       tip: null,
-      transition: `그림책 속 친구처럼 이제 우리 몸으로 해 볼까요? 「${physName}」!`,
+      transition: `동화책 속 친구처럼 이제 우리 몸으로 해 볼까요? 「${physName}」!`,
       inclusion: "소리 · 화면 자극이 큰 친구는 편한 자리에서 보게 하고, 책장을 넘기는 역할을 맡길 수 있어요.",
       levels: null,
     },
@@ -203,7 +203,7 @@ function buildPrep(body: DemoLessonBody, meta: OfficialWeekMeta, stages: ClassSt
   const before: Sourced[] = [
     ...gatherForWeek(body.weekNo).map((text) => ({ text, origin: "source" as const })),
     ...(d?.supportType === "teacherPrep" ? d.homeKitHow.map((text) => ({ text, origin: "source" as const })) : []),
-    { text: `그림책 《${meta.storybook}》(또는 E-BOOK)을 펼칠 자리에 준비해요.`, origin: "edited" },
+    { text: `동화책 《${meta.storybook}》(또는 E-BOOK)을 펼칠 자리에 준비해요.`, origin: "edited" },
     { text: `신체 놀이 준비물 ${move?.materials.length ?? 0}가지 · 만들기 재료 ${make?.materials.length ?? 0}가지를 단계별로 나눠 둬요.`, origin: "edited" },
   ];
   const tipWithCleanup = [d?.activityTip, d?.physical2?.tip].find((x) => x && x.includes("정리"));
@@ -226,8 +226,9 @@ function buildPrep(body: DemoLessonBody, meta: OfficialWeekMeta, stages: ClassSt
  * ★ 활동 이름은 자료의 워크북 · 미술 · 가족연계 제목을 그대로 쓴다.
  */
 function buildPdfExtensions(body: DemoLessonBody, d: WeekDashboard): OptionalExtension[] {
-  const src = `주차 대시보드 자료 PDF ${d.weekNo}주차`;
-  const note = "자료에 단계별 시간이 없습니다 · 검수 필요";
+  const guide = d.sourceKind === "officialGuide";
+  const src = guide ? `공식 교사용 수업가이드 ${d.weekNo}주차` : `주차 대시보드 자료 PDF ${d.weekNo}주차`;
+  const note = guide ? "가이드 시간표에 단계별 시간이 없습니다 · 검수 필요" : "자료에 단계별 시간이 없습니다 · 검수 필요";
   const base = {
     estimatedMinutes: null,
     minutesNote: note,
@@ -291,7 +292,8 @@ function buildPdfExtensions(body: DemoLessonBody, d: WeekDashboard): OptionalExt
  *   분을 비운다.
  */
 function buildExtensions(body: DemoLessonBody, plan: OfficialWeekPlan): OptionalExtension[] {
-  if (!plan.matchesCurrentLesson) {
+  // 공식 가이드 기준 주차(14 · 17~24)는 대시보드가 이미 가이드 전사본이다 — 가이드의 워크북 · 미술 · 가정연계 제목 · 순서로 만든다
+  if (!plan.matchesCurrentLesson || isOfficialGuideWeek(plan.weekNo)) {
     const d = weekDashboard(plan.weekNo);
     if (!d) throw new Error(`week-dashboards 에 ${plan.weekNo}주차가 없다`);
     return buildPdfExtensions(body, d);

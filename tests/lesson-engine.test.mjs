@@ -11,14 +11,20 @@ import { indicatorsFor } from "../src/data/experience/lesson-engine/growth-mappi
 import { weekAssets } from "../src/data/experience/lesson-engine/assets.ts";
 import { MEDIA_SLOT_IDS } from "../src/data/experience/lesson-engine/media-slots-generated.ts";
 import { OPEN_CHILD_LINES } from "../src/data/experience/lesson-engine/classroom-lines.ts";
-import { SEQUENCE_NOTES } from "../src/data/experience/lesson-engine/sequence-notes.ts";
+import { OFFICIAL_GUIDE_WEEKS } from "../src/lib/weeks/official-guide-weeks.ts";
+import { GUIDE_SUMMARIES } from "../src/data/experience/teacher-dashboard/guide-summaries.ts";
+import { SEQUENCE_NOTES, sequenceNotes } from "../src/data/experience/lesson-engine/sequence-notes.ts";
 import { DEMO_SCENARIOS } from "../src/data/experience/growth-demo-scenarios.ts";
 import { GROWTH_INDICATORS } from "../src/data/experience/report.ts";
 import * as G from "../src/lib/growth/demo-analysis.ts";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC_DIR = join(ROOT, "docs/curriculum-upgrade/TAP_Curriculum_Development_Pack/TeachAble_24Week_Dashboard_DevPack/source_text");
-const sourceText = (n) => readFileSync(n <= 20 ? join(SRC_DIR, `week-${String(n).padStart(2, "0")}.txt`) : join(ROOT, `docs/curriculum-upgrade/dashboard-source-21-24/week-${n}.txt`), "utf8");
+// 원문 텍스트 — 14 · 17~24주는 공식 교사용 수업가이드의 공개 요약(guide-summaries.ts · 원문 전사본은 비공개), 나머지는 자료 PDF 추출본
+const GUIDE_WEEKS = [14, 17, 18, 19, 20, 21, 22, 23, 24];
+/** 자료 PDF 추출본 — 그림 자리 ID · PDF 추가 칸 · 보관된 PDF 메모처럼 PDF 에만 있는 것을 대조할 때 */
+const pdfText = (n) => readFileSync(n <= 20 ? join(SRC_DIR, `week-${String(n).padStart(2, "0")}.txt`) : join(ROOT, `docs/curriculum-upgrade/dashboard-source-21-24/week-${n}.txt`), "utf8");
+const sourceText = (n) => GUIDE_WEEKS.includes(n) ? readFileSync(join(ROOT, "src/data/experience/teacher-dashboard/guide-summaries.ts"), "utf8") : pdfText(n);
 const sq = (s) => s.normalize("NFC").replace(/[\s?.!,·ˮʼ”“"'‘’()~\-–]/g, "");
 const NAME = Object.fromEntries(GROWTH_INDICATORS.map((g) => [g.code, g.name]));
 const DEF = Object.fromEntries(GROWTH_INDICATORS.map((g) => [g.code, g.definition]));
@@ -66,7 +72,9 @@ test("자료 자리 — PDF 의 그림 자리 ID 489개를 그대로 쓰고, 실
   const total = Object.values(MEDIA_SLOT_IDS).reduce((a, x) => a + x.length, 0);
   assert.equal(total, 489);
   for (let n = 1; n <= 24; n++) {
-    for (const id of MEDIA_SLOT_IDS[n]) assert.ok(sourceText(n).includes(id), `${id} 가 PDF 에 없다`);
+    // 그림 자리 ID 는 자료 PDF 의 것이다 (보관). 공식 가이드 기준 주차는 그 PDF 그림 자리를 쓰지 않는다
+    for (const id of MEDIA_SLOT_IDS[n]) assert.ok(pdfText(n).includes(id), `${id} 가 PDF 에 없다`);
+    if (GUIDE_WEEKS.includes(n)) assert.deepEqual(weekAssets(n).filter((a) => /\.(physical\d|art|workbook|meta|family|support)\./.test(a.id)).map((a) => a.id), [], `${n}주 PDF 그림 자리를 쓰지 않는다`);
     const assets = weekAssets(n);
     for (const a of assets) {
       assert.equal(a.state === "ready", a.kind === "storybookCover" && n <= 8, `${a.id} 상태`);
@@ -85,29 +93,35 @@ test("교실 화면 「이야기 열기」 — 24주 모두 같은 추상 문장
   }
   for (const p of plans) {
     const chips = p.lessonStages[0].classroom.chips;
-    assert.ok(chips.some((c) => c.includes(p.storybook.title)) && chips.some((c) => c.startsWith("몸놀이")) && chips.some((c) => c.startsWith("만들기")), `${p.weekNo}주 오늘 할 것`);
+    assert.ok(chips.some((c) => c.includes(p.storybook.title)) && chips.some((c) => c.startsWith("신체활동")) && chips.some((c) => c.startsWith("만들기")), `${p.weekNo}주 오늘 할 것`);
   }
 });
 
 test("순서 주의 — 신체활동이 뒤 단계 결과물을 먼저 쓰는 4 · 11 · 22 · 24주에 원문 문장과 운영 제안이 있다", () => {
+  // 메모 4개는 자료 PDF 활동 순서에 붙인 것이다 (보관). 22 · 24주는 공식 가이드 수업이 되어 화면에 쓰지 않는다
   assert.deepEqual(SEQUENCE_NOTES.map((x) => x.weekNo), [4, 11, 22, 24]);
+  assert.deepEqual(EXPERIENCE_WEEKS.filter((w) => sequenceNotes(w.weekNo).length).map((w) => w.weekNo), [4, 11], "화면에 쓰는 순서 주의");
   for (const s of SEQUENCE_NOTES) {
     // PDF 추출본은 단(column)대로 뽑혀 한 문장이 여러 줄에 흩어진 곳이 있다 — 낱말이 모두 원문에 있어야 한다
-    const src = sq(sourceText(s.weekNo));
+    const src = sq(pdfText(s.weekNo));
     for (const part of s.conflict.text.split(" · ")) for (const piece of part.split(" — ")) {
       assert.ok(src.includes(sq(piece)) || piece.split(/\s+/).filter((w) => sq(w).length >= 2).every((w) => src.includes(sq(w))), `${s.weekNo}주 원문 ${piece}`);
     }
     assert.equal(s.resolution.origin, "proposal");
   }
-  // 4 · 11 · 22 · 24 말고는 신체 단계가 「만든 · 꾸민 …」을 먼저 쓰지 않는다
+  // 4 · 11 말고는 화면 수업의 신체 단계가 「만든 · 꾸민 …」을 먼저 쓰지 않는다 (공식 가이드 22 · 24주 포함 확인)
   for (const d of WEEK_DASHBOARDS) {
     const uses = d.physicalSteps.some((s) => /내가 만든|직접 만든|각자 꾸민/.test(s.guide));
-    assert.equal(uses, [4, 11, 22, 24].includes(d.weekNo), `${d.weekNo}주`);
+    assert.equal(uses, [4, 11].includes(d.weekNo), `${d.weekNo}주`);
   }
 });
 
 test("관찰 문항 → 5대 지표 — 많아야 둘, 듣기는 자기 설명이 아니고, 맞지 않으면 연결하지 않는다", () => {
   assert.deepEqual(indicatorsFor("친구의 이야기를 끝까지 듣는가?"), ["engagement_immersion"]);
+  // 19주(공식 가이드) — 소리를 「듣는」 문항은 표현 다양성이 아니다 · 「안전하게」의 「전하」는 자기 설명이 아니다 (2026-10-29)
+  assert.deepEqual(indicatorsFor("친구의 소리를 기다리고 들으려 하는가"), ["engagement_immersion"]);
+  assert.ok(!indicatorsFor("도구와 공간을 안전하게 사용하는가").includes("self_explanation"));
+  assert.ok(indicatorsFor("악기 소리를 듣고 리듬을 바꿔 표현하는가").includes("expression_variety"), "듣고 표현까지 하면 표현 다양성");
   assert.ok(!indicatorsFor("곤충의 움직임을 몸으로 표현하는가?").includes("self_explanation"));
   assert.ok(!indicatorsFor("도움이 필요할 때 큰 소리로 어른을 부르는가?").includes("expression_variety"));
   assert.ok(!indicatorsFor("내 자리와 사물함을 스스로 찾아가는가?").includes("form_space_composition"));
@@ -142,7 +156,8 @@ test("가상 성장 분석 — 장면 8개가 규칙대로 나온다", () => {
   assert.equal(conflict.parentExperience, null, "확인 안 된 문장은 보호자 설명에 쓰지 않는다");
 
   const miss = run(scen("missingIndicator"));
-  assert.deepEqual(miss.statements.map((s) => s.indicator), ["creative_attempt"]);
+  // 18주는 공식 가이드 「마음을 담은 비누」 — 관찰 문항 「비누에 자신의 마음을 담아 구성하는가」 → 형태 · 공간 구성
+  assert.deepEqual(miss.statements.map((s) => s.indicator), ["form_space_composition"]);
   assert.equal(miss.noRecord.length, 4);
 
   const two = run(scen("twoActivities"));
@@ -186,9 +201,20 @@ test("개인정보 차단 — 전화 · 이메일 · 주민번호 · 생년월�
   assert.ok(blocked.blocked.length > 0, "가상 원아가 아닌 이름은 막는다");
 });
 
-test("쓰면 안 되는 표현 — 진단 · 비교 · 점수 · 성격 단정 · 감정 단정을 찾아낸다", () => {
+test("쓰면 안 되는 표현 — 진단 · 비교 · 점수 · 성격 단정 · 감정 단정을 찾아낸다", async () => {
   for (const t of ["ADHD 같아요", "또래보다 느려요", "오늘 8점", "원래 내성적인 아이", "속으로 슬퍼했다", "항상 잘해요"]) assert.ok(G.bannedReasons(t).length, t);
   assert.deepEqual(G.bannedReasons("친구를 본 뒤 리듬에 맞춰 흔들었다."), []);
+  // 「스틱」의 「틱」은 진단 표현이 아니다 (19주 「나만의 북과 스틱 꾸미기」) — 낱말 첫머리 「틱」만 잡는다
+  assert.deepEqual(G.bannedReasons("「나만의 북과 스틱 꾸미기」을 처음부터 끝까지 이어 갔다."), []);
+  assert.ok(G.bannedReasons("수업 중 틱이 보였다.").length, "틱");
+  // 24주 모두 — 시연용 자동 기록(weekStarter) 문장에 금지 표현이 없다
+  const { weekStarter } = await import("../src/lib/growth/week-starter.ts");
+  for (const w of EXPERIENCE_WEEKS) {
+    const plan = buildLessonPlan(w);
+    const acts = [...plan.physicalActivities, ...(plan.artActivity ? [plan.artActivity] : [])].map((a) => ({ id: a.id, title: a.title, kind: a.kind, stage: a.stage, items: a.observations.map((o) => ({ item: o.item, indicators: o.indicators })) }));
+    const s = weekStarter({ weekNo: w.weekNo, title: w.title, storybook: w.storybook, familyTitle: null, activities: acts, items: acts.flatMap((a) => a.items), itemsOrigin: "source", parentNotice: [], kidsnote: null });
+    for (const o of s.observations) assert.deepEqual(G.bannedReasons(o.teacherNote), [], `${w.weekNo}주 ${o.teacherNote}`);
+  }
   // AI 초안 문장 자체에도 금지 표현이 없다
   for (const s of DEMO_SCENARIOS) for (const st of run(s).statements) assert.deepEqual(G.bannedReasons(st.text), [], st.text);
 });
@@ -217,17 +243,18 @@ test("검토 · 승인 흐름 — AI 초안 → 교사 수정 → 검토 완료 
 });
 
 test("미리 준비 · 사전 제작 — 4 · 11 · 22 · 24주 견본 · 조각, 16주 사진 인화, 17주 세계지도 설치, 18~23주 깃발은 원문 조각 + 운영 제안", async () => {
-  const { PREP_NOTES, hasFilming, FILMING_NOTE } = await import("../src/data/experience/lesson-engine/prep-notes.ts");
-  assert.deepEqual(PREP_NOTES.filter((p) => p.when === "before").map((p) => p.weekNo).sort((a, b) => a - b), [4, 11, 16, 17, 22, 24]);
-  assert.deepEqual(PREP_NOTES.filter((p) => p.when === "during").map((p) => p.weekNo), [18, 19, 20, 21, 22, 23]);
+  const { PREP_NOTES, prepNotes, hasFilming, FILMING_NOTE } = await import("../src/data/experience/lesson-engine/prep-notes.ts");
+  // 자료 PDF 활동에 붙인 메모(17 · 22 · 24 사전 제작, 18~23 세계지도 깃발)는 그 주차가 공식 가이드 수업이 되어 화면에 쓰지 않는다
+  const live = EXPERIENCE_WEEKS.flatMap((w) => prepNotes(w.weekNo));
+  assert.deepEqual(live.filter((p) => p.when === "before").map((p) => p.weekNo).sort((a, b) => a - b), [4, 11, 16]);
+  assert.deepEqual(live.filter((p) => p.when === "during").map((p) => p.weekNo), []);
   for (const p of PREP_NOTES) {
     assert.equal(p.text.origin, "source");
     assert.equal(p.action.origin, "proposal");
-    const src = sq(sourceText(p.weekNo));
+    // 메모의 근거 문장은 자료 PDF 원문이다 (보관된 17 · 22 · 24주 메모 포함)
+    const src = sq(pdfText(p.weekNo));
     assert.ok(src.includes(sq(p.text.text)) || p.text.text.split(/\s+/).filter((w) => sq(w).length >= 2).every((w) => src.includes(sq(w))), `${p.weekNo}주 원문 ${p.text.text}`);
   }
-  // 19주는 원문 그대로 아프리카 · 스페인 (캐스터네츠) — 21주 스페인과 겹쳐도 원문을 고치지 않는다
-  assert.match(PREP_NOTES.find((p) => p.weekNo === 19).text.text, /아프리카 · 스페인/);
   assert.ok(hasFilming(16), "16주 영상편지");
   assert.equal(FILMING_NOTE.origin, "proposal");
 });
@@ -250,6 +277,11 @@ test("교사 화면 단계 추가 정보 — 오늘의 목표 · PDF 활동 소�
     for (const k of ["open", "story", "move", "make", "share"]) assert.ok(x[k]?.goal?.text, `${w.weekNo}주 ${k} 목표`);
     assert.ok(x.move.leads.length >= 1 && x.move.leads.every((l) => l.lead.origin === "source"), `${w.weekNo}주 신체활동 소개`);
     assert.equal(x.move.leads.length, WEEK_DASHBOARDS.find((d) => d.weekNo === w.weekNo).physical2 ? 2 : 1, `${w.weekNo}주 신체활동 소개 개수`);
+    // 14 · 17~24주는 공식 가이드 수업 — 소개는 가이드 단락이 아니라 공개 요약의 활동 예시 한 줄이다
+    if (OFFICIAL_GUIDE_WEEKS.includes(w.weekNo)) {
+      const g = GUIDE_SUMMARIES.find((s) => s.weekNo === w.weekNo);
+      assert.equal(x.move.leads[0].lead.text, g.physical.plays[0].example, `${w.weekNo}주 신체활동 소개 = 공개 요약`);
+    }
     assert.deepEqual(x.share.wrapUp.map((u) => u.label).slice(0, 2), ["정리", "가정연계"], `${w.weekNo}주 정리 · 가정연계`);
     // PDF 추출본이 단(column)대로 흩어진 주차가 있다 — 문장이 그대로 없으면 낱말이 모두 있어야 한다
     const src = sq(sourceText(w.weekNo));
@@ -261,11 +293,13 @@ test("교사 화면 단계 추가 정보 — 오늘의 목표 · PDF 활동 소�
 const inSource = (src, text) => src.includes(sq(text)) || text.split(/\s+/).filter((v) => sq(v).length >= 2).every((v) => src.includes(sq(v)));
 
 test("PDF 추가 칸 — 미술 활용 · 예시 · TIP, 교구 안내 · 미션 · 활용, 가족연계 안내 · TIP, 가정용 교구 안내, 뮤직비디오 — 모두 원문", async () => {
-  const { WEEK_PDF_EXTRA } = await import("../src/data/experience/teacher-dashboard/week-pdf-extra.ts");
+  const { WEEK_PDF_EXTRA, pdfExtraOf } = await import("../src/data/experience/teacher-dashboard/week-pdf-extra.ts");
   assert.equal(WEEK_PDF_EXTRA.length, 24);
+  // PDF 추가 칸은 자료 PDF 의 것이다 — 공식 가이드 기준 주차(14 · 17~24)는 화면에 쓰지 않는다
+  for (const n of GUIDE_WEEKS) assert.equal(pdfExtraOf(n), undefined, `${n}주 PDF 추가 칸을 쓰지 않는다`);
   let n = 0;
   for (const w of WEEK_PDF_EXTRA) {
-    const src = sq(sourceText(w.weekNo));
+    const src = sq(pdfText(w.weekNo));
     for (const [k, v] of Object.entries(w)) {
       if (k === "weekNo") continue;
       for (const s of Array.isArray(v) ? v : v ? [v] : []) {
@@ -294,8 +328,12 @@ test("상세 수업 지도안 (인쇄) — 12개 영역을 모두 싣고 검색�
   assert.ok(player.includes("다음 활동 ▶"));
 });
 
-test("사진 자리 ID — 신체활동 단계 · 미술 예시 · 워크북 장 수와 PDF 그림 자리가 맞는다", () => {
-  for (const d of WEEK_DASHBOARDS) {
+test("사진 자리 ID — 신체활동 단계 · 미술 예시 · 워크북 장 수와 PDF 그림 자리가 맞는다", async () => {
+  // 그림 자리는 자료 PDF 의 것이라 보관된 PDF 대시보드와 대조한다. 공식 가이드 기준 주차는 그림 자리를 쓰지 않는다
+  const { PDF_WEEK_DASHBOARDS } = await import("../src/data/experience/teacher-dashboard/week-dashboards.ts");
+  const { mediaSlotIds } = await import("../src/data/experience/lesson-engine/assets.ts");
+  for (const n of GUIDE_WEEKS) assert.deepEqual(mediaSlotIds(n), [], `${n}주 PDF 그림 자리를 쓰지 않는다`);
+  for (const d of PDF_WEEK_DASHBOARDS) {
     const ids = MEDIA_SLOT_IDS[d.weekNo];
     const count = (re) => ids.filter((x) => re.test(x)).length;
     assert.equal(count(/\.physical0\.step\./), d.physicalSteps.length, `${d.weekNo}주 신체 단계 사진 자리`);

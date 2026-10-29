@@ -107,7 +107,7 @@ note(topicBad.length === 0, "24주 주제 일치 (상세 제목 = 플레이어 �
     await page.idle(300, 6000);
     const m = await measure();
     const extra = await page.eval(`({noindex:/noindex/.test(document.querySelector('meta[name=robots]')?.content??''),
-      origin:document.body.innerText.includes('PDF 원문'), table:!!document.querySelector('table'), family:document.body.innerText.includes('가족연계 안내문')})`);
+      origin:document.body.innerText.includes('자료 원문'), table:!!document.querySelector('table'), family:document.body.innerText.includes('가족연계 안내문')})`);
     await page.send("Emulation.setEmulatedMedia", { media: "print" });
     // 실제로 그려지는지 본다 (숨긴 머리말 안의 단추도 display 값은 그대로라서 getClientRects 로 판정)
     const pr = await page.eval(`(()=>{const v=(el)=>!!el&&el.getClientRects().length>0;return {header:v(document.querySelector('header')),footer:v(document.querySelector('footer')),button:[...document.querySelectorAll('button')].some(v)}})()`);
@@ -186,10 +186,11 @@ note(topicBad.length === 0, "24주 주제 일치 (상세 제목 = 플레이어 �
     await page.eval(`window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'}))`); await page.idle(200);
     await page.eval(`window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'}))`); await page.idle(300);
     const move = await page.eval(`(()=>{const t=document.querySelector("[aria-label='교사 화면']")?.innerText??'';return {seq:t.includes('순서 주의'), fold:t.includes('이 단계 자료 · 관찰')}})()`);
-    const wantSeq = [4, 11, 22, 24].includes(n);
+    // 22 · 24주 순서 주의는 자료 PDF 수업의 것 — 공식 가이드 기준이 된 뒤에는 4 · 11주만
+    const wantSeq = [4, 11].includes(n);
     if (!open.line || open.line.includes("무엇을 만날까요") || open.chips < 3 || move.seq !== wantSeq || !move.fold) bad.push(`${n}:${JSON.stringify({ ...open, ...move })}`);
   }
-  note(bad.length === 0, "교실 화면 주제 문장 · 오늘 할 것 · 순서 주의(4 · 11 · 22 · 24주) · 단계 자료/관찰 → 지표", bad.join(" "));
+  note(bad.length === 0, "교실 화면 주제 문장 · 오늘 할 것 · 순서 주의(4 · 11주) · 단계 자료/관찰 → 지표", bad.join(" "));
   page.drain();
 }
 

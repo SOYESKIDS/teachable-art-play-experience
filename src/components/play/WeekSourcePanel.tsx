@@ -38,8 +38,13 @@ export function WeekSourcePanel({ weekNo }: { weekNo: number }) {
       </div>
 
       <p className="mt-2 text-[15px] leading-relaxed text-pop-ink-muted">
-        받은 주차 자료 PDF 와 이 화면을 맞대어 본 결과입니다.
-        {entry.state === "confirmed" ? null : (
+        {entry.state === "guide" ? "받은 공식 교사용 수업가이드와 이 화면을 맞대어 본 결과입니다." : "받은 주차 자료 PDF 와 이 화면을 맞대어 본 결과입니다."}
+        {entry.state === "confirmed" ? null : entry.state === "guide" ? (
+          <>
+            {" "}수업 내용은 가이드 원문이고,{" "}
+            <strong className="font-bold text-pop-ink">웹 화면에 옮긴 결과는 본사 확인 전입니다.</strong>
+          </>
+        ) : (
           <>
             {" "}자료가 아직 초안이라{" "}
             <strong className="font-bold text-pop-ink">공식 교안으로 확정된 내용이 아닙니다.</strong>

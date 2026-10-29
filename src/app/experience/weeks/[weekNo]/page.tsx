@@ -3,7 +3,7 @@ import { TeacherDashboard } from "@/components/play/TeacherDashboard";
 import { INTEGRATION_LABEL, SAFETY_ORIGIN, mediaStatus, preLessonChecks, weekGoals } from "@/data/experience/lesson-support";
 import { indicatorLinks } from "@/data/experience/lesson-engine/growth-mapping";
 import { indicatorName } from "@/data/experience/lesson-engine/plan";
-import { MEDIA_SLOT_IDS } from "@/data/experience/lesson-engine/media-slots-generated";
+import { mediaSlotIds } from "@/data/experience/lesson-engine/assets";
 import { WeekSourcePanel } from "@/components/play/WeekSourcePanel";
 import { ConsultButton } from "@/components/play/ConsultButton";
 import { EmailInquiryButton } from "@/components/play/EmailInquiryButton";
@@ -37,7 +37,7 @@ export const dynamicParams = false;
 
 /** PDF 그림 자리 ID — 단계 순서대로 (wN.physical0.step.K …) */
 function slotsOf(n: number) {
-  const ids = MEDIA_SLOT_IDS[n] ?? [];
+  const ids = mediaSlotIds(n);
   const pick = (re: RegExp) => ids.filter((x) => re.test(x)).sort((a, b) => Number(a.split(".").pop()) - Number(b.split(".").pop()));
   return { physical0: pick(/\.physical0\.step\./), physical1: pick(/\.physical1\.step\./), art: pick(/\.art\.example\./), workbook: pick(/\.workbook\.worksheet\./) };
 }

@@ -1,5 +1,6 @@
 import type { ContentStatus } from "./content-state";
 import { partOf, type WeekSummary } from "./week-types";
+import { OFFICIAL_GUIDE_WEEKS } from "./official-guide-weeks";
 
 /**
  * 24주 수업 지도 — 2026-10-26 자료 PDF 기준 · 2026-10-29 승인 제목 반영 (APPROVED_WEEK_TITLES).
@@ -229,12 +230,13 @@ const SEEDS: WeekSeed[] = [
   },
   {
     weekNo: 14,
-    title: "온 세상은 하얀 도화지",
-    storybook: "하얀 눈밭에 그려요!",
-    growthKeyword: "추억",
-    coreMessage: "차가운 겨울도 함께하면 신나는 추억이 돼요.",
-    activitySummary: "말랑말랑 눈놀이 → 반짝반짝 나의 눈 결정",
-    outcome: "반짝반짝 나의 눈 결정",
+    // 공식 교사용 수업가이드 14주차 (공개 요약 guide-summaries.ts) — 2026-10-29 승인 제목 주차
+    title: "말하지 않아도 괜찮아!",
+    storybook: "말하지 않아도 괜찮아!",
+    growthKeyword: "표현",
+    coreMessage: "말하지 않아도 괜찮아요!",
+    activitySummary: "몸으로 말해요 → 감기야 사라져라! 얍!",
+    outcome: "감기야 사라져라! 얍!",
     themeColor: "#5178AE",
   },
   {
@@ -259,84 +261,90 @@ const SEEDS: WeekSeed[] = [
   },
   {
     weekNo: 17,
-    title: "첨벙첨벙, 안전하게!",
-    storybook: "첨벙! 물놀이 가는 날",
-    growthKeyword: "약속",
-    coreMessage: "안전 약속을 지키면 물놀이가 더 신나요.",
-    activitySummary: "첨벙첨벙 안전 물놀이 → 나만의 안전 튜브",
-    outcome: "나만의 안전 튜브",
-    themeColor: "#1B8092",
+    // 공식 교사용 수업가이드 17주차 (공개 요약 guide-summaries.ts) — 2026-10-29 승인 제목 주차
+    title: "짝! 우리들의 색",
+    storybook: "짝! 우리들의 색",
+    growthKeyword: "존중",
+    coreMessage: "색이 만들어낸 아름다움",
+    activitySummary: "팡팡!!! 색을 터트려요! → 내가 만든 색친구",
+    outcome: "내가 만든 색친구",
+    themeColor: "#C34599",
   },
   {
     weekNo: 18,
-    // ★ 자료 제목을 그대로 쓴다. 수업 발문은 정답을 묻지 않고 보이는 변화를 말하게 한다
-    //   (demo-lessons.ts 18주차 · tests 의 정답 유도 발문 검사).
-    title: "색이 섞이면 무슨 색?",
-    storybook: "색이 섞이던 날",
-    growthKeyword: "창의",
-    coreMessage: "색과 색이 만나면 새로운 색이 태어나요.",
-    activitySummary: "알록달록 색 축제 → 나만의 색 카드",
-    outcome: "나만의 색 카드 · 우리 반 색 지도",
-    themeColor: "#8A4FD0",
+    // 공식 교사용 수업가이드 18주차 (공개 요약 guide-summaries.ts) — 2026-10-29 승인 제목 주차
+    title: "반짝이는 물길 놀이터",
+    storybook: "반짝이는 물길 놀이터",
+    growthKeyword: "표현",
+    coreMessage: "표현할수록 따뜻하게 전해지는 마음",
+    activitySummary: "조심조심! 돌다리를 건너요 → 마음을 담은 비누",
+    outcome: "마음을 담은 비누",
+    themeColor: "#1B8092",
   },
   {
     weekNo: 19,
-    title: "리듬탐험대, 출발!",
-    storybook: "소리를 따라가면",
-    growthKeyword: "리듬",
-    coreMessage: "세계 곳곳에는 저마다 다른 소리가 살아요.",
-    activitySummary: "소리를 따라 세계여행 → 나만의 젬베",
-    outcome: "나만의 젬베",
+    // 공식 교사용 수업가이드 19주차 (공개 요약 guide-summaries.ts) — 2026-10-29 승인 제목 주차
+    title: "숲 속 작은 연주회",
+    storybook: "숲 속 작은 연주회",
+    growthKeyword: "경청·협력",
+    coreMessage: "함께 만드는 우리의 리듬",
+    activitySummary: "귀 쫑긋! 소리를 듣고 움직여요 → 나만의 북과 스틱 꾸미기",
+    outcome: "나만의 북과 스틱 꾸미기",
     themeColor: "#56812B",
   },
   {
     weekNo: 20,
-    title: "복을 전해요",
-    storybook: "명절날 인사",
-    growthKeyword: "감사",
-    coreMessage: "인사는 달라도 전하는 마음은 같아요.",
-    activitySummary: "세계 명절 인사 여행 → 명절 밥상 꾸미기",
-    outcome: "우리 반 명절 밥상 (공동)",
-    themeColor: "#C2185B",
-  },
-  {
-    weekNo: 21,
-    title: "동글동글 토마토",
-    storybook: "토마토가 자랐어요",
-    growthKeyword: "과정",
-    coreMessage: "기다린 만큼 더 맛있게 익어요.",
-    activitySummary: "토마토 축제가 열렸어요! → 토마토 도장 찍기",
-    outcome: "우리 반 토마토밭 (공동)",
+    // 공식 교사용 수업가이드 20주차 (공개 요약 guide-summaries.ts) — 2026-10-29 승인 제목 주차
+    title: "주렁주렁 신나는 하루",
+    storybook: "주렁주렁 신나는 하루",
+    growthKeyword: "배려",
+    coreMessage: "배려할 때 더 커지는 즐거움",
+    activitySummary: "토마토 길을 이어줘! → 반쪽 토마토를 완성해요",
+    outcome: "반쪽 토마토를 완성해요",
     themeColor: "#D6412D",
   },
   {
+    weekNo: 21,
+    // 공식 교사용 수업가이드 21주차 (공개 요약 guide-summaries.ts) — 2026-10-29 승인 제목 주차
+    title: "두근두근 하늘여행",
+    storybook: "두근두근 하늘여행",
+    growthKeyword: "호기심·도전",
+    coreMessage: "새로운 세상을 만드는 호기심",
+    activitySummary: "미니 열기구 날리기 → 우리들의 큰 열기구",
+    outcome: "우리들의 큰 열기구",
+    themeColor: "#3176CF",
+  },
+  {
     weekNo: 22,
-    title: "우리 반 할로윈 파티",
-    storybook: "호박 마을의 파티",
-    growthKeyword: "축제",
-    coreMessage: "함께 준비하면 축제가 더 즐거워요.",
-    activitySummary: "우리 반 할로윈 파티를 열어요 → 파티 장식 만들기",
-    outcome: "할로윈 파티 장식 · 가면",
+    // 공식 교사용 수업가이드 22주차 (공개 요약 guide-summaries.ts) — 2026-10-29 승인 제목 주차
+    title: "오늘 밤, 무슨 일이 생길까?",
+    storybook: "오늘 밤, 무슨 일이 생길까?",
+    growthKeyword: "유연함",
+    coreMessage: "예상치 못해 더 특별한 재미와 추억",
+    activitySummary: "Trick or Treat! 사탕을 모아요 → 나만의 할로윈 바구니",
+    outcome: "나만의 할로윈 바구니",
     themeColor: "#B4611A",
   },
   {
     weekNo: 23,
-    title: "산타는 어디서 올까?",
-    storybook: "산타의 긴 여행",
-    growthKeyword: "선물",
-    coreMessage: "기다리는 마음도 선물이에요.",
-    activitySummary: "산타 썰매 배달 놀이 → 우리 반 트리 장식",
-    outcome: "우리 반 트리 (공동)",
+    // 공식 교사용 수업가이드 23주차 (공개 요약 guide-summaries.ts) — 2026-10-29 승인 제목 주차
+    title: "별빛이 찾아온 크리스마스",
+    storybook: "별빛이 찾아온 크리스마스",
+    growthKeyword: "나눔",
+    coreMessage: "나누면 커지는 기쁨",
+    activitySummary: "씽씽! 선물 썰매를 끌어요 → 선물 안에는 무엇이 있을까?",
+    outcome: "선물 안에는 무엇이 있을까?",
     themeColor: "#2A7552",
   },
   {
     weekNo: 24,
-    title: "친구야, 너는 어디 별에서 왔니?",
-    storybook: "어디 별에서 왔니?",
-    growthKeyword: "어울림",
-    coreMessage: "각기 다른 우리가 모여 아름다운 지구가 돼요.",
-    activitySummary: "다 다른 우리가 모여 지구가 돼요 → 우리 지구 조각 꾸미기",
-    outcome: "우리 반 지구 (공동작품)",
+    // 공식 교사용 수업가이드 24주차 (공개 요약 guide-summaries.ts) — 2026-10-29 승인 제목 주차
+    title: "서로 다른 하루, 하나의 지구",
+    storybook: "서로 다른 하루, 하나의 지구",
+    growthKeyword: "친구",
+    coreMessage: "다른 우리, 같은 지구",
+    activitySummary: "우리도 여기 있어! 지구촌 사진 붙이기 → 나만의 태극기 만들기",
+    outcome: "나만의 태극기 만들기",
     themeColor: "#2F5FA0",
   },
 ];
@@ -344,11 +352,12 @@ const SEEDS: WeekSeed[] = [
 /**
  * 2026-10-29 수정 지시로 바뀐 주차 제목 (대표 승인 제목).
  *
- * ★ 위 SEEDS 의 title 은 자료 PDF 의 주차 제목 그대로다 — 지금 화면의 수업 내용(신체활동 · 미술 · 교안)은
- *   그 PDF 교안에서 왔다. 승인 제목은 2026-10-26 PDF 동기화 전 공식 가이드의 주제와 같다
- *   (docs/curriculum/snapshots/2026-10-26-before-pdf-sync/week-index.json). 어느 교안으로 맞출지는 본사 결정이다.
- * ★ 그래서 제목만 바꾸고 본문은 지어내지 않는다. 이 주차들은 lessonUpdatePending 이고,
- *   화면은 「업데이트 교안 확인 필요 — 아래 수업은 이전 교안 「…」 기준」을 함께 적는다.
+ * ★ 승인 제목은 공식 교사용 수업가이드(내부 자료 · 공개 저장소 밖 비공개 보관)의 주차 제목과 같다
+ *   (띄어쓰기 · 문장부호만 다른 주차: 14 · 22 · 23 — 화면은 승인 표기, 그림책 제목은 가이드 원문 표기).
+ *   그래서 이 주차들의 SEEDS · 대시보드 · 수업 본문을 그 가이드 기준으로 맞췄다 (2026-10-29 · 대조표
+ *   docs/curriculum/OFFICIAL-GUIDE-14-17-24-20261029.md). 같은 주차의 자료 PDF 수업은 다른 주제라 보관만 한다.
+ * ★ 승인 제목인데 맞는 공식 교안이 없는 주차가 생기면 lessonUpdatePending 이 켜지고,
+ *   화면은 「업데이트 교안 확인 필요」를 적는다 (본문을 지어내지 않는다). 지금은 그런 주차가 없다.
  */
 export const APPROVED_WEEK_TITLES: Readonly<Record<number, string>> = {
   14: "말하지 않아도 괜찮아.",
@@ -370,7 +379,8 @@ export const WEEK_INDEX: WeekSummary[] = SEEDS.map((seed) => ({
   partNo: partOf(seed.weekNo).partNo,
   title: APPROVED_WEEK_TITLES[seed.weekNo] ?? seed.title,
   sourceTitle: seed.title,
-  lessonUpdatePending: seed.weekNo in APPROVED_WEEK_TITLES,
+  // 승인 제목인데 공식 가이드 교안이 없을 때만 — 가이드가 있는 주차는 내용이 제목과 맞다
+  lessonUpdatePending: seed.weekNo in APPROVED_WEEK_TITLES && !OFFICIAL_GUIDE_WEEKS.includes(seed.weekNo),
   storybook: seed.storybook,
   growthKeyword: seed.growthKeyword,
   coreMessage: seed.coreMessage,

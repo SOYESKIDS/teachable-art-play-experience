@@ -4,13 +4,13 @@
  * ── 이 파일이 있는 이유 ──────────────────────────────────────────
  *
  * 이전 가이드의 「권장 핵심수업 시간」과 단계별 시간표를 지우지 않고 보존한다.
- * 화면이 말하는 운영 시간은 이 파일이 아니라 lesson-time.ts 의 기본 수업 35분이다.
+ * 화면이 말하는 운영 시간은 이 파일이 아니라 lesson-time.ts 의 기본 수업 45분이다.
  *
  * ★ durationLabel · stages 는 가이드 원문 그대로다. 고치지 않는다.
  *   화면에 적을 때는 「출처 기록 · 현재 운영 시간이 아닙니다」를 함께 붙인다.
- * ★ matchesCurrentLesson — 2026-10-26 자료 PDF 기준으로 수업이 바뀐 주차
- *   (9 · 14 · 15 · 17~24)는 이 가이드가 **다른 수업**의 기록이다. 그 주차는 시간표 ·
- *   도입 제목 · 확장활동을 지금 수업에 쓰지 않는다.
+ * ★ matchesCurrentLesson — 2026-10-26 자료 PDF 기준으로 수업이 바뀐 주차(9 · 15)는 이 가이드가
+ *   **다른 수업**의 기록이다. 14 · 17~24주는 2026-10-29 승인 제목이 이 가이드의 수업이라 true 다
+ *   (공개 체험은 가이드 요약 guide-summaries.ts 만 싣는다).
  * ★ 17~24주차는 가이드 5장이 「관찰 시간표」라 단계별 분이 원문에 없다.
  *
  * 생성 근거: docs/curriculum/original-duration-baseline.md
@@ -172,7 +172,7 @@ export const OFFICIAL_PLAN: readonly OfficialWeekPlan[] = [
     extensionSources: [{ kind: "workbook", name: "워크북", min: 10, max: 10 }, { kind: "move_more", name: "몸으로 말해요", min: 20, max: 25 }, { kind: "art_more", name: "미술활동", min: 15, max: 20 }],
     introTitle: "말하지 않아도 알 수 있을까?",
     sourceStatus: "verified",
-    matchesCurrentLesson: false,
+    matchesCurrentLesson: true,
   },
   {
     weekNo: 15,
@@ -199,7 +199,7 @@ export const OFFICIAL_PLAN: readonly OfficialWeekPlan[] = [
     extensionSources: [],
     introTitle: null,
     sourceStatus: "pending_review",
-    matchesCurrentLesson: false,
+    matchesCurrentLesson: true,
   },
   {
     weekNo: 18,
@@ -208,7 +208,7 @@ export const OFFICIAL_PLAN: readonly OfficialWeekPlan[] = [
     extensionSources: [],
     introTitle: null,
     sourceStatus: "pending_review",
-    matchesCurrentLesson: false,
+    matchesCurrentLesson: true,
   },
   {
     weekNo: 19,
@@ -217,7 +217,7 @@ export const OFFICIAL_PLAN: readonly OfficialWeekPlan[] = [
     extensionSources: [],
     introTitle: null,
     sourceStatus: "pending_review",
-    matchesCurrentLesson: false,
+    matchesCurrentLesson: true,
   },
   {
     weekNo: 20,
@@ -226,7 +226,7 @@ export const OFFICIAL_PLAN: readonly OfficialWeekPlan[] = [
     extensionSources: [],
     introTitle: null,
     sourceStatus: "pending_review",
-    matchesCurrentLesson: false,
+    matchesCurrentLesson: true,
   },
   {
     weekNo: 21,
@@ -235,7 +235,7 @@ export const OFFICIAL_PLAN: readonly OfficialWeekPlan[] = [
     extensionSources: [],
     introTitle: null,
     sourceStatus: "pending_review",
-    matchesCurrentLesson: false,
+    matchesCurrentLesson: true,
   },
   {
     weekNo: 22,
@@ -244,7 +244,7 @@ export const OFFICIAL_PLAN: readonly OfficialWeekPlan[] = [
     extensionSources: [],
     introTitle: null,
     sourceStatus: "pending_review",
-    matchesCurrentLesson: false,
+    matchesCurrentLesson: true,
   },
   {
     weekNo: 23,
@@ -253,7 +253,7 @@ export const OFFICIAL_PLAN: readonly OfficialWeekPlan[] = [
     extensionSources: [],
     introTitle: null,
     sourceStatus: "pending_review",
-    matchesCurrentLesson: false,
+    matchesCurrentLesson: true,
   },
   {
     weekNo: 24,
@@ -262,7 +262,7 @@ export const OFFICIAL_PLAN: readonly OfficialWeekPlan[] = [
     extensionSources: [],
     introTitle: null,
     sourceStatus: "pending_review",
-    matchesCurrentLesson: false,
+    matchesCurrentLesson: true,
   },
 ];
 

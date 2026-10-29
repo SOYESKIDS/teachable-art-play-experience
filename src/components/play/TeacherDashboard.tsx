@@ -448,7 +448,7 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
             <Row label="성장 키워드" value={d.keyword} />
             <Row label="기억할 것" value={d.teacherKey} />
             <Row label="파트" value={`PART ${week.partNo} · ${partOf(week.weekNo).title}`} />
-            <Row label="파트 (자료 PDF 표기)" value={d.part} />
+            {d.sourceKind === "officialGuide" ? null : <Row label="파트 (자료 PDF 표기)" value={d.part} />}
             <Row label="주제 요소 (원안)" value={x?.topicElements ?? null} />
             <Row label="계절 · 장소" value={d.place ?? x?.seasonPlace ?? null} />
             <Row label="제작 교구" value={x?.makesKit ?? null} />
@@ -748,8 +748,8 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
         <Fold no={10} title="동화책 음원과 뮤직비디오" count={d.media.length}>
           <Head>미디어 보유 상태</Head>
           <div className="mt-1.5"><MediaStatusTable rows={support.media} /></div>
-          <Head>PDF 그림 자리 — 자료 상태</Head>
-          <SlotStatus slots={support.slots} />
+          <Head>그림 자리 — 자료 상태</Head>
+          {d.sourceKind === "officialGuide" ? <p className="mt-1.5 text-[14px] text-pop-ink-muted">공식 교사용 수업가이드에는 그림 자리 표시가 없습니다.</p> : <SlotStatus slots={support.slots} />}
           <Head>음원 목록 (자료 원문)</Head>
           <List items={d.media} empty={NONE} />
           {x?.videoDesc ? (

@@ -1,4 +1,5 @@
 import type { StageKey, Sourced } from "../types";
+import { isOfficialGuideWeek } from "../teacher-dashboard/week-dashboards";
 
 /**
  * 35분 순서와 자료 PDF 활동 순서가 맞지 않는 주차 — 교사가 수업 중에 막히지 않게 미리 알린다.
@@ -56,5 +57,7 @@ export const SEQUENCE_NOTES: readonly SequenceNote[] = [
 ];
 
 export function sequenceNotes(weekNo: number): readonly SequenceNote[] {
+  // 14 · 17~24주는 공식 가이드 기준 수업이다 — 22 · 24주 메모는 자료 PDF(다른 주제) 활동 순서에 붙인 것이라 쓰지 않는다
+  if (isOfficialGuideWeek(weekNo)) return [];
   return SEQUENCE_NOTES.filter((x) => x.weekNo === weekNo);
 }

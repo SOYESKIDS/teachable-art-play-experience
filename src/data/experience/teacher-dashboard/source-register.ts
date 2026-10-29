@@ -1,4 +1,5 @@
 import { APPROVED_WEEK_TITLES, LESSON_UPDATE_PENDING_LABEL } from "@/lib/weeks/week-index";
+import { OFFICIAL_GUIDE_WEEKS } from "@/lib/weeks/official-guide-weeks";
 
 /**
  * 주차별 원본 자료 대조표 — 읽기 전용.
@@ -19,12 +20,14 @@ import { APPROVED_WEEK_TITLES, LESSON_UPDATE_PENDING_LABEL } from "@/lib/weeks/w
  */
 
 /** 자료 PDF 의 확정 정도 — 자료의 「데이터 출처」 칸을 그대로 따른다 */
-export type SourceState = "confirmed" | "mixed" | "draft";
+export type SourceState = "confirmed" | "mixed" | "draft" | "guide";
 
 export const SOURCE_STATE_LABEL: Record<SourceState, string> = {
   confirmed: "자료 확정본",
   mixed: "확정 · 초안 혼재",
   draft: "초안 · 검수 전",
+  // 14 · 17~24주 (2026-10-29) — 공식 교사용 수업가이드 원문 기준, 웹 화면 반영은 본사 확인 전
+  guide: "공식 가이드 원문 · 화면 반영 확인 전",
 };
 
 export interface WeekSourceEntry {
@@ -46,7 +49,7 @@ const PROPOSAL = "자료에 「미작성」으로 비어 있는 관찰 문항 ·
 const SOURCE_FILLED = "추출에서 빠졌던 관찰 문항 · 활동 목표 원문을 자료에서 다시 옮겼습니다";
 const MEDIA_FILLED = "추출에서 빠졌던 음원 목록을 자료에서 다시 옮겼습니다";
 const TIME = "수업 시간을 기본 수업 45분 하나로 통일했습니다 (2026-10-29 · 자료 「CORE 45분」과 같음 · 단계별 시간은 정하지 않음)";
-const SPLIT = "주차 제목과 그림책 제목을 나눠 적었습니다";
+const SPLIT = "주차 제목과 동화책 제목을 나눠 적었습니다";
 const BOOK = "동화책 이름을 자료 기준으로 맞췄습니다";
 const TOPIC = "수업 주제 · 제목 · 키워드 · 동화책 · 활동을 자료 기준으로 바꿨습니다";
 const PART3 = "PART 이름을 「두근두근 세계여행」으로 확정했습니다 (2026-10-29)";
@@ -81,9 +84,19 @@ const ENTRIES: readonly WeekSourceEntry[] = [
   { weekNo: 24, state: "draft", inDevPack: false, assetSlotsOnly: true, open: [MEDIA, DRAFT], resolved: [TOPIC, PART3, TIME] },
 ];
 
-export const WEEK_SOURCES: readonly WeekSourceEntry[] = ENTRIES.map((e) =>
-  e.weekNo in APPROVED_WEEK_TITLES ? { ...e, open: [RETITLED(e.weekNo), ...e.open] } : e,
-);
+/** 2026-10-29 — 승인 제목 = 공식 가이드 제목이라 수업 내용을 가이드 전사본 기준으로 맞춘 주차 */
+const GUIDE_ALIGNED = (weekNo: number) =>
+  `주차 제목 「${APPROVED_WEEK_TITLES[weekNo]}」이 공식 교사용 수업가이드의 수업이라, 수업 내용(동화책 · 목표 · 신체활동 · 미술 · 발문 · 준비물)을 그 가이드 원문 기준으로 맞췄습니다 (2026-10-29 · 같은 주차 자료 PDF 는 다른 주제라 보관만 합니다)`;
+const GUIDE_REVIEW = "공식 가이드 원문을 웹 화면에 옮긴 결과 · 단계 배분은 본사 확인이 필요합니다";
+
+export const WEEK_SOURCES: readonly WeekSourceEntry[] = ENTRIES.map((e) => {
+  if (!(e.weekNo in APPROVED_WEEK_TITLES)) return e;
+  if (OFFICIAL_GUIDE_WEEKS.includes(e.weekNo)) {
+    // 자료 PDF 기준이던 「주제를 자료 기준으로 바꿨다 · PART 3 · 초안」 기록은 이 주차 화면에 더 맞지 않는다
+    return { ...e, state: "guide" as const, open: [MEDIA, GUIDE_REVIEW], resolved: [GUIDE_ALIGNED(e.weekNo), ...e.resolved.filter((r) => r !== TOPIC && r !== PART3)] };
+  }
+  return { ...e, open: [RETITLED(e.weekNo), ...e.open] };
+});
 
 export function weekSource(weekNo: number): WeekSourceEntry | null {
   return WEEK_SOURCES.find((w) => w.weekNo === weekNo) ?? null;
@@ -94,7 +107,8 @@ export function weekSource(weekNo: number): WeekSourceEntry | null {
  * 나머지는 검수 전 초안이다. 확정되지 않은 내용을 확정 교안처럼 보이게 하지 않는다.
  */
 export function curriculumBadge(weekNo: number): string {
-  return weekSource(weekNo)?.state === "confirmed" ? "공식 교육과정" : "초안 · 검수 전 교안";
+  const state = weekSource(weekNo)?.state;
+  return state === "confirmed" ? "공식 교육과정" : state === "guide" ? "공식 가이드 기준 · 검수 전" : "초안 · 검수 전 교안";
 }
 
 /** 자료를 대조한 주차 수와 남은 확인 사항이 있는 주차 수 */
