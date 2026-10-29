@@ -62,7 +62,7 @@ export interface DemoMoment {
 export const DEMO_REPORT = {
   childLabel: "하늘 (가상 원아)",
   classLabel: "햇살반 (가상)",
-  period: "1~4주 · 씨앗과 숲",
+  period: "1~4주 · 씨앗에서 숲까지",
   summary:
     "하늘이는 새로운 재료를 만나면 먼저 손으로 만져 보고 소리를 들어 보는 탐색형 친구예요. 4주 동안 ‘처음엔 망설이다가 스스로 다시 해보는’ 순간이 점점 늘었어요.",
   moments: [

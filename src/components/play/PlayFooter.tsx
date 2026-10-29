@@ -33,7 +33,7 @@ export function PlayFooter() {
             ))}
           </nav>
           <div className="flex flex-col items-start gap-2 text-[15px]">
-            <p className="text-[14px] font-bold text-white">우리 유치원 도입 문의</p>
+            <p className="text-[14px] font-bold text-white">우리 유치원 도입 문의 · {CONTACT.person}</p>
             <a href={CONTACT.phoneHref} className="inline-flex min-h-11 items-center font-bold text-white hover:text-pop-yellow">☎ {CONTACT.phone}</a>
             <a href={CONTACT.emailHref} className="inline-flex min-h-11 items-center font-bold text-white hover:text-pop-yellow">✉ {CONTACT.email}</a>
             <a href={CONTACT.salesSite} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center font-bold text-white underline-offset-4 hover:text-pop-yellow hover:underline">

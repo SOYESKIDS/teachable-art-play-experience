@@ -10,8 +10,10 @@ import Link from "next/link";
 import { pdfExtraOf } from "@/data/experience/teacher-dashboard/week-pdf-extra";
 import { KidsBoardPanel, LessonFlow, SlotStatus, area, goTo } from "@/components/play/DashboardLinks";
 import { editedLines, gatherForWeek, isEditedLine, pdfQuestions, weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
-import { TEXT_ORIGIN_LABEL, type ExperienceWeek, type TextOrigin } from "@/data/experience/types";
-import { LESSON_TIME, SHORT_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
+import { CORE_STAGE_FLOW, TEXT_ORIGIN_LABEL, type ExperienceWeek, type TextOrigin } from "@/data/experience/types";
+import { LESSON_TIME, PDF_TIME_NOTE, SHORT_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
+import { partOf } from "@/lib/weeks/week-types";
+import { LessonUpdateNotice } from "@/components/play/LessonUpdateNotice";
 import { CHECK_STATE_NOTE, SAFETY_ORIGIN, type CheckGroup, type MediaRow } from "@/data/experience/lesson-labels";
 import { GROWTH_INDICATORS, REPORT_READING_NOTES } from "@/data/experience/report";
 import type { Sourced } from "@/data/experience/types";
@@ -187,12 +189,12 @@ function List({ items, empty }: { items: readonly string[]; empty?: string }) {
  */
 const TASKS: readonly { code: string; name: string; hint: string; ids: readonly string[]; areas: readonly number[] }[] = [
   { code: "WK", name: "주간 개요", hint: "주제 · 목표 · 누리과정", ids: [area(1), area(9)], areas: [1, 9] },
-  { code: "LS", name: "수업 진행 가이드", hint: `${LESSON_TIME.totalMinutes}분 단계 · 발문 · 그림책 · 활동`, ids: ["lesson-plan"], areas: [2, 3, 4] },
+  { code: "LS", name: "수업 진행 가이드", hint: "단계 순서 · 발문 · 동화책 · 활동", ids: ["lesson-plan"], areas: [2, 3, 4] },
   { code: "PR", name: "준비 · 물류", hint: "준비물 · 키트 · 안전 · 정리", ids: ["dash-prep", area(6), area(8)], areas: [6, 8] },
   { code: "OB", name: "관찰 포인트", hint: "수업 중 볼 행동 · 운영 포인트", ids: [area(11)], areas: [11] },
   { code: "RP", name: "성장 리포트", hint: "성장기록 예시 · 가상 분석 · 리포트", ids: [area(12)], areas: [12] },
   { code: "FM", name: "가정 연계", hint: "가족 활동 · 부모 안내 · 키즈보드", ids: [area(7), "dash-kidsboard", area(12)], areas: [7, 12] },
-  { code: "MD", name: "미디어 라이브러리", hint: "그림책 표지 · 음원 · 영상", ids: [area(10)], areas: [10] },
+  { code: "MD", name: "미디어 라이브러리", hint: "동화책 표지 · 음원 · 영상", ids: [area(10)], areas: [10] },
   { code: "CW", name: "주차 연계 산출물", hint: "결과물 · 다음 주차 · 모아 올 것", ids: ["dash-cw"], areas: [4, 12] },
 ];
 
@@ -354,10 +356,10 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
 
       <PrepSummary
         tiles={[
-          { area: 2, label: "그림책", title: d.storybookTitle ? `《${d.storybookTitle}》` : NONE, detail: d.storySummary ? "줄거리 · 핵심 메시지" : "그림책 정보" },
+          { area: 2, label: "동화책", title: d.storybookTitle ? `《${d.storybookTitle}》` : NONE, detail: d.storySummary ? "줄거리 · 핵심 메시지" : "동화책 정보" },
           { area: 3, label: "대표 신체활동", title: d.physicalTitle ?? NONE, detail: d.physicalSteps.length ? `진행 ${d.physicalSteps.length}단계` : "단계 자료 없음" },
           { area: 4, label: "미술", title: d.artTitle ?? week.outcome ?? NONE, detail: d.artSteps.length ? `만드는 순서 ${d.artSteps.length}단계` : "만드는 순서는 체험 구성 참고" },
-          { area: 5, label: "워크북", title: d.workbookTitle ?? "워크북", detail: d.workbookSheets.length ? `${d.workbookSheets.length}장 · 선택 확장활동` : NONE },
+          { area: 5, label: "워크북", title: d.workbookTitle ?? "워크북", detail: d.workbookSheets.length ? `${d.workbookSheets.length}장 · 연계 활동` : NONE },
           { area: 6, label: "준비물", title: (d.physicalMaterials.length ? d.physicalMaterials : d.kitItems).slice(0, 2).join(" · ") || NONE, detail: `체크리스트 ${d.physicalMaterials.length}가지 · 키트 ${d.kitItems.length}가지` },
           { area: 7, label: "가정연계", title: d.familyTitle ?? NONE, detail: d.familyHow.length ? `방법 ${d.familyHow.length}단계` : "방법 자료 없음" },
           { area: 2, label: "교사 발문", title: `“${week.body.teacherQuestions[0]}”`, detail: `발문 ${week.body.teacherQuestions.length}개 + 마무리 질문` },
@@ -434,7 +436,8 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
             <p><span className="text-[13px] font-bold text-pop-ink-muted">대표 신체활동 · </span>{d.physicalTitle ?? NONE}</p>
             <p><span className="text-[13px] font-bold text-pop-ink-muted">미술 · </span>{d.artTitle ?? NONE}</p>
             <p><span className="text-[13px] font-bold text-pop-ink-muted">준비 · </span>교구 {d.kitItems.length}가지 · 원 준비물 {d.orgItems.length}가지 · 안전 {week.body.safety.length}가지</p>
-            <p><span className="text-[13px] font-bold text-pop-ink-muted">수업 시간 · </span>{LESSON_TIME.label} ({LESSON_TIME.breakdown})</p>
+            <p><span className="text-[13px] font-bold text-pop-ink-muted">수업 시간 · </span>{LESSON_TIME.label}</p>
+            <LessonUpdateNotice week={week} className="sm:col-span-2" />
             <p className="flex flex-wrap gap-2 pt-1 sm:col-span-2">
               {support.prev ? <Link href={`/experience/weeks/${support.prev.weekNo}`} className="inline-flex min-h-11 items-center rounded-full bg-pop-cream px-4 text-[14px] font-bold text-pop-ink">← {support.prev.weekNo}주 「{support.prev.title}」</Link> : null}
               {support.next ? <Link href={`/experience/weeks/${support.next.weekNo}`} className="inline-flex min-h-11 items-center rounded-full bg-pop-cream px-4 text-[14px] font-bold text-pop-ink">{support.next.weekNo}주 「{support.next.title}」 →</Link> : null}
@@ -444,7 +447,8 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
             <Row label="핵심 주제" value={d.coreTheme} />
             <Row label="성장 키워드" value={d.keyword} />
             <Row label="기억할 것" value={d.teacherKey} />
-            <Row label="파트" value={d.part} />
+            <Row label="파트" value={`PART ${week.partNo} · ${partOf(week.weekNo).title}`} />
+            <Row label="파트 (자료 PDF 표기)" value={d.part} />
             <Row label="주제 요소 (원안)" value={x?.topicElements ?? null} />
             <Row label="계절 · 장소" value={d.place ?? x?.seasonPlace ?? null} />
             <Row label="제작 교구" value={x?.makesKit ?? null} />
@@ -455,21 +459,21 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
           <div className="mt-4 rounded-2xl border-2 bg-white px-4 py-3" style={tone}>
             <p className="text-[13px] font-bold text-pop-ink-muted">수업 시간</p>
             <p className="mt-1">
-              운영 기준 <strong className="font-bold">{LESSON_TIME.label}</strong> ({LESSON_TIME.breakdown}) +
-              선택 확장활동
+              운영 기준 <strong className="font-bold">{LESSON_TIME.label}</strong> · {CORE_STAGE_FLOW}
             </p>
+            <p className="mt-1 text-[14px] text-pop-ink-muted">{LESSON_TIME.connectNote} 단계별 시간은 정하지 않았습니다.</p>
             <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-[14px]">
-              <span><span className="font-bold">{SHORT_TIME.label}</span> ({SHORT_TIME.breakdown}) — {SHORT_TIME.note}</span>
+              <span><span className="font-bold">{SHORT_TIME.label}</span> — {SHORT_TIME.note}</span>
               <OriginTag origin="proposal" />
             </p>
             <p className="mt-1 text-[14px] text-pop-ink-muted">
-              자료 표기 「{week.duration.pdfDurationLabel}」
-              {week.duration.legacyGuideDurationLabel ? ` · 이전 가이드 「${week.duration.legacyGuideDurationLabel}」` : ""} — {SOURCE_TIME_NOTE}.
+              자료 표기 「{week.duration.pdfDurationLabel}」 — {PDF_TIME_NOTE}
+              {week.duration.legacyGuideDurationLabel ? ` · 이전 가이드 「${week.duration.legacyGuideDurationLabel}」 — ${SOURCE_TIME_NOTE}` : ""}.
             </p>
           </div>
         </Fold>
 
-        <Fold no={2} title="그림책">
+        <Fold no={2} title="동화책">
           <WeekArt week={week} className="mb-4 aspect-[4/3] w-full max-w-[280px] rounded-[20px] ring-1 ring-pop-ink/5" />
           {d.storybookTitle ? (
             <p className={cx("font-display text-[20px] text-pop-ink", displayFallback(d.storybookTitle))}>《{d.storybookTitle}》</p>
@@ -555,9 +559,7 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
             {week.stages.map((s, i) => (
               <li key={s.key} className="flex gap-2">
                 <span className="shrink-0 font-bold text-pop-ink-muted">{i + 1}</span>
-                <span>
-                  {s.title} · 약 {s.minutes}분
-                </span>
+                <span>{s.title}</span>
               </li>
             ))}
           </ol>
@@ -608,7 +610,7 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
             <p className="text-[14px] text-pop-ink-muted">{NONE}</p>
           )}
           <p className="mt-3 text-[14px] leading-relaxed text-pop-ink-muted">
-            워크북은 선택 확장활동입니다. {LESSON_TIME.label} 안에 넣지 않습니다. 워크북 인쇄 파일 · 교구 사진은 자료 준비 중입니다.
+            워크북은 연계 활동으로 이어 갑니다. 워크북 인쇄 파일 · 교구 사진은 자료 준비 중입니다.
           </p>
         </Fold>
 
@@ -639,7 +641,7 @@ export function TeacherDashboard({ week, support }: { week: ExperienceWeek; supp
           <dl className="mt-1.5 grid gap-2 text-[14px]">
             {[moveStage, makeStage].map((s) => (s && s.materials.length ? (
               <div key={s.key} className="rounded-2xl bg-pop-cream px-3.5 py-2.5">
-                <dt className="font-bold text-pop-ink">{s.title} · 약 {s.minutes}분</dt>
+                <dt className="font-bold text-pop-ink">{s.title}</dt>
                 <dd className="mt-0.5 text-pop-ink-muted">{s.materials.join(" · ")}</dd>
               </div>
             ) : null))}

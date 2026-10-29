@@ -96,7 +96,7 @@ export function closingChecks(week: ExperienceWeek, next: ExperienceWeek | null)
   if (week.extensions.length) {
     groups.push({
       key: "extension",
-      label: "선택 확장활동 (기본 수업 뒤)",
+      label: "연계 활동 (워크북 · 작품 완성 · 가정연계)",
       items: week.extensions.map((x) => ({ text: x.title, origin: "edited" as const })),
     });
   }
@@ -113,8 +113,8 @@ export function mediaStatus(week: ExperienceWeek): readonly MediaRow[] {
   const ebook = [...week.body.materials, ...(d?.physicalMaterials ?? [])].some((m) => /E-?BOOK/i.test(m));
   return [
     week.image
-      ? { key: "cover", label: "그림책 표지", state: "ready", detail: "소예키즈 그림책 표지 (공개 사용 확인)" }
-      : { key: "cover", label: "그림책 표지", state: "pending", detail: "화면에는 자체 제작 그림을 씁니다" },
+      ? { key: "cover", label: "동화책 표지", state: "ready", detail: "소예키즈 동화책 표지 (공개 사용 확인)" }
+      : { key: "cover", label: "동화책 표지", state: "pending", detail: "화면에는 자체 제작 그림을 씁니다" },
     { key: "ebook", label: "E-BOOK", state: ebook ? "listed" : "pending", detail: ebook ? "준비물에 E-BOOK 이 적혀 있습니다 · 파일은 없습니다" : "자료에 없습니다" },
     { key: "audio", label: "동화 음원", state: d?.media.length ? "listed" : "pending", detail: d?.media.length ? `${d.media.length}개 이름이 자료에 있습니다` : "자료에 없습니다" },
     { key: "video", label: "뮤직비디오", state: "pending", detail: "영상 파일이 없습니다" },

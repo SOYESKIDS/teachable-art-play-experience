@@ -4,7 +4,7 @@
 //
 // ★ 손으로 판정하지 않는다. 화면 데이터(week-dashboards · weeks · lesson-support)의 문장이
 //   저장소의 PDF 추출 텍스트에 그대로(또는 낱말이 모두) 있는지 기계로 대조한다.
-// ★ 판정: ✔ 원문 확인 · ✎ 35분 체험 편집 · ◇ 교사용 제안 · ∅ 원문 「미작성」 · ✕ 자료 없음(검수 필요) · △ 원문과 일부 다름(검수 필요)
+// ★ 판정: ✔ 원문 확인 · ✎ 웹 체험 편집 · ◇ 교사용 제안 · ∅ 원문 「미작성」 · ✕ 자료 없음(검수 필요) · △ 원문과 일부 다름(검수 필요)
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -102,7 +102,7 @@ const md = `# 24주 커리큘럼 원문 대조표 (최종)
 | 합계 | ${total} | |
 
 ★ 「안전」 열은 24주 모두 ◇ 이다 — 자료 PDF 에 안전 유의사항 항목이 따로 없다. 화면 · 인쇄물에 「교사용 제안」으로 표시한다.
-★ 「✎」은 원문을 일부러 고쳐 쓴 문장이 있는 칸이다 — 화면에 「35분 체험 편집」으로 표시한다:
+★ 「✎」은 원문을 일부러 고쳐 쓴 문장이 있는 칸이다 — 화면에 「웹 체험 편집」으로 표시한다:
 ${EDITED_LINES.map((e) => `  - ${e.weekNo}주 「${e.text}」 ← 원문 「${e.original}」 (${e.reason})`).join("\n")}
 ★ 「✔」은 문장이 원문 텍스트에 있다는 뜻이다. 본사가 교안으로 승인했다는 뜻이 아니다 (9~24주 「개편 후보 · 검수 전」 유지).
 

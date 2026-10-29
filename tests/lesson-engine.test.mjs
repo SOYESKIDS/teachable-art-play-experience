@@ -24,14 +24,14 @@ const NAME = Object.fromEntries(GROWTH_INDICATORS.map((g) => [g.code, g.name]));
 const DEF = Object.fromEntries(GROWTH_INDICATORS.map((g) => [g.code, g.definition]));
 const plans = EXPERIENCE_WEEKS.map(buildLessonPlan);
 
-test("24주 실행형 데이터 — 요구한 항목이 모두 있고 35분 · 단계 5개다", () => {
+test("24주 실행형 데이터 — 요구한 항목이 모두 있고 45분 · 단계 5개다", () => {
   const KEYS = ["weekNo", "weekTitle", "storybook", "learningGoals", "growthKeyword", "lessonDuration", "lessonStages", "physicalActivities", "artActivity",
     "workbookActivities", "kitAndMaterials", "safetyGuidance", "teacherQuestions", "observationPoints", "growthIndicatorMappings", "familyActivity",
     "crossWeekOutputs", "mediaAssets", "sourceReferences", "reviewStatus"];
   for (const p of plans) {
     for (const k of KEYS) assert.ok(k in p, `${p.weekNo}주 ${k}`);
     assert.equal(p.lessonStages.length, 5);
-    assert.equal(p.lessonStages.reduce((a, s) => a + s.minutes, 0), 35, `${p.weekNo}주 35분`);
+    assert.equal(p.lessonStages.reduce((a, s) => a + s.minutes, 0), 45, `${p.weekNo}주 45분`);
     for (const s of p.lessonStages) {
       assert.match(s.id, new RegExp(`^w${p.weekNo}\\.stage\\.`));
       assert.ok(s.teacherSays.length && s.teacherDoes.length && s.childrenDo.length, `${s.id} 교사 말 · 행동 · 아이 행동`);
@@ -232,9 +232,9 @@ test("미리 준비 · 사전 제작 — 4 · 11 · 22 · 24주 견본 · 조각
   assert.equal(FILMING_NOTE.origin, "proposal");
 });
 
-test("수업 시간 — PDF 원본(CORE 45 · SHORT 30) · 웹 35분 체험 · 30분 단축(교사용 편집안)을 섞지 않는다", async () => {
+test("수업 시간 — 운영 기준 45분(자료 CORE 45와 같음) · 30분 단축(교사용 편집안)을 섞지 않는다", async () => {
   const { LESSON_TIME, SHORT_TIME, SHORT_STAGE_MINUTES, PDF_DURATION_LABEL } = await import("../src/lib/weeks/lesson-time.ts");
-  assert.equal(LESSON_TIME.totalMinutes, 35);
+  assert.equal(LESSON_TIME.totalMinutes, 45);
   assert.equal(SHORT_TIME.totalMinutes, 30);
   assert.equal(Object.keys(SHORT_STAGE_MINUTES).join(), "open,story,move,make,share");
   assert.match(PDF_DURATION_LABEL, /CORE 45분.*SHORT CLASS 30분/);
@@ -284,7 +284,7 @@ test("PDF 추가 칸 — 미술 활용 · 예시 · TIP, 교구 안내 · 미션
 
 test("상세 수업 지도안 (인쇄) — 12개 영역을 모두 싣고 검색에서 뺀다 · 플레이어는 PDF 단계를 하나씩 넘긴다", () => {
   const guide = readFileSync(join(ROOT, "src/app/experience/weeks/[weekNo]/guide/page.tsx"), "utf8");
-  for (const [i, title] of ["주차 기본 정보", "그림책", "대표 신체활동", "미술활동", "워크북", "교구 · 놀이자료 키트", "가족연계 활동", "가정용 교구 · 교사 지원자료", "누리과정 연계", "동화책 음원 · 캐릭터 뮤직비디오", "교사 운영 · 관찰 · 성장 기록", "주차 연계 산출물"].entries())
+  for (const [i, title] of ["주차 기본 정보", "동화책", "대표 신체활동", "미술활동", "워크북", "교구 · 놀이자료 키트", "가족연계 활동", "가정용 교구 · 교사 지원자료", "누리과정 연계", "동화책 음원 · 캐릭터 뮤직비디오", "교사 운영 · 관찰 · 성장 기록", "주차 연계 산출물"].entries())
     assert.ok(guide.includes(`no={${i + 1}} title="${title}"`), `영역 ${i + 1} ${title}`);
   assert.ok(guide.includes("robots: { index: false"));
   for (const k of ["artUse", "artExamples", "artTip", "kitMissions", "kitUse", "familyNote", "familyTip", "homeKitNote", "videoDesc"]) assert.ok(guide.includes(`x?.${k}`), `지도안 ${k}`);

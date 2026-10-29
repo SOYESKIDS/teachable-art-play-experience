@@ -7,9 +7,10 @@ import { cx } from "@/components/ui/cx";
 import { PrintButton } from "@/components/play/PrintButton";
 import { closingChecks, preLessonChecks, weekGoals, type CheckGroup } from "@/data/experience/lesson-support";
 import { isEditedLine, weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
-import { TEXT_ORIGIN_LABEL } from "@/data/experience/types";
+import { CORE_STAGE_FLOW, TEXT_ORIGIN_LABEL } from "@/data/experience/types";
 import { EXPERIENCE_WEEKS, experienceWeek } from "@/data/experience/weeks";
-import { LESSON_TIME, PDF_DURATION_LABEL, SHORT_TIME } from "@/lib/weeks/lesson-time";
+import { LESSON_TIME, PDF_DURATION_LABEL, PDF_TIME_NOTE, SHORT_TIME } from "@/lib/weeks/lesson-time";
+import { LessonUpdateNotice } from "@/components/play/LessonUpdateNotice";
 import { buildLessonPlan, indicatorName } from "@/data/experience/lesson-engine/plan";
 
 /**
@@ -93,19 +94,20 @@ export default async function WeekPrintPage({ params }: PageProps<"/experience/w
             <div>
               <p className="text-[13px] font-bold text-pop-ink-muted">TeachAble Art Play · 교사용 수업 요약</p>
               <h1 className={cx("mt-1 font-display text-[30px] leading-tight print:text-[24px]", displayFallback(`${week.weekNo}주차 「${week.title}」`))}>{week.weekNo}주차 「{week.title}」</h1>
-              <p className="mt-1 text-[15px] font-semibold">그림책 《{week.storybook}》 · #{week.growthKeyword} · {LESSON_TIME.label} ({LESSON_TIME.breakdown})</p>
+              <p className="mt-1 text-[15px] font-semibold">동화책 《{week.storybook}》 · #{week.growthKeyword} · {LESSON_TIME.label}</p>
             </div>
             <p className="max-w-[30ch] text-[12px] leading-snug text-pop-ink-muted">
               체험용 구성입니다. 공식 교안으로 확정된 내용이 아닙니다. 문장 옆 표시는 출처입니다 —
               {(["source", "edited", "proposal", "review"] as const).map((o) => ` [${TEXT_ORIGIN_LABEL[o]}]`).join("")}
             </p>
           </header>
+          <LessonUpdateNotice week={week} className="mt-4 print:text-[12px]" />
 
           <Section title="수업 시간">
             <ul className="grid gap-1 text-[13px]">
-              <li>· 자료 PDF 원본 운영시간 — {PDF_DURATION_LABEL} <OriginTag origin="source" className="align-middle" /></li>
-              <li>· 웹사이트 체험 — {LESSON_TIME.label} ({LESSON_TIME.breakdown}) <OriginTag origin="edited" className="align-middle" /></li>
-              <li>· {SHORT_TIME.label} ({SHORT_TIME.breakdown}) — {SHORT_TIME.note} <OriginTag origin="proposal" className="align-middle" /></li>
+              <li>· 운영 기준 — {LESSON_TIME.label} · 단계 순서 {CORE_STAGE_FLOW} (단계별 시간은 정하지 않음)</li>
+              <li>· 자료 PDF 원본 운영시간 — {PDF_DURATION_LABEL} <OriginTag origin="source" className="align-middle" /> · {PDF_TIME_NOTE}</li>
+              <li>· {SHORT_TIME.label} — {SHORT_TIME.note} <OriginTag origin="proposal" className="align-middle" /></li>
             </ul>
           </Section>
 
@@ -123,7 +125,7 @@ export default async function WeekPrintPage({ params }: PageProps<"/experience/w
             <table className="w-full border-collapse text-left text-[13px] leading-snug">
               <thead>
                 <tr className="border-b-2 border-pop-ink/30 text-[12px] text-pop-ink-muted">
-                  <th scope="col" className="w-[16%] py-1.5 pr-2">단계 · 시간</th>
+                  <th scope="col" className="w-[16%] py-1.5 pr-2">단계</th>
                   <th scope="col" className="w-[30%] py-1.5 pr-2">교사 발문</th>
                   <th scope="col" className="py-1.5 pr-2">아이가 하는 일 · 준비물</th>
                 </tr>
@@ -131,7 +133,7 @@ export default async function WeekPrintPage({ params }: PageProps<"/experience/w
               <tbody>
                 {week.stages.map((s, i) => (
                   <tr key={s.key} className="break-inside-avoid border-b border-pop-ink/10 align-top">
-                    <th scope="row" className="py-2 pr-2 font-bold">{i + 1}. {s.title}<br /><span className="font-semibold text-pop-ink-muted">약 {s.minutes}분</span></th>
+                    <th scope="row" className="py-2 pr-2 font-bold">{i + 1}. {s.title}</th>
                     <td className="py-2 pr-2">“{s.teacherQuestion}” <OriginTag origin={s.teacherQuestionOrigin} className="align-middle" /></td>
                     <td className="py-2 pr-2">
                       <ol className="grid gap-0.5">
@@ -144,7 +146,7 @@ export default async function WeekPrintPage({ params }: PageProps<"/experience/w
                 ))}
               </tbody>
             </table>
-            <p className="mt-2 text-[12px] text-pop-ink-muted">워크북 · 확장활동은 {LESSON_TIME.label} 밖의 선택 활동입니다. 워크북 도안 · 음원 · 영상 파일은 자료 준비 중이라 이 인쇄물에 넣지 않았습니다.</p>
+            <p className="mt-2 text-[12px] text-pop-ink-muted">워크북 · 작품 완성 · 가정연계는 연계 활동으로 이어 갑니다. 워크북 도안 · 음원 · 영상 파일은 자료 준비 중이라 이 인쇄물에 넣지 않았습니다.</p>
           </Section>
 
           <Section title="활동별 관찰 포인트 · 5대 성장지표">

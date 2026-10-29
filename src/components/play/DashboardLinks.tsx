@@ -28,7 +28,7 @@ export const area = (n: number) => `dash-area-${n}`;
 export function LessonFlow({ weekNo }: { weekNo: number }) {
   const steps: readonly { label: string; ids?: readonly string[]; href?: string }[] = [
     { label: "수업 준비", ids: ["dash-prep", area(6)] },
-    { label: "그림책", ids: [area(2)] },
+    { label: "동화책", ids: [area(2)] },
     { label: "신체 · 감각 활동", ids: [area(3)] },
     { label: "미술 제작", ids: [area(4)] },
     { label: "워크북 · 교구", ids: [area(5), area(6)] },

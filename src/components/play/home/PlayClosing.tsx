@@ -1,7 +1,8 @@
 import { Buddy } from "@/components/play/Doodles";
 import { GROWTH_METRIC_LABEL } from "@/lib/curriculum/taxonomies";
 import { DEMO_REPORT } from "@/data/experience/report";
-import { CONTACT } from "@/data/site";
+import { CONTACT, PARENT_NOTICE } from "@/data/site";
+import { LESSON_TIME } from "@/lib/weeks/lesson-time";
 import { ArrowRight, PlayIcon, PopLink, popButtonClass } from "../PopButton";
 import { Sticker } from "../Stickers";
 import { SectionHeading } from "./PlaySections";
@@ -92,6 +93,12 @@ export function AdoptionTimeline() {
             </p>
           </li>
         </ol>
+        {/* 학부모 안내 문구 — 2026-10-29 수정 지시 문장 그대로 */}
+        <figure className="mt-8 rounded-[32px] bg-pop-cream px-6 py-6 ring-1 ring-pop-ink/5 sm:px-8">
+          <figcaption className="text-[14px] font-extrabold text-pop-ink-muted">학부모 안내 문구 예시</figcaption>
+          <blockquote className="mt-2 text-[18px] font-semibold leading-relaxed text-pop-ink">“{PARENT_NOTICE}”</blockquote>
+          <p className="mt-3 text-[14px] leading-relaxed text-pop-ink-muted">운영 안내 · {LESSON_TIME.shortLabel} · {LESSON_TIME.connectNote}</p>
+        </figure>
       </div>
     </section>
   );
@@ -108,7 +115,7 @@ export function PlayFinalCta() {
           <span className="block">첫 장면을 열어 볼까요?</span>
         </h2>
         <p className="mx-auto mt-5 max-w-[40ch] text-[18px] font-medium leading-relaxed text-white/90">
-          체험은 바로 시작됩니다. 우리 원에 맞는 도입이 궁금하시면 전화나 이메일로 문의해 주세요.
+          체험은 바로 시작됩니다. 도입 상담은 {CONTACT.person}가 직접 안내합니다. 전화나 이메일로 문의해 주세요.
         </p>
         <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
           <PopLink href="/experience/classroom/4" tone="yellow" size="xl">

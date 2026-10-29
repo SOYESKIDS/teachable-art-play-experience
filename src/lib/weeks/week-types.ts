@@ -380,8 +380,12 @@ export interface WeekScene {
 export interface WeekSummary {
   weekNo: number;
   partNo: PartNo;
-  /** 자료 PDF 의 주차 제목 */
+  /** 화면에 쓰는 주차 제목 — 2026-10-29 승인 제목이 있으면 그것, 없으면 자료 PDF 제목 */
   title: string;
+  /** 자료 PDF 의 주차 제목 (지금 수업 내용의 출처). 승인 제목과 같으면 title 과 같다 */
+  sourceTitle: string;
+  /** 제목이 바뀌었는데 새 교안이 아직 없다 — 화면은 「업데이트 교안 확인 필요」를 적는다 */
+  lessonUpdatePending: boolean;
   /** 자료 PDF 의 그림책 제목 — 주차 제목과 다를 수 있다 */
   storybook: string;
   growthKeyword: string;
@@ -512,25 +516,17 @@ export interface PartMeta {
   title: string;
   weekFrom: number;
   weekTo: number;
-  /** 파트 이름이 아직 개편 후보이면 true — 화면은 PART_NAME_CANDIDATE_LABEL 을 붙인다 */
+  /** 파트 이름이 확정 전이면 true (2026-10-29 세 PART 모두 확정 — 지금은 모두 false) */
   nameProvisional: boolean;
 }
 
-/** 확정 전 파트 이름 옆에 붙이는 말 */
-export const PART_NAME_CANDIDATE_LABEL = "개편 후보";
-
+// ★ 2026-10-29 수정 지시로 확정한 PART 이름. 「개편 후보」 표시는 없앴다.
+//   자료 PDF 표기(씨앗과 숲 · 우리 그리고 모두의 사계절 · 두근두근 세계여행)는 교안 데이터의 원문으로 남는다.
+//   (그 이전 표기 「세계의 축제」는 docs/curriculum/snapshots/2026-10-26-before-pdf-sync/parts.json)
 export const PARTS: PartMeta[] = [
-  { partNo: 1, title: "씨앗과 숲", weekFrom: 1, weekTo: 8, nameProvisional: false },
-  {
-    partNo: 2,
-    title: "우리 그리고 모두의 사계절",
-    weekFrom: 9,
-    weekTo: 16,
-    nameProvisional: false,
-  },
-  // ★ 17~24주 자료 PDF 의 파트 이름. 본사 확정 전이라 「개편 후보」로 밝힌다.
-  //   (이전 표기 「세계의 축제」는 docs/curriculum/snapshots/2026-10-26-before-pdf-sync/parts.json)
-  { partNo: 3, title: "두근두근 세계여행", weekFrom: 17, weekTo: 24, nameProvisional: true },
+  { partNo: 1, title: "씨앗에서 숲까지", weekFrom: 1, weekTo: 8, nameProvisional: false },
+  { partNo: 2, title: "우리 모두의 사계절", weekFrom: 9, weekTo: 16, nameProvisional: false },
+  { partNo: 3, title: "두근두근 세계여행", weekFrom: 17, weekTo: 24, nameProvisional: false },
 ];
 
 export function partOf(weekNo: number): PartMeta {

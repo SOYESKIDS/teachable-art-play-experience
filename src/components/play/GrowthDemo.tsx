@@ -335,7 +335,7 @@ export function GrowthDemo({ weeks }: { weeks: readonly DemoWeek[] }) {
           <p className="absolute right-4 top-4 rounded-full bg-pop-orange px-3 py-1 text-[13px] font-extrabold text-pop-ink">가상 예시 · 실제 아동 아님</p>
           <h2 id="demo-report" className={cx("font-display text-[22px] text-pop-ink", displayFallback("5. 주간 성장리포트 미리보기"))}>5. 주간 성장리포트 미리보기</h2>
           <dl className="mt-3 grid gap-3 text-[14px] leading-relaxed text-pop-ink">
-            <div><dt className="font-bold text-pop-ink-muted">주차</dt><dd>{week.weekNo}주차 「{week.title}」 · 그림책 《{week.storybook}》 · {childLabel}</dd></div>
+            <div><dt className="font-bold text-pop-ink-muted">주차</dt><dd>{week.weekNo}주차 「{week.title}」 · 동화책 《{week.storybook}》 · {childLabel}</dd></div>
             <div><dt className="font-bold text-pop-ink-muted">이번 주 대표활동</dt><dd>{week.activities.map((a) => a.title).join(" · ")}</dd></div>
             <div><dt className="font-bold text-pop-ink-muted">관찰된 행동 · 발언 (교사 기록)</dt>
               <dd><ul className="grid gap-1">{observations.filter((o) => o.teacherNote.trim()).map((o) => <li key={o.id}>· [{o.id}] {o.activityTitle} — {o.teacherNote}{o.childQuote ? ` “${o.childQuote}”` : ""}</li>)}</ul></dd></div>

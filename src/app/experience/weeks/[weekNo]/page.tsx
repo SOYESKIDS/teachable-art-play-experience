@@ -18,17 +18,17 @@ import { cx } from "@/components/ui/cx";
 import { displayFallback } from "@/components/play/display-font";
 import { curriculumBadge } from "@/data/experience/teacher-dashboard/source-register";
 import { EXPERIENCE_WEEKS, experiencePart, experienceWeek } from "@/data/experience/weeks";
-import { TEXT_ORIGIN_LABEL } from "@/data/experience/types";
+import { CORE_STAGE_FLOW, TEXT_ORIGIN_LABEL } from "@/data/experience/types";
 import { OriginLegend, OriginTag } from "@/components/play/OriginTag";
-import { LESSON_TIME, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
-import { PART_NAME_CANDIDATE_LABEL } from "@/lib/weeks/week-types";
+import { LessonUpdateNotice } from "@/components/play/LessonUpdateNotice";
+import { LESSON_TIME, PDF_TIME_NOTE, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
 
 /**
  * 공개 체험 · 주차 상세 (1~24주, 빌드 때 모두 생성).
  *
  * ★ 수업 지도 값과 체험용 구성을 화면에서 나눠 보인다.
  *   위쪽 = week-index.ts (주차 제목 · 그림책 · 키워드 · 메시지 · 활동 · 결과물)
- *     배지는 자료 확정본(1~8주차)만 「공식 교육과정」, 나머지는 「개편 후보 · 검수 전」.
+ *     배지는 자료 확정본(1~8주차)만 「공식 교육과정」, 나머지는 「초안 · 검수 전 교안」.
  *   아래 본문 = 체험용 구성 — 상태 배지와 안내 문장을 항상 함께 둔다.
  * ★ 수업 시간은 lesson-time.ts 의 LESSON_TIME 하나만 말한다. 원본 표기는 출처 기록으로만.
  * ★ 누리과정 5개 영역과 SOYE KIDS 핵심경험은 다른 묶음으로 보인다 (섞어 쓰지 않는다).
@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: PageProps<"/experience/weeks/
   if (!week) return {};
   return {
     title: `${week.weekNo}주차 「${week.title}」 | 수업 체험 | TeachAble Art Play`,
-    description: `${week.coreMessage} — 그림책 《${week.storybook}》 · 성장 키워드 「${week.growthKeyword}」 · ${LESSON_TIME.label}`,
+    description: `${week.coreMessage} — 동화책 《${week.storybook}》 · 성장 키워드 「${week.growthKeyword}」 · ${LESSON_TIME.label}`,
     alternates: { canonical: `/experience/weeks/${week.weekNo}` },
   };
 }
@@ -106,16 +106,17 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
         <div className="animate-rise">
           <div className="flex flex-wrap gap-2">
             <span className="rounded-full bg-pop-leaf-soft px-3 py-1 text-[12px] font-bold text-pop-leaf-deep">{curriculumBadge(week.weekNo)}</span>
-            <span className="rounded-full bg-white px-3 py-1 text-[12px] font-bold text-pop-ink ring-1 ring-pop-ink/10">PART {part.partNo} · {part.title}{part.nameProvisional ? ` (${PART_NAME_CANDIDATE_LABEL})` : ""}</span>
+            <span className="rounded-full bg-white px-3 py-1 text-[12px] font-bold text-pop-ink ring-1 ring-pop-ink/10">PART {part.partNo} · {part.title}</span>
           </div>
           <h1 id="week-title" className={cx("mt-4 font-display text-[40px] leading-tight text-pop-ink sm:text-[54px]", displayFallback(week.title))}>{week.title}</h1>
-          <p className="mt-2 text-[18px] font-bold text-pop-ink-muted">그림책 《{week.storybook}》</p>
+          <LessonUpdateNotice week={week} className="mt-3" />
+          <p className="mt-2 text-[18px] font-bold text-pop-ink-muted">동화책 《{week.storybook}》</p>
           <CoverTitleNote week={week} className="mt-1" />
           <p className="mt-4 text-[19px] font-medium leading-relaxed text-pop-ink">{week.coreMessage}</p>
           <dl className="mt-6 grid grid-cols-2 gap-3">
             {[
               ["성장 키워드", `#${week.growthKeyword}`],
-              ["기본 수업", `${week.totalMinutes}분 (${LESSON_TIME.breakdown})`],
+              ["수업 시간", LESSON_TIME.label],
               ["대표 활동", week.activitySummary],
               ["결과물", week.outcome ?? "결과물 정리 중"],
             ].map(([k, v]) => (
@@ -126,8 +127,8 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
             ))}
           </dl>
           <p className="mt-3 text-[13px] leading-relaxed text-pop-ink-muted">
-            시간 출처 기록 · 자료 「{week.duration.pdfDurationLabel}」
-            {week.duration.legacyGuideDurationLabel ? ` · 이전 가이드 「${week.duration.legacyGuideDurationLabel}」` : ""} — {SOURCE_TIME_NOTE}.
+            시간 출처 기록 · 자료 「{week.duration.pdfDurationLabel}」 — {PDF_TIME_NOTE}
+            {week.duration.legacyGuideDurationLabel ? ` · 이전 가이드 「${week.duration.legacyGuideDurationLabel}」 — ${SOURCE_TIME_NOTE}` : ""}.
           </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <PopLink href={`/experience/classroom/${week.weekNo}`} tone="pink" size="xl">
@@ -174,13 +175,14 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
 
           <h2 id="lesson-plan" className="mt-14 scroll-mt-28 font-display text-[30px] text-pop-ink sm:text-[36px]">{LESSON_TIME.label}</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-pop-ink-muted">
-            다섯 단계({LESSON_TIME.breakdown})로 한 회차가 끝나요. 아래 선택 확장활동은 하지 않아도 됩니다.
+            {CORE_STAGE_FLOW} — 다섯 단계로 한 회차가 끝나요. {LESSON_TIME.connectNote}
           </p>
+          <LessonUpdateNotice week={week} className="mt-3" />
           <OriginLegend className="mt-2" />
           <ol className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             {week.stages.map((s, i) => (
               <li key={s.key} className={cx("flex flex-col rounded-[28px] p-5", ["bg-pop-sky-soft", "bg-pop-pink-soft", "bg-pop-mint-soft", "bg-pop-yellow-soft", "bg-pop-lilac-soft"][i])}>
-                <p className="text-[13px] font-bold text-pop-ink-muted">{i + 1}단계 · 약 {s.minutes}분</p>
+                <p className="text-[13px] font-bold text-pop-ink-muted">{i + 1}단계</p>
                 <h3 className="mt-1 font-display text-[21px] text-pop-ink">{s.title}</h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-pop-ink">{s.guide} <OriginTag origin={s.guideOrigin} className="align-middle" /></p>
                 <details className="group mt-3 rounded-2xl bg-white/70 px-3 py-2">
@@ -203,30 +205,26 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
                 {b.materials.map((m) => <li key={m} className="rounded-full bg-white px-3.5 py-2 text-[15px] font-semibold text-pop-ink">{m}</li>)}
               </ul>
             </Block>
-            <Block title="만들기 · 결과물" tone="bg-pop-mint-soft">
+            <Block title="교구 및 워크북 활동 · 결과물" tone="bg-pop-mint-soft">
               <p className="text-[16px] leading-relaxed text-pop-ink">{b.art}</p>
               <p className="mt-3 inline-flex rounded-full bg-white px-3.5 py-2 text-[14px] font-bold text-pop-ink">결과물 · {week.outcome ?? "정리 중"}</p>
             </Block>
           </div>
 
           {/*
-            선택 확장활동 — 기본 수업을 마친 뒤 고르는 것.
-            ★ 시간을 모르면 숫자를 지어내지 않는다. estimatedMinutes 가 비면 「검수 필요」라고 적는다.
+            연계 활동 — 워크북 · 작품 완성 · 가정연계 (내용은 그대로).
+            ★ 2026-10-29 수정 지시: 「기본 수업 밖 선택 확장활동」 문구와 분 숫자는 화면에서 뺐다.
           */}
           <section aria-labelledby="week-ext-title" className="mt-14">
-            <h2 id="week-ext-title" className="font-display text-[30px] text-pop-ink sm:text-[36px]">선택 확장활동</h2>
+            <h2 id="week-ext-title" className="font-display text-[30px] text-pop-ink sm:text-[36px]">연계 활동</h2>
             <p className="mt-2 text-[15px] leading-relaxed text-pop-ink-muted">
-              원의 일정에 맞춰 골라서 더 합니다. 기본 수업만으로도 한 회차가 끝나요.
+              워크북 · 작품 완성 · 가정연계로 이어 갑니다. 원의 일정에 맞춰 운영합니다.
             </p>
             <ul className="mt-6 grid gap-4 md:grid-cols-2">
               {week.extensions.map((x) => (
                 <li key={x.key} className="flex flex-col rounded-[28px] bg-white p-5 ring-1 ring-pop-ink/5">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="font-display text-[20px] text-pop-ink">{x.title}</h3>
-                    <span className={cx("rounded-full px-2.5 py-1 text-[12px] font-bold",
-                      x.estimatedMinutes === null ? "bg-pop-cream text-pop-ink-muted" : "bg-pop-mint-soft text-pop-mint-deep")}>
-                      {x.estimatedMinutes === null ? "예상 시간 검수 필요" : `약 ${x.estimatedMinutes}분`}
-                    </span>
                   </div>
                   <p className="mt-2 text-[15px] leading-relaxed text-pop-ink">{x.activity}</p>
                   <dl className="mt-3 flex flex-col gap-1.5 text-[13px] leading-relaxed text-pop-ink-muted">
@@ -238,7 +236,6 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
                     <div className="flex gap-2"><dt className="shrink-0 font-bold">검수 상태</dt>
                       <dd>{x.sourceStatus === "verified" ? "공식 가이드 확인" : "검수 필요"}</dd></div>
                   </dl>
-                  <p className="mt-auto pt-3 text-[12px] font-semibold text-pop-ink-muted">{x.minutesNote}</p>
                 </li>
               ))}
             </ul>
@@ -266,11 +263,11 @@ export default async function ExperienceWeekPage({ params }: PageProps<"/experie
             <div className="mt-4 grid gap-3">
               {[
                 {
-                  title: "그림책 · 몸 · 소리",
+                  title: "동화책 · 신체활동 · 소리",
                   body: (
                     <dl className="grid gap-3 text-[16px] leading-relaxed text-pop-ink sm:grid-cols-3">
-                      <div><dt className="font-bold text-pop-sky-deep">그림책 활동</dt><dd className="mt-1">{b.story}</dd></div>
-                      <div><dt className="font-bold text-pop-pink-deep">신체표현</dt><dd className="mt-1">{b.movement}</dd></div>
+                      <div><dt className="font-bold text-pop-sky-deep">동화책 활동</dt><dd className="mt-1">{b.story}</dd></div>
+                      <div><dt className="font-bold text-pop-pink-deep">신체활동</dt><dd className="mt-1">{b.movement}</dd></div>
                       <div><dt className="font-bold text-pop-lilac-deep">음악 · 리듬</dt><dd className="mt-1">{b.music}</dd></div>
                     </dl>
                   ),

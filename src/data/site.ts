@@ -7,20 +7,25 @@
 /**
  * 사이트 주소 — 단일 설정. 메타데이터(canonical · OG) · robots · sitemap · 공유 링크가 모두 이 값을 읽는다.
  *
- * ★ 지금 Production 도메인(Vercel 프로젝트 teachable-art-play-experience)이다. 자체 도메인을 연결하면
- *   이 한 줄만 바꾼다.
+ * ★ 공식 도메인(2026-10-29) — Vercel 프로젝트 teachable-art-play-experience 에 연결된 자체 도메인이다.
  * ★ 환경변수로 두지 않는다 — 정적 export 라 빌드 때 값이 박히고, 공개 소스에는 환경변수를 읽는
  *   자리를 두지 않는다 (tests/public-security.test.mjs). Preview 배포도 canonical 은 이 주소를 가리킨다.
  */
-export const SITE_URL = "https://teachable-art-play-experience.vercel.app";
+export const SITE_URL = "https://teachableartplay-class.soyes.kr";
 
 export const CONTACT = {
-  phone: "02-303-4420",
-  phoneHref: "tel:023034420",
+  /** 도입 상담 담당 */
+  person: "백향은 대표",
+  phone: "010-4814-0998",
+  phoneHref: "tel:01048140998",
   email: "soyes2013@gmail.com",
   emailHref: "mailto:soyes2013@gmail.com?subject=%5BTeachAble%20Art%20Play%5D%20%EB%8F%84%EC%9E%85%20%EB%AC%B8%EC%9D%98",
-  salesSite: "https://teachable-art-play-sales.vercel.app/",
+  salesSite: "https://teachableartplay-pr.soyes.kr/",
 } as const;
+
+/** 학부모 안내 문구 — 2026-10-29 수정 지시 문장 그대로 (홈 「도입 안내」) */
+export const PARENT_NOTICE =
+  "올해 우리 원은 동화책, 음악, 신체활동, 미술을 잇는 24주 통합예술 수업을 담임선생님과 함께 운영합니다.";
 
 export const COMPANY = {
   name: "주식회사 소예키즈 (SOYE KIDS Co., Ltd.)",
@@ -50,10 +55,12 @@ export type ExperienceScreen = keyof typeof EXPERIENCE_SCREEN_LABEL;
  *   **방문이나 상담 전환이 자동으로 세어진다고 말하지 않는다.**
  */
 export function consultHref(medium: ExperienceScreen, campaign?: string): string {
-  const url = new URL("contact", CONTACT.salesSite);
+  // 영업 사이트의 상담 자리는 홈 #contact 다 (teachableartplay-pr.soyes.kr/contact 는 없는 주소 · 2026-10-29 확인)
+  const url = new URL(CONTACT.salesSite);
   url.searchParams.set("utm_source", "experience");
   url.searchParams.set("utm_medium", medium);
   if (campaign) url.searchParams.set("utm_campaign", campaign);
+  url.hash = "contact";
   return url.toString();
 }
 

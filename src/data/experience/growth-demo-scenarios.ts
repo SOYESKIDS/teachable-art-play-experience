@@ -18,7 +18,7 @@ export interface DemoScenario {
   evidence: readonly DemoEvidence[];
 }
 
-const base = { observedAt: "가상 수업 · 35분 중", observer: "가상 담임교사" };
+const base = { observedAt: "가상 수업 중", observer: "가상 담임교사" };
 
 export const DEMO_SCENARIOS: readonly DemoScenario[] = [
   {

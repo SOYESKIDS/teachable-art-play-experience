@@ -4,6 +4,7 @@ import type { ExperienceWeek } from "@/data/experience/types";
 import { ArrowRight } from "./PopButton";
 import { WeekArt } from "./WeekArt";
 import { displayFallback } from "./display-font";
+import { LessonUpdateNotice } from "./LessonUpdateNotice";
 
 /**
  * 24주 탐색 카드 — 큰 그림 + 주차 번호 · 제목 · 성장 키워드 · 체험 버튼.
@@ -38,7 +39,8 @@ export function WeekCard({ week, priority = false }: { week: ExperienceWeek; pri
           #{week.growthKeyword}
         </span>
         <h3 className={cx("font-display text-[22px] leading-snug text-pop-ink", displayFallback(week.title))}>{week.title}</h3>
-        <p className="text-[13px] font-bold text-pop-ink-muted">그림책 《{week.storybook}》</p>
+        <LessonUpdateNotice week={week} compact className="w-fit" />
+        <p className="text-[13px] font-bold text-pop-ink-muted">동화책 《{week.storybook}》</p>
         <p className="line-clamp-2 text-[14px] leading-relaxed text-pop-ink-muted">{week.coreMessage}</p>
         <p className="line-clamp-1 rounded-xl px-2.5 py-1.5 text-[13px] font-semibold text-pop-ink" style={{ backgroundColor: `${week.themeColor}14` }}>
           <span className="font-bold text-pop-ink-muted">대표 활동 · </span>{week.activitySummary}

@@ -14,7 +14,7 @@ const { OPEN_CHILD_LINES } = await imp("src/data/experience/lesson-engine/classr
 
 const plans = EXPERIENCE_WEEKS.map(buildLessonPlan);
 const chains = plans.flatMap((p) => connectionCheck(p).map((r) => ({ ...r, weekNo: p.weekNo })));
-const ORIGIN = { source: "PDF 원문", edited: "35분 편집", proposal: "교사용 제안", review: "검수 필요" };
+const ORIGIN = { source: "PDF 원문", edited: "웹 체험 편집", proposal: "교사용 제안", review: "검수 필요" };
 const cell = (s) => String(s ?? "").replace(/\|/g, "/").replace(/\n/g, " ");
 const kinds = {};
 for (const p of plans) for (const a of p.mediaAssets) { kinds[a.kind] ??= { total: 0, ready: 0, listed: 0 }; kinds[a.kind].total++; kinds[a.kind][a.state === "ready" ? "ready" : a.state === "listed" ? "listed" : "total"] += a.state === "pending" ? 0 : 1; }
@@ -26,7 +26,7 @@ const md = `# 24주 실행형 수업 데이터 · 성장 데이터 연결 (2026-
   - ★ 2026-10-27 받은 최신 PDF(1~15주 ZIP 3개 · 1~24주 묶음 1개, 39개 파일)는 SHA-256 으로 2026-10-22 판과 바이트 단위로 같다 — \`PDF-LATEST-20261027.md\`.
   - PDF 추가 칸(미술 활용 · 예시 · TIP · 교구 이름 · 미션 · 활용 · 가족연계 소개 · 안내 · TIP · 가정용 교구 안내 · 뮤직비디오 설명 등)은 \`teacher-dashboard/week-pdf-extra.ts\`, 화면 대조는 \`PDF-WEB-COVERAGE.md\`.
 - 코드: \`src/data/experience/lesson-engine/\` (plan · assets · growth-mapping · sequence-notes · classroom-lines) · \`src/lib/growth/demo-analysis.ts\`
-- 출처 표시: PDF 원문 · 35분 편집 · 교사용 제안 · 검수 필요 — 지표 연결 · 순서 운영 · 대체 운영 · 교실 첫 문장은 모두 교사용 제안(본사 검수 전)
+- 출처 표시: PDF 원문 · 웹 체험 편집 · 교사용 제안 · 검수 필요 — 지표 연결 · 순서 운영 · 대체 운영 · 교실 첫 문장은 모두 교사용 제안(본사 검수 전)
 
 ## 1. 기존 수업 프로그램과 PDF 의 불일치 (이번에 찾은 것)
 

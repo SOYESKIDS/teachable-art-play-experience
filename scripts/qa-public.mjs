@@ -1,5 +1,5 @@
 // 공개 체험 사이트 브라우저 QA — 로그인 · 토큰 · 쿠키 없이 (시크릿 창과 같은 새 프로필).
-//   node scripts/qa-public.mjs https://teachable-art-play-experience.vercel.app [캡처 폴더]
+//   node scripts/qa-public.mjs https://teachableartplay-class.soyes.kr [캡처 폴더]
 // 6개 화면 × 6개 폭(휴대폰 360 · 390 · 태블릿 768 · 1024 · PC 1440 · 전자칠판 1920) · 24주 상세 + 플레이어 48개 · 플레이어 버튼 17개 · 운영 경로 404 · 외부 요청 0 · 문의 동선.
 // `vercel env run` (env VERCEL_OIDC_TOKEN), is attached ONLY to requests for the preview host,
 // and is never printed.
@@ -84,7 +84,7 @@ note(bad24.length === 0, "24주 상세 + 플레이어 48페이지 (200, 이미�
 
 // 2-1. 주제 일치 — 주차 상세 제목 · 그림책 · 대시보드 그림책 · 교실 플레이어 시작 화면이 같은 수업을 가리킨다
 const TOPIC = `(()=>{const t=(s)=>document.querySelector(s)?.textContent.trim()??null;
-  const book=[...document.querySelectorAll("p")].map(p=>p.textContent.trim()).find(x=>x.startsWith("그림책 《"))??null;
+  const book=[...document.querySelectorAll("p")].map(p=>p.textContent.trim()).find(x=>x.startsWith("동화책 《"))??null;
   return {h1:t("h1"), h2:t("[aria-label='수업 시작'] h2"), book, dashBook:[...document.querySelectorAll("#teacher-dash ~ div details p")].map(p=>p.textContent.trim()).find(x=>/^《.*》$/.test(x))??null};})()`;
 const topicBad = [];
 for (let n = 1; n <= 24; n++) {
@@ -92,7 +92,7 @@ for (let n = 1; n <= 24; n++) {
   const a = await page.eval(TOPIC);
   await page.goto(base + `/experience/classroom/${n}`).catch(() => {}); await page.eval("sessionStorage.clear()"); await page.goto(base + `/experience/classroom/${n}`).catch(() => {}); await page.idle(300, 6000);
   const b = await page.eval(TOPIC);
-  const sameBook = a.book && a.dashBook && a.book === `그림책 ${a.dashBook}` && b.book === a.book;
+  const sameBook = a.book && a.dashBook && a.book === `동화책 ${a.dashBook}` && b.book === a.book;
   if (!a.h1 || a.h1 !== b.h2 || !sameBook) topicBad.push(`${n}: 상세「${a.h1}」 플레이어「${b.h2}」 ${a.book} / 대시보드 ${a.dashBook} / 플레이어 ${b.book}`);
 }
 page.drain();
@@ -128,17 +128,18 @@ note(topicBad.length === 0, "24주 주제 일치 (상세 제목 = 플레이어 �
     await page.goto(`${base}/experience/classroom/${n}`).catch(() => {}); await page.eval("sessionStorage.clear()");
     await page.goto(`${base}/experience/classroom/${n}`).catch(() => {}); await page.idle(400, 6000);
     const intro = await page.eval(`document.body.innerText.includes('수업 전 확인')`);
-    // 화면이 막 그려진 직후에는 단추가 아직 반응하지 않을 수 있다 — 단계 시간이 보일 때까지 기다리고, 안 보이면 한 번 더 누른다
+    // 화면이 막 그려진 직후에는 단추가 아직 반응하지 않을 수 있다 — 진행 시간이 보일 때까지 기다리고, 안 보이면 한 번 더 누른다
+    // ★ 2026-10-29: 단계별 계획 분(「/ 7분」)은 보이지 않는다 — 지난 시간 · 전체 시간 / 기본 45분만
     let timer = false;
     for (let i = 0; i < 2 && !timer; i++) {
       await page.clickText("수업 시작", { exact: false }).catch(() => {});
-      timer = await page.waitFor(`/이 단계 \\d+:\\d\\d \\/ \\d+분/.test(document.body.innerText)`, 4000);
+      timer = await page.waitFor(`/이 단계 \\d+:\\d\\d · 전체 \\d+:\\d\\d \\/ 기본 45분/.test(document.body.innerText) && !/이 단계 \\d+:\\d\\d \\/ \\d+분/.test(document.body.innerText)`, 4000);
     }
     for (let i = 0; i < 5; i++) { await page.eval(`window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'}))`); await page.idle(200, 2000); }
     const done = await page.eval(`({closing:document.body.innerText.includes('수업 마무리 확인'), note:document.body.innerText.includes('새로고침하면 사라집니다')})`);
     if (!intro || !timer || !done.closing || !done.note) bad.push(`${n}:${JSON.stringify({ intro, timer, ...done })}`);
   }
-  note(bad.length === 0, "플레이어 수업 전 확인 · 단계 시간 · 수업 마무리 확인 (1 · 8 · 16 · 24주)", bad.join(" "));
+  note(bad.length === 0, "플레이어 수업 전 확인 · 진행 시간(기본 45분 · 단계별 분 없음) · 수업 마무리 확인 (1 · 8 · 16 · 24주)", bad.join(" "));
   page.drain();
 }
 
@@ -268,7 +269,8 @@ for (const p of ["/teacher", "/director", "/admin", "/login", "/kindergarten", "
 
 // 5. 문의 동선 — 전화 · 이메일 · 영업 사이트 (저장 폼 없음)
 await page.goto(base + "/"); await page.idle(600);
-const c = await page.eval(`({tel: !!document.querySelector('a[href^="tel:023034420"]'), mail: !!document.querySelector('a[href^="mailto:soyes2013@gmail.com"]'), sales: !!document.querySelector('a[href="https://teachable-art-play-sales.vercel.app/"]'), contact: !!document.getElementById("contact"), forms: document.querySelectorAll("form,input,textarea").length})`);
-note(c.tel && c.mail && c.sales && c.contact && c.forms === 0, "문의 동선 (전화 · 이메일 · 영업 사이트 · 폼 0)", JSON.stringify(c));
+const c = await page.eval(`({tel: !!document.querySelector('a[href="tel:01048140998"]'), mail: !!document.querySelector('a[href^="mailto:soyes2013@gmail.com"]'), sales: !!document.querySelector('a[href="https://teachableartplay-pr.soyes.kr/"]'), person: document.getElementById("contact")?.innerText.includes("백향은 대표") ?? false, contact: !!document.getElementById("contact"), forms: document.querySelectorAll("form,input,textarea").length, canonical: document.querySelector('link[rel=canonical]')?.href ?? "", og: document.querySelector('meta[property="og:url"]')?.content ?? ""})`);
+note(c.tel && c.mail && c.sales && c.person && c.contact && c.forms === 0, "문의 동선 (백향은 대표 · 010-4814-0998 · 이메일 · 영업 사이트 teachableartplay-pr · 폼 0)", JSON.stringify(c));
+note(c.canonical.startsWith("https://teachableartplay-class.soyes.kr") && (!c.og || c.og.startsWith("https://teachableartplay-class.soyes.kr")), "canonical · OG 주소 = teachableartplay-class.soyes.kr", JSON.stringify(c));
 console.log("SUMMARY", results.filter(Boolean).length, "/", results.length);
 await close();

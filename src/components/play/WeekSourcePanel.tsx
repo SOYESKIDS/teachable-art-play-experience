@@ -1,5 +1,5 @@
 import { weekSource, SOURCE_STATE_LABEL } from "@/data/experience/teacher-dashboard/source-register";
-import { LESSON_TIME, PDF_DURATION_LABEL, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
+import { LESSON_TIME, PDF_DURATION_LABEL, PDF_TIME_NOTE } from "@/lib/weeks/lesson-time";
 
 /**
  * 주차 자료 상태 — 읽기 전용.
@@ -77,11 +77,11 @@ export function WeekSourcePanel({ weekNo }: { weekNo: number }) {
       <dl className="mt-5 flex flex-col gap-1.5 border-t border-pop-ink/5 pt-5 text-[13px] leading-relaxed text-pop-ink-muted">
         <div className="flex flex-wrap gap-x-2">
           <dt className="shrink-0 font-bold">{LESSON_TIME.label}</dt>
-          <dd>운영 기준입니다 ({LESSON_TIME.breakdown}). {LESSON_TIME.extensionNote}</dd>
+          <dd>운영 기준입니다. {LESSON_TIME.connectNote} 단계별 시간은 정하지 않았습니다.</dd>
         </div>
         <div className="flex flex-wrap gap-x-2">
           <dt className="shrink-0 font-bold">자료 표기 {PDF_DURATION_LABEL}</dt>
-          <dd>{SOURCE_TIME_NOTE}.</dd>
+          <dd>{PDF_TIME_NOTE}.</dd>
         </div>
         {entry.assetSlotsOnly ? (
           <div className="flex flex-wrap gap-x-2">

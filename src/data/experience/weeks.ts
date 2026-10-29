@@ -27,7 +27,7 @@ import {
  *
  * ★ 지도 값(주차 제목 · 그림책 · 성장 키워드 · 핵심 메시지 · 대표 활동 · 결과물 · 색)은
  *   week-index.ts 에서 읽기만 한다. 여기서 고치지 않는다.
- * ★ 수업 시간은 lesson-time.ts 의 기본 수업 35분(5 + 7 + 13 + 7 + 3) 하나다.
+ * ★ 수업 시간은 lesson-time.ts 의 기본 수업 45분 하나다 (단계별 분은 내부 임시 배분 · 화면에 숫자로 보이지 않는다).
  * ★ week-index.ts 는 정적 데이터 파일이다 — DB · Supabase 를 부르지 않는다.
  *   (tests/experience-isolation.test.mjs 가 이 폴더의 import 를 검사한다)
  */
@@ -46,8 +46,8 @@ export function parseDurationMinutes(label: string): number {
 /**
  * 기본 수업 다섯 단계를 만든다.
  *
- * ★ 단계별 분은 24주 모두 lesson-time.ts 의 5 + 7 + 13 + 7 + 3분이다. 화면이 말하는
- *   시간과 단계 합이 어긋나면 교사가 수업 중에 시간을 잘못 잡는다.
+ * ★ 단계별 분은 24주 모두 lesson-time.ts 의 내부 배분(임시 · 대표 승인 전)이다. 화면에는 숫자로 보이지 않지만
+ *   단계 합은 화면이 말하는 기본 수업 시간과 같아야 한다.
  * ★ 발문은 단계마다 다르다 — 도입은 아이의 경험 · 감정 · 호기심을 여는 발문(openQuestion),
  *   그림책은 그림책 장면 · 인물 행동을 묻는 발문(teacherQuestions[0]). 같은 발문을 두 번 쓰지 않는다.
  * ★ 발문 · 안내 · 진행 순서마다 출처(TextOrigin)를 붙인다. 화면 세 곳이 이 값을 그대로 쓴다.
@@ -356,6 +356,8 @@ function officialMeta(weekNo: number): OfficialWeekMeta {
     weekNo: w.weekNo,
     partNo: w.partNo as 1 | 2 | 3,
     title: w.title,
+    sourceTitle: w.sourceTitle,
+    lessonUpdatePending: w.lessonUpdatePending,
     storybook: w.storybook,
     growthKeyword: w.growthKeyword,
     coreMessage: w.coreMessage,
@@ -434,7 +436,8 @@ const PART_COPY: Record<1 | 2 | 3, Omit<ExperiencePart, "partNo" | "title" | "na
   },
   3: {
     tagline: "세상과 어울려요",
-    description: "물놀이 안전 약속에서 출발해 색 · 소리 · 명절 · 축제를 지나, 서로 다른 우리가 하나의 지구가 되는 마지막 여덟 번의 세계여행.",
+    // 2026-10-29 수정 지시 문장
+    description: "세계 여러 문화의 놀이와 장면을 경험하며, 더 넓은 세상으로 자라나는 마지막 여덟 번의 세계여행.",
     tone: "pink",
     character: "ella",
   },

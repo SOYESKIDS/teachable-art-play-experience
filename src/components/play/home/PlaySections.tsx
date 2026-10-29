@@ -9,7 +9,7 @@ import { Sticker, type StickerKind } from "../Stickers";
 import type { MotifKey } from "@/data/experience/types";
 import { WeekArt } from "../WeekArt";
 import { displayFallback } from "../display-font";
-import { PART_NAME_CANDIDATE_LABEL } from "@/lib/weeks/week-types";
+import { LESSON_TIME } from "@/lib/weeks/lesson-time";
 
 const TONE = {
   mint: { bg: "bg-pop-mint-soft", text: "text-pop-mint-deep", dot: "#22c3b5", solid: "bg-pop-mint" },
@@ -75,7 +75,6 @@ export function AdventureMap() {
                     </p>
                     <h3 className="mt-2 font-display text-[28px] leading-tight text-pop-ink">
                       {part.title}
-                      {part.nameProvisional ? <span className="ml-2 align-middle text-[14px] font-sans font-bold text-pop-ink-muted">({PART_NAME_CANDIDATE_LABEL})</span> : null}
                     </h3>
                     <p className="mt-3 text-[16px] leading-relaxed text-pop-ink-muted">{part.description}</p>
                     <ul className="mt-5 flex flex-wrap gap-1" aria-label={`PART ${part.partNo} 주차`}>
@@ -103,9 +102,10 @@ export function AdventureMap() {
 /* ── 3. 수업은 이렇게 진행됩니다 ─────────────────────────────── */
 const FLOW = [
   // 단계 그림 = 단계 아이콘 + 그 단계에 어울리는 주제 그림 (자체 제작 SVG — 사진을 쓰지 않는다)
-  { title: "그림책", body: "이야기 속 주인공을 만나며 오늘의 질문을 품어요.", color: "#4da3ff", soft: "bg-pop-sky-soft", icon: "book", motifs: ["chat", "moon"] },
-  { title: "움직임", body: "몸과 리듬으로 이야기를 표현하며 감각을 깨워요.", color: "#ff4f8b", soft: "bg-pop-pink-soft", icon: "move", motifs: ["drum", "butterfly"] },
-  { title: "만들기", body: "재료를 탐색하고 나만의 작품으로 생각을 담아요.", color: "#ffc928", soft: "bg-pop-yellow-soft", icon: "make", motifs: ["paint", "flower"] },
+  // 2026-10-29 수정 지시 — 그림책 → 동화책 · 움직임 → 신체활동 · 만들기 → 교구 및 워크북 활동
+  { title: "동화책", body: "동화책 이야기를 함께 따라가요.", color: "#4da3ff", soft: "bg-pop-sky-soft", icon: "book", motifs: ["chat", "moon"] },
+  { title: "신체활동", body: "움직임을 통해 감각을 깨워요.", color: "#ff4f8b", soft: "bg-pop-pink-soft", icon: "move", motifs: ["drum", "butterfly"] },
+  { title: "교구 및 워크북 활동", body: "재료를 탐색하고 나만의 작품으로 생각을 담아요.", color: "#ffc928", soft: "bg-pop-yellow-soft", icon: "make", motifs: ["paint", "flower"] },
   { title: "관찰", body: "선생님은 아이가 시도한 순간을 기록으로 남겨요.", color: "#22c3b5", soft: "bg-pop-mint-soft", icon: "eye", motifs: [] },
 ];
 
@@ -146,7 +146,7 @@ export function ClassFlow() {
           id="program-title"
           eyebrow="한 번의 수업"
           title={<>수업은 이렇게 <span className="text-pop-mint-deep">흘러갑니다</span></>}
-          lead="설명보다 경험이 먼저. 매주 같은 리듬이라 아이도 선생님도 금세 익숙해집니다."
+          lead={`동화책에서 움직임으로, 움직임에서 창작으로. ${LESSON_TIME.shortLabel}, ${LESSON_TIME.connectNote}`}
         />
         <ol className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {FLOW.map((step, i) => (
@@ -203,7 +203,7 @@ export function TryFeatured() {
         <div className="order-1 lg:order-2">
           <p className="inline-flex rounded-full bg-white px-4 py-1.5 text-[13px] font-bold text-pop-mint-deep">미리 체험해 보기 · {week.weekNo}주차</p>
           <h2 id="try-title" className={cx("mt-4 font-display text-[40px] leading-tight text-pop-ink sm:text-[56px]", displayFallback(week.title))}>{week.title}</h2>
-          <p className="mt-2 text-[18px] font-bold text-pop-ink-muted">그림책 《{week.storybook}》</p>
+          <p className="mt-2 text-[18px] font-bold text-pop-ink-muted">동화책 《{week.storybook}》</p>
           <p className="mt-4 max-w-[36ch] text-[19px] font-medium leading-relaxed text-pop-ink">{week.coreMessage}</p>
           <ul className="mt-6 flex flex-wrap gap-2">
             {week.stages.map((s) => (

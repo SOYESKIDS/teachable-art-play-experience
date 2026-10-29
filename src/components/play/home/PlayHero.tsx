@@ -2,6 +2,7 @@ import { Buddy } from "@/components/play/Doodles";
 import { ArrowRight, PlayIcon, PopLink } from "../PopButton";
 import { Sticker } from "../Stickers";
 import { HeroScene } from "./HeroScene";
+import { LESSON_TIME } from "@/lib/weeks/lesson-time";
 
 /**
  * 홈 첫 화면 — 큰 그림이 먼저 보인다.
@@ -33,8 +34,8 @@ export function PlayHero() {
             <br className="sm:hidden" /> 이어집니다.
           </h1>
           <p className="mt-6 max-w-[36ch] text-[18px] font-medium leading-relaxed text-pop-ink-muted sm:text-[20px] 2xl:text-[22px]">
-            그림책 · 신체표현 · 미술활동으로 만나는 <strong className="whitespace-nowrap font-bold text-pop-ink">24주 통합예술교육</strong>.
-            외부 강사 없이 <strong className="whitespace-nowrap font-bold text-pop-ink">담임선생님이</strong> 교실 플레이어로 진행해요.
+            동화책 · 신체활동 · 미술활동으로 만나는 <strong className="whitespace-nowrap font-bold text-pop-ink">24주 통합예술교육</strong>.
+            외부 강사 없이 <strong className="whitespace-nowrap font-bold text-pop-ink">담임선생님이</strong> {LESSON_TIME.label}을 교실 플레이어로 진행해요.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             {/* 주 버튼(체험)은 분홍 하나 — 24주 둘러보기는 보조 버튼 */}

@@ -2,9 +2,8 @@ import { GROWTH_INDICATORS } from "../report";
 import { SAFETY_ORIGIN } from "../lesson-labels";
 import { gatherForWeek, pdfQuestions, weekDashboard } from "../teacher-dashboard/week-dashboards";
 import { curriculumBadge } from "../teacher-dashboard/source-register";
-import type { ExperienceWeek, Sourced, StageKey, TextOrigin } from "../types";
+import { CORE_STAGE_FLOW, type ExperienceWeek, type Sourced, type StageKey, type TextOrigin } from "../types";
 import { weekGoals } from "../lesson-support";
-import { LESSON_TIME } from "@/lib/weeks/lesson-time";
 import type { GrowthMetricCode } from "@/lib/curriculum/taxonomies";
 import { physicalIndexOf, weekAssets, type LessonAsset } from "./assets";
 import { activitySides, EVIDENCE_REQUIREMENTS, indicatorLinks, type IndicatorLink } from "./growth-mapping";
@@ -64,7 +63,8 @@ export interface WeekLessonPlan {
   storybook: { title: string; summary: string | null; message: string | null };
   learningGoals: readonly Sourced[];
   growthKeyword: string;
-  lessonDuration: { coreMinutes: number; breakdown: string; pdfDurationLabel: string };
+  /** 단계 순서만 (분 배분은 임시 · 대표 승인 전이라 담지 않는다) */
+  lessonDuration: { coreMinutes: number; stageFlow: string; pdfDurationLabel: string };
   lessonStages: readonly PlanStage[];
   physicalActivities: readonly PlanActivity[];
   artActivity: PlanActivity | null;
@@ -159,7 +159,7 @@ export function buildLessonPlan(week: ExperienceWeek): WeekLessonPlan {
     storybook: { title: week.storybook, summary: d?.storySummary ?? null, message: d?.storyMessage ?? null },
     learningGoals: weekGoals(week),
     growthKeyword: week.growthKeyword,
-    lessonDuration: { coreMinutes: week.totalMinutes, breakdown: LESSON_TIME.breakdown, pdfDurationLabel: week.duration.pdfDurationLabel },
+    lessonDuration: { coreMinutes: week.totalMinutes, stageFlow: CORE_STAGE_FLOW, pdfDurationLabel: week.duration.pdfDurationLabel },
     lessonStages: stages,
     physicalActivities: physical,
     artActivity: art,
@@ -214,7 +214,7 @@ export function connectionCheck(plan: WeekLessonPlan): readonly ChainResult[] {
       title: a.title,
       links,
       complete: Object.values(links).every(Boolean),
-      note: a.steps.length ? null : "PDF 에 만드는 순서가 없어 35분 체험 편집 문장으로 진행",
+      note: a.steps.length ? null : "PDF 에 만드는 순서가 없어 웹 체험 편집 문장으로 진행",
     };
   });
 }

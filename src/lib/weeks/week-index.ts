@@ -2,7 +2,7 @@ import type { ContentStatus } from "./content-state";
 import { partOf, type WeekSummary } from "./week-types";
 
 /**
- * 24주 수업 지도 — 2026-10-26 개편 후보.
+ * 24주 수업 지도 — 2026-10-26 자료 PDF 기준 · 2026-10-29 승인 제목 반영 (APPROVED_WEEK_TITLES).
  *
  * ── 어디서 왔는가 ─────────────────────────────────────────────────
  *
@@ -18,7 +18,7 @@ import { partOf, type WeekSummary } from "./week-types";
  *   그대로 남겼다 — 되돌릴 때 그 값을 쓴다.
  * ★ 수업 시간은 여기 두지 않는다. 화면이 말하는 시간은 lesson-time.ts 한 곳에서만 정한다.
  *   이전 가이드의 시간 표기는 official-plan.ts 에 출처 기록으로만 남는다.
- * ★ 자료 PDF 는 아직 초안이다. 화면은 「개편 후보 · 검수 전」을 함께 적는다.
+ * ★ 자료 PDF 는 아직 초안이다 (9~24주). 화면은 「초안 · 검수 전 교안」을 함께 적는다.
  *
  * ── 여기 없는 것 ──────────────────────────────────────────────────
  *
@@ -341,10 +341,36 @@ const SEEDS: WeekSeed[] = [
   },
 ];
 
+/**
+ * 2026-10-29 수정 지시로 바뀐 주차 제목 (대표 승인 제목).
+ *
+ * ★ 위 SEEDS 의 title 은 자료 PDF 의 주차 제목 그대로다 — 지금 화면의 수업 내용(신체활동 · 미술 · 교안)은
+ *   그 PDF 교안에서 왔다. 승인 제목은 2026-10-26 PDF 동기화 전 공식 가이드의 주제와 같다
+ *   (docs/curriculum/snapshots/2026-10-26-before-pdf-sync/week-index.json). 어느 교안으로 맞출지는 본사 결정이다.
+ * ★ 그래서 제목만 바꾸고 본문은 지어내지 않는다. 이 주차들은 lessonUpdatePending 이고,
+ *   화면은 「업데이트 교안 확인 필요 — 아래 수업은 이전 교안 「…」 기준」을 함께 적는다.
+ */
+export const APPROVED_WEEK_TITLES: Readonly<Record<number, string>> = {
+  14: "말하지 않아도 괜찮아.",
+  17: "짝! 우리들의 색",
+  18: "반짝이는 물길 놀이터",
+  19: "숲 속 작은 연주회",
+  20: "주렁주렁 신나는 하루",
+  21: "두근두근 하늘여행",
+  22: "오늘밤, 무슨일이 생길까?",
+  23: "별 빛이 찾아 온 크리스마스",
+  24: "서로 다른 하루, 하나의 지구",
+};
+
+/** 제목이 바뀌었는데 새 교안이 아직 없는 주차에 붙이는 말 */
+export const LESSON_UPDATE_PENDING_LABEL = "업데이트 교안 확인 필요";
+
 export const WEEK_INDEX: WeekSummary[] = SEEDS.map((seed) => ({
   weekNo: seed.weekNo,
   partNo: partOf(seed.weekNo).partNo,
-  title: seed.title,
+  title: APPROVED_WEEK_TITLES[seed.weekNo] ?? seed.title,
+  sourceTitle: seed.title,
+  lessonUpdatePending: seed.weekNo in APPROVED_WEEK_TITLES,
   storybook: seed.storybook,
   growthKeyword: seed.growthKeyword,
   coreMessage: seed.coreMessage,
