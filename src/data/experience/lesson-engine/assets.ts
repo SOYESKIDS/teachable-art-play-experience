@@ -1,8 +1,15 @@
 import type { MediaState } from "../lesson-labels";
 import type { Sourced, StageKey } from "../types";
 import { WEEK_MEDIA } from "../media";
-import { weekDashboard } from "../teacher-dashboard/week-dashboards";
+import { isOfficialGuideWeek, weekDashboard } from "../teacher-dashboard/week-dashboards";
 import { MEDIA_SLOT_IDS } from "./media-slots-generated";
+
+/**
+ * 이 주차 PDF 그림 자리 ID. 14 · 17~24주는 공식 가이드 기준 수업이라 같은 주차 PDF(다른 주제)의 그림 자리를 쓰지 않는다.
+ */
+export function mediaSlotIds(weekNo: number): readonly string[] {
+  return isOfficialGuideWeek(weekNo) ? [] : MEDIA_SLOT_IDS[weekNo] ?? [];
+}
 
 /**
  * 주차 자료 등록부 — 그림 자리 ID 는 PDF 원문의 ID 를 그대로 쓴다 (w4.physical0.step.0 …).
@@ -35,11 +42,11 @@ export interface LessonAsset {
 
 const KIND_INFO: Record<AssetKind, { label: string; usedIn: LessonAsset["usedIn"]; fallback: string | null }> = {
   weekHero: { label: "주차 대표 그림", usedIn: ["open"], fallback: "화면에는 자체 제작 주제 그림을 씁니다." },
-  storybookCover: { label: "그림책 표지", usedIn: ["story"], fallback: "실물 그림책 표지를 들어 보여 주세요 (화면은 자체 제작 그림)." },
-  ebook: { label: "E-BOOK", usedIn: ["story"], fallback: "E-BOOK 파일이 없으면 실물 그림책으로 읽어 주세요." },
+  storybookCover: { label: "동화책 표지", usedIn: ["story"], fallback: "실물 동화책 표지를 들어 보여 주세요 (화면은 자체 제작 그림)." },
+  ebook: { label: "E-BOOK", usedIn: ["story"], fallback: "E-BOOK 파일이 없으면 실물 동화책으로 읽어 주세요." },
   physicalStep: { label: "신체활동 단계 사진", usedIn: ["move"], fallback: "사진 없이 선생님이 먼저 동작을 보여 주고 아이들이 따라 해요." },
   artExample: { label: "미술 과정 · 완성 예시", usedIn: ["make"], fallback: "선생님이 미리 만든 견본 하나를 보여 주세요." },
-  workbookPage: { label: "워크북 페이지", usedIn: ["extension"], fallback: "워크북 실물이 있을 때 기본 수업 뒤 확장활동으로 해요." },
+  workbookPage: { label: "워크북 페이지", usedIn: ["extension"], fallback: "워크북 실물이 있을 때 연계 활동으로 이어 가요." },
   kitPhoto: { label: "교구 키트 사진", usedIn: ["move", "make"], fallback: "실물 교구를 꺼내 보여 주세요." },
   kitExample: { label: "교구 활용 예시", usedIn: ["move", "make"], fallback: "선생님이 먼저 교구를 써 보는 시범을 보여 주세요." },
   supportKit: { label: "지원자료 구성품", usedIn: ["family"], fallback: "구성품 목록(대시보드 8번 영역)으로 확인해요." },
@@ -47,7 +54,7 @@ const KIND_INFO: Record<AssetKind, { label: string; usedIn: LessonAsset["usedIn"
   supportStep: { label: "지원자료 준비 단계", usedIn: ["family"], fallback: "준비 단계 글(대시보드 8번 영역)을 따라 해요." },
   familyHero: { label: "가족 활동 대표 그림", usedIn: ["share", "family"], fallback: "인쇄용 수업 요약의 가족연계 안내문을 보내요." },
   familyExample: { label: "가족 활동 완성 예시", usedIn: ["family"], fallback: "완성 예시 대신 활동 방법 글로 안내해요." },
-  video: { label: "뮤직비디오", usedIn: ["story"], fallback: "영상 대신 그림책 장면을 다시 보며 이야기해요." },
+  video: { label: "뮤직비디오", usedIn: ["story"], fallback: "영상 대신 동화책 장면을 다시 보며 이야기해요." },
   audioCharacter: { label: "음원 캐릭터 그림", usedIn: ["move"], fallback: "그림 없이 노래 이름만 알려 주세요." },
   audioTrack: { label: "동화 음원", usedIn: ["move"], fallback: "음원이 없으면 손뼉 · 교실 악기로 리듬을 만들어요." },
 };
@@ -97,7 +104,7 @@ export function weekAssets(weekNo: number): readonly LessonAsset[] {
     };
   };
   const out: LessonAsset[] = [];
-  for (const id of MEDIA_SLOT_IDS[weekNo] ?? []) {
+  for (const id of mediaSlotIds(weekNo)) {
     const kind = kindOf(id);
     if (kind) out.push(make(id, kind, false));
   }

@@ -135,7 +135,7 @@ test("public 의 그림은 실제 이미지 파일이다 (확장자와 내용이
 
 test("문의는 전화 · 이메일 · 영업 사이트 링크뿐이다 (저장하는 폼 없음)", () => {
   const site = readFileSync(join(ROOT, "src/data/site.ts"), "utf8");
-  assert.match(site, /02-303-4420/);
+  assert.match(site, /010-4814-0998/);
   assert.match(site, /soyes2013@gmail\.com/);
-  assert.match(site, /https:\/\/teachable-art-play-sales\.vercel\.app\//);
+  assert.match(site, /https:\/\/teachableartplay-pr\.soyes\.kr\//);
 });

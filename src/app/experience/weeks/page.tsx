@@ -10,7 +10,7 @@ import { EXPERIENCE_PARTS, EXPERIENCE_WEEKS } from "@/data/experience/weeks";
 
 export const metadata = {
   title: "24주 수업 둘러보기 | TeachAble Art Play",
-  description: "씨앗과 숲 · 우리 그리고 모두의 사계절 · 두근두근 세계여행 — 24주 통합예술교육 수업을 큰 카드로 둘러보세요.",
+  description: "씨앗에서 숲까지 · 우리 모두의 사계절 · 두근두근 세계여행 — 24주 통합예술교육 수업을 큰 카드로 둘러보세요.",
   alternates: { canonical: "/experience/weeks" },
 };
 

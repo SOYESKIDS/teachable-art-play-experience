@@ -18,7 +18,7 @@ export interface DemoScenario {
   evidence: readonly DemoEvidence[];
 }
 
-const base = { observedAt: "가상 수업 · 35분 중", observer: "가상 담임교사" };
+const base = { observedAt: "가상 수업 중", observer: "가상 담임교사" };
 
 export const DEMO_SCENARIOS: readonly DemoScenario[] = [
   {
@@ -60,10 +60,10 @@ export const DEMO_SCENARIOS: readonly DemoScenario[] = [
     weekNo: 14,
     childLabel: "구름 (가상)",
     observations: [
-      { ...base, id: "obs-14-1", weekNo: 14, activityId: "w14.art", activityTitle: "반짝반짝 나의 눈 결정", stageKey: "make",
-        item: "다양한 재료로 눈 결정을 표현하는가?", indicator: "expression_variety", teacherNote: "", support: "independent", evidenceIds: ["ev-14-1"] },
+      { ...base, id: "obs-14-1", weekNo: 14, activityId: "w14.art", activityTitle: "감기야 사라져라! 얍!", stageKey: "make",
+        item: "응원 그림의 색·모양·상징 선택", indicator: "expression_variety", teacherNote: "", support: "independent", evidenceIds: ["ev-14-1"] },
     ],
-    evidence: [{ id: "ev-14-1", kind: "artwork", caption: "가상 작품 설명 — 반짝이 · 면봉을 붙인 눈 결정" }],
+    evidence: [{ id: "ev-14-1", kind: "artwork", caption: "가상 작품 설명 — 색연필 · 스티커로 꾸민 응원 그림" }],
   },
   {
     key: "conflict",
@@ -72,11 +72,11 @@ export const DEMO_SCENARIOS: readonly DemoScenario[] = [
     weekNo: 17,
     childLabel: "하늘 (가상)",
     observations: [
-      { ...base, id: "obs-17-1", weekNo: 17, activityId: "w17.art", activityTitle: "나만의 안전 튜브 만들기", stageKey: "make",
-        item: "안전 튜브를 자신만의 방법으로 꾸미는가?", indicator: "creative_attempt",
-        teacherNote: "튜브에 물결 무늬를 직접 그려 넣고 약속 스티커 자리를 스스로 정했다.", support: "independent", evidenceIds: ["ev-17-1"] },
+      { ...base, id: "obs-17-1", weekNo: 17, activityId: "w17.art", activityTitle: "내가 만든 색친구", stageKey: "make",
+        item: "번진 모양을 자기 방식으로 확장하는가", indicator: "form_space_composition",
+        teacherNote: "번진 물감 모양 위쪽에 눈을 직접 붙이고, 아래로 다리 두 개를 이어 그렸다.", support: "independent", evidenceIds: ["ev-17-1"] },
     ],
-    evidence: [{ id: "ev-17-1", kind: "photo", caption: "가상 사진 설명 — 선생님이 스티커 붙이는 것을 함께 도와주는 장면", supportHint: "with_teacher" }],
+    evidence: [{ id: "ev-17-1", kind: "photo", caption: "가상 사진 설명 — 선생님이 눈 붙이는 것을 함께 도와주는 장면", supportHint: "with_teacher" }],
   },
   {
     key: "missingIndicator",
@@ -85,9 +85,9 @@ export const DEMO_SCENARIOS: readonly DemoScenario[] = [
     weekNo: 18,
     childLabel: "바다 (가상)",
     observations: [
-      { ...base, id: "obs-18-1", weekNo: 18, activityId: "w18.art", activityTitle: "나만의 색 카드 만들기", stageKey: "make",
-        item: "자신이 만든 색에 이름을 붙이는가?", indicator: "creative_attempt",
-        teacherNote: "노랑과 파랑을 섞어 만든 색을 보고 ‘개구리색’이라고 이름 붙였다.", childQuote: "이건 개구리색!", support: "independent", evidenceIds: [] },
+      { ...base, id: "obs-18-1", weekNo: 18, activityId: "w18.art", activityTitle: "마음을 담은 비누", stageKey: "make",
+        item: "비누에 자신의 마음을 담아 구성하는가", indicator: "form_space_composition",
+        teacherNote: "비누 틀 가운데에 하트 조각을 놓고, 둘레에 작은 별 조각을 돌려 담았다.", childQuote: "가운데가 내 마음이야!", support: "independent", evidenceIds: [] },
     ],
     evidence: [],
   },

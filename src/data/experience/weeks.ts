@@ -5,7 +5,7 @@ import { DEMO_LESSONS } from "./demo-lessons";
 import { WEEK_MEDIA } from "./media";
 import { OPEN_CHILD_LINES } from "./lesson-engine/classroom-lines";
 import { officialPlan, type OfficialWeekPlan } from "./official-plan";
-import { gatherForWeek, weekDashboard, type WeekDashboard } from "./teacher-dashboard/week-dashboards";
+import { gatherForWeek, isOfficialGuideWeek, weekDashboard, type WeekDashboard } from "./teacher-dashboard/week-dashboards";
 import { weekProposal } from "./teacher-dashboard/proposals";
 import {
   CORE_STAGE_ORDER,
@@ -27,7 +27,7 @@ import {
  *
  * ★ 지도 값(주차 제목 · 그림책 · 성장 키워드 · 핵심 메시지 · 대표 활동 · 결과물 · 색)은
  *   week-index.ts 에서 읽기만 한다. 여기서 고치지 않는다.
- * ★ 수업 시간은 lesson-time.ts 의 기본 수업 35분(5 + 7 + 13 + 7 + 3) 하나다.
+ * ★ 수업 시간은 lesson-time.ts 의 기본 수업 45분 하나다 (단계별 분은 내부 임시 배분 · 화면에 숫자로 보이지 않는다).
  * ★ week-index.ts 는 정적 데이터 파일이다 — DB · Supabase 를 부르지 않는다.
  *   (tests/experience-isolation.test.mjs 가 이 폴더의 import 를 검사한다)
  */
@@ -46,8 +46,8 @@ export function parseDurationMinutes(label: string): number {
 /**
  * 기본 수업 다섯 단계를 만든다.
  *
- * ★ 단계별 분은 24주 모두 lesson-time.ts 의 5 + 7 + 13 + 7 + 3분이다. 화면이 말하는
- *   시간과 단계 합이 어긋나면 교사가 수업 중에 시간을 잘못 잡는다.
+ * ★ 단계별 분은 24주 모두 lesson-time.ts 의 내부 배분(임시 · 대표 승인 전)이다. 화면에는 숫자로 보이지 않지만
+ *   단계 합은 화면이 말하는 기본 수업 시간과 같아야 한다.
  * ★ 발문은 단계마다 다르다 — 도입은 아이의 경험 · 감정 · 호기심을 여는 발문(openQuestion),
  *   그림책은 그림책 장면 · 인물 행동을 묻는 발문(teacherQuestions[0]). 같은 발문을 두 번 쓰지 않는다.
  * ★ 발문 · 안내 · 진행 순서마다 출처(TextOrigin)를 붙인다. 화면 세 곳이 이 값을 그대로 쓴다.
@@ -139,7 +139,7 @@ function stageDetail(body: DemoLessonBody, meta: OfficialWeekMeta, plan: Officia
       materials: [body.materials[0]],
       safety: [],
       tip: null,
-      transition: `이제 ${book} 그림책 속으로 들어가 볼까요?`,
+      transition: `이제 ${book} 동화책 속으로 들어가 볼까요?`,
       inclusion: "말로 답하기 어려운 친구는 손짓 · 표정 · 그림 카드로 고르게 해요.",
       levels: null,
     },
@@ -152,7 +152,7 @@ function stageDetail(body: DemoLessonBody, meta: OfficialWeekMeta, plan: Officia
       materials: [body.materials[0]],
       safety: [],
       tip: null,
-      transition: `그림책 속 친구처럼 이제 우리 몸으로 해 볼까요? 「${physName}」!`,
+      transition: `동화책 속 친구처럼 이제 우리 몸으로 해 볼까요? 「${physName}」!`,
       inclusion: "소리 · 화면 자극이 큰 친구는 편한 자리에서 보게 하고, 책장을 넘기는 역할을 맡길 수 있어요.",
       levels: null,
     },
@@ -203,7 +203,7 @@ function buildPrep(body: DemoLessonBody, meta: OfficialWeekMeta, stages: ClassSt
   const before: Sourced[] = [
     ...gatherForWeek(body.weekNo).map((text) => ({ text, origin: "source" as const })),
     ...(d?.supportType === "teacherPrep" ? d.homeKitHow.map((text) => ({ text, origin: "source" as const })) : []),
-    { text: `그림책 《${meta.storybook}》(또는 E-BOOK)을 펼칠 자리에 준비해요.`, origin: "edited" },
+    { text: `동화책 《${meta.storybook}》(또는 E-BOOK)을 펼칠 자리에 준비해요.`, origin: "edited" },
     { text: `신체 놀이 준비물 ${move?.materials.length ?? 0}가지 · 만들기 재료 ${make?.materials.length ?? 0}가지를 단계별로 나눠 둬요.`, origin: "edited" },
   ];
   const tipWithCleanup = [d?.activityTip, d?.physical2?.tip].find((x) => x && x.includes("정리"));
@@ -226,8 +226,9 @@ function buildPrep(body: DemoLessonBody, meta: OfficialWeekMeta, stages: ClassSt
  * ★ 활동 이름은 자료의 워크북 · 미술 · 가족연계 제목을 그대로 쓴다.
  */
 function buildPdfExtensions(body: DemoLessonBody, d: WeekDashboard): OptionalExtension[] {
-  const src = `주차 대시보드 자료 PDF ${d.weekNo}주차`;
-  const note = "자료에 단계별 시간이 없습니다 · 검수 필요";
+  const guide = d.sourceKind === "officialGuide";
+  const src = guide ? `공식 교사용 수업가이드 ${d.weekNo}주차` : `주차 대시보드 자료 PDF ${d.weekNo}주차`;
+  const note = guide ? "가이드 시간표에 단계별 시간이 없습니다 · 검수 필요" : "자료에 단계별 시간이 없습니다 · 검수 필요";
   const base = {
     estimatedMinutes: null,
     minutesNote: note,
@@ -291,7 +292,8 @@ function buildPdfExtensions(body: DemoLessonBody, d: WeekDashboard): OptionalExt
  *   분을 비운다.
  */
 function buildExtensions(body: DemoLessonBody, plan: OfficialWeekPlan): OptionalExtension[] {
-  if (!plan.matchesCurrentLesson) {
+  // 공식 가이드 기준 주차(14 · 17~24)는 대시보드가 이미 가이드 전사본이다 — 가이드의 워크북 · 미술 · 가정연계 제목 · 순서로 만든다
+  if (!plan.matchesCurrentLesson || isOfficialGuideWeek(plan.weekNo)) {
     const d = weekDashboard(plan.weekNo);
     if (!d) throw new Error(`week-dashboards 에 ${plan.weekNo}주차가 없다`);
     return buildPdfExtensions(body, d);
@@ -356,6 +358,8 @@ function officialMeta(weekNo: number): OfficialWeekMeta {
     weekNo: w.weekNo,
     partNo: w.partNo as 1 | 2 | 3,
     title: w.title,
+    sourceTitle: w.sourceTitle,
+    lessonUpdatePending: w.lessonUpdatePending,
     storybook: w.storybook,
     growthKeyword: w.growthKeyword,
     coreMessage: w.coreMessage,
@@ -434,7 +438,8 @@ const PART_COPY: Record<1 | 2 | 3, Omit<ExperiencePart, "partNo" | "title" | "na
   },
   3: {
     tagline: "세상과 어울려요",
-    description: "물놀이 안전 약속에서 출발해 색 · 소리 · 명절 · 축제를 지나, 서로 다른 우리가 하나의 지구가 되는 마지막 여덟 번의 세계여행.",
+    // 2026-10-29 수정 지시 문장
+    description: "세계 여러 문화의 놀이와 장면을 경험하며, 더 넓은 세상으로 자라나는 마지막 여덟 번의 세계여행.",
     tone: "pink",
     character: "ella",
   },

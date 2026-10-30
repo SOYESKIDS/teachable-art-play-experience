@@ -8,9 +8,10 @@ import { PrintButton } from "@/components/play/PrintButton";
 import { TEACHER_POINT_PROPOSALS, weekProposal } from "@/data/experience/teacher-dashboard/proposals";
 import { editedLines, isEditedLine, pdfQuestions, weekDashboard } from "@/data/experience/teacher-dashboard/week-dashboards";
 import { pdfExtraOf } from "@/data/experience/teacher-dashboard/week-pdf-extra";
-import { TEXT_ORIGIN_LABEL, type TextOrigin } from "@/data/experience/types";
-import { EXPERIENCE_WEEKS, experienceWeek } from "@/data/experience/weeks";
-import { LESSON_TIME, PDF_DURATION_LABEL, SHORT_TIME } from "@/lib/weeks/lesson-time";
+import { CORE_STAGE_FLOW, TEXT_ORIGIN_LABEL, type TextOrigin } from "@/data/experience/types";
+import { EXPERIENCE_WEEKS, experiencePart, experienceWeek } from "@/data/experience/weeks";
+import { LESSON_TIME, PDF_DURATION_LABEL, PDF_TIME_NOTE, SHORT_TIME } from "@/lib/weeks/lesson-time";
+import { LessonUpdateNotice } from "@/components/play/LessonUpdateNotice";
 import { buildLessonPlan, indicatorName } from "@/data/experience/lesson-engine/plan";
 import { prepNotes } from "@/data/experience/lesson-engine/prep-notes";
 import { GROWTH_INDICATORS } from "@/data/experience/report";
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: PageProps<"/experience/weeks/
   if (!week) return {};
   return {
     title: `${week.weekNo}주차 상세 수업 지도안 | TeachAble Art Play`,
-    description: `《${week.title}》 자료 12개 영역 전체 — 그림책 · 신체활동 · 미술 · 워크북 · 교구 · 가족연계 · 가정용 교구 · 누리과정 · 음원 · 관찰 · 주차 연계 (체험용 구성).`,
+    description: `《${week.title}》 자료 12개 영역 전체 — 동화책 · 신체활동 · 미술 · 워크북 · 교구 · 가족연계 · 가정용 교구 · 누리과정 · 음원 · 관찰 · 주차 연계 (체험용 구성).`,
     alternates: { canonical: `/experience/weeks/${week.weekNo}/guide` },
     robots: { index: false, follow: true },
   };
@@ -116,18 +117,20 @@ export default async function WeekGuidePage({ params }: PageProps<"/experience/w
             <div>
               <p className="text-[13px] font-bold text-pop-ink-muted">TeachAble Art Play · 상세 수업 지도안 (자료 12개 영역 전체)</p>
               <h1 className={cx("mt-1 font-display text-[30px] leading-tight print:text-[24px]", displayFallback(`${week.weekNo}주차 「${week.title}」`))}>{week.weekNo}주차 「{week.title}」</h1>
-              <p className="mt-1 text-[15px] font-semibold">그림책 《{week.storybook}》 · #{week.growthKeyword}</p>
+              <p className="mt-1 text-[15px] font-semibold">동화책 《{week.storybook}》 · #{week.growthKeyword}</p>
             </div>
             <p className="max-w-[30ch] text-[12px] leading-snug text-pop-ink-muted">
               체험용 구성입니다. 공식 교안으로 확정된 내용이 아닙니다. 문장 옆 표시는 출처입니다 —
               {(["source", "edited", "proposal", "review"] as const).map((o) => ` [${TEXT_ORIGIN_LABEL[o]}]`).join("")}
             </p>
           </header>
+          <LessonUpdateNotice week={week} className="mt-4 print:text-[12px]" />
 
           <Section no={1} title="주차 기본 정보">
             <Line label="핵심 주제" text={d.coreTheme} />
             <Line label="성장 키워드" text={d.keyword} />
-            <Line label="파트" text={d.part} />
+            <Line label="파트" text={`PART ${week.partNo} · ${experiencePart(week.partNo)?.title ?? ""}`} origin="edited" />
+            {d.sourceKind === "officialGuide" ? null : <Line label="파트 (자료 PDF 표기)" text={d.part} />}
             <Line label="계절 · 방문지" text={d.place ?? x?.seasonPlace} />
             {x?.topicElements ? <Line label="주제 요소 (원안)" text={x.topicElements} /> : null}
             <Line label="교사가 기억할 핵심" text={d.teacherKey} />
@@ -136,9 +139,9 @@ export default async function WeekGuidePage({ params }: PageProps<"/experience/w
             {x?.makesKit ? <Line label="제작 교구" text={x.makesKit} /> : null}
             <Label>수업 시간</Label>
             <ul className="grid gap-0.5">
-              <li>· 자료 PDF — {d.pdfDuration ?? PDF_DURATION_LABEL} <OriginTag origin="source" className="align-middle" /></li>
-              <li>· 웹 체험 — {LESSON_TIME.label} ({LESSON_TIME.breakdown}) <OriginTag origin="edited" className="align-middle" /></li>
-              <li>· {SHORT_TIME.label} ({SHORT_TIME.breakdown}) — {SHORT_TIME.note} <OriginTag origin="proposal" className="align-middle" /></li>
+              <li>· 운영 기준 — {LESSON_TIME.label} · 단계 순서 {CORE_STAGE_FLOW} (단계별 시간은 정하지 않음)</li>
+              <li>· 자료 PDF — {d.pdfDuration ?? PDF_DURATION_LABEL} <OriginTag origin="source" className="align-middle" /> · {PDF_TIME_NOTE}</li>
+              <li>· {SHORT_TIME.label} — {SHORT_TIME.note} <OriginTag origin="proposal" className="align-middle" /></li>
             </ul>
             <Label>교육 목표</Label>
             {d.goals.length ? <Items items={d.goals} /> : <Items items={proposal?.goals ?? []} origin="proposal" />}
@@ -154,7 +157,7 @@ export default async function WeekGuidePage({ params }: PageProps<"/experience/w
             ) : null}
           </Section>
 
-          <Section no={2} title="그림책">
+          <Section no={2} title="동화책">
             <Line label="제목" text={d.storybookTitle ? `《${d.storybookTitle}》` : null} />
             <Line label="줄거리" text={d.storySummary} />
             {d.storyMessage ? <Line label="핵심 메시지" text={d.storyMessage} /> : null}
@@ -169,7 +172,7 @@ export default async function WeekGuidePage({ params }: PageProps<"/experience/w
                 <Items items={pdfQuestions(week.weekNo).map((q) => `“${q}”`)} />
               </>
             ) : null}
-            <p className="text-pop-ink-muted">그림책 파일 · {plan.mediaAssets.some((m) => m.kind === "storybookCover" && m.state === "ready") ? "표지 그림 공개 사용 확인 · 본문 파일은 자료 준비 중" : "자료 준비 중 — 표지 대신 제목 카드로 읽어 줍니다."} [{TEXT_ORIGIN_LABEL.proposal}]</p>
+            <p className="text-pop-ink-muted">동화책 파일 · {plan.mediaAssets.some((m) => m.kind === "storybookCover" && m.state === "ready") ? "표지 그림 공개 사용 확인 · 본문 파일은 자료 준비 중" : "자료 준비 중 — 표지 대신 제목 카드로 읽어 줍니다."} [{TEXT_ORIGIN_LABEL.proposal}]</p>
           </Section>
 
           <Section no={3} title="대표 신체활동">
@@ -209,7 +212,7 @@ export default async function WeekGuidePage({ params }: PageProps<"/experience/w
                 {d.workbookSheets.map((s, i) => <li key={s.title}><span className="font-bold">{i + 1}장 · {s.title}</span>{s.guide ? <> — {s.guide}</> : null} <OriginTag origin="source" className="align-middle" /></li>)}
               </ol>
             ) : <p className="text-pop-ink-muted">{NONE}</p>}
-            <p className="text-pop-ink-muted">워크북 인쇄 파일 · 자료 준비 중 — {LESSON_TIME.label} 밖의 선택 확장활동입니다. 파일이 오기 전에는 장마다 적힌 활동을 종이에 그려 진행합니다 [{TEXT_ORIGIN_LABEL.proposal}].</p>
+            <p className="text-pop-ink-muted">워크북 인쇄 파일 · 자료 준비 중 — 연계 활동으로 이어 갑니다. 파일이 오기 전에는 장마다 적힌 활동을 종이에 그려 진행합니다 [{TEXT_ORIGIN_LABEL.proposal}].</p>
           </Section>
 
           <Section no={6} title="교구 · 놀이자료 키트">
@@ -269,11 +272,11 @@ export default async function WeekGuidePage({ params }: PageProps<"/experience/w
 
           <Section no={11} title="교사 운영 · 관찰 · 성장 기록" breakBefore>
             {teacherPoint ? <Line label="교사 운영 포인트" text={teacherPoint} origin={d.teacherPoint ? "source" : "proposal"} /> : null}
-            <Label>{LESSON_TIME.label} 진행 (단계별)</Label>
+            <Label>{LESSON_TIME.label} 진행 (단계 순서)</Label>
             <ol className="grid gap-2">
               {week.stages.map((s, i) => (
                 <li key={s.key} className="break-inside-avoid">
-                  <p className="font-bold">{i + 1}. {s.title} · 약 {s.minutes}분 — “{s.teacherQuestion}” <OriginTag origin={s.teacherQuestionOrigin} className="align-middle" /></p>
+                  <p className="font-bold">{i + 1}. {s.title} — “{s.teacherQuestion}” <OriginTag origin={s.teacherQuestionOrigin} className="align-middle" /></p>
                   <ol className="ml-4 grid gap-0.5">
                     {s.steps.map((t, j) => <li key={t.text}>{j + 1}) {t.text} <OriginTag origin={t.origin} className="align-middle" /></li>)}
                   </ol>
@@ -305,7 +308,7 @@ export default async function WeekGuidePage({ params }: PageProps<"/experience/w
             {plan.crossWeekOutputs.gather.length ? <><Label>앞 주차에서 모아 올 것</Label><Items items={plan.crossWeekOutputs.gather} /></> : null}
           </Section>
 
-          <Section no={13} title="자료 파일 상태 (PDF 그림 자리)">
+          <Section no={13} title="자료 파일 상태 (그림 자리)">
             <ul className="grid gap-1">
               {[...assetsBy.entries()].map(([label, list]) => (
                 <li key={label}>

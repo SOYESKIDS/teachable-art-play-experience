@@ -14,7 +14,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { EXPERIENCE_WEEKS, EXPERIENCE_PARTS, parseDurationMinutes, STAGE_ORDER } from "../src/data/experience/weeks.ts";
 import { officialPlan } from "../src/data/experience/official-plan.ts";
-import { LESSON_STAGE_MINUTES, LESSON_TIME } from "../src/lib/weeks/lesson-time.ts";
+import { LESSON_STAGE_MINUTES, LESSON_STAGE_MINUTES_STATUS, LESSON_TIME } from "../src/lib/weeks/lesson-time.ts";
 import { WEEK_DASHBOARDS, gatherForWeek } from "../src/data/experience/teacher-dashboard/week-dashboards.ts";
 import { WEEK_PROPOSALS } from "../src/data/experience/teacher-dashboard/proposals.ts";
 import { PARTS } from "../src/lib/weeks/week-types.ts";
@@ -22,10 +22,12 @@ import { DEMO_LESSONS } from "../src/data/experience/demo-lessons.ts";
 import { DEMO_REPORT } from "../src/data/experience/report.ts";
 import { CHARACTERS_ENABLED, characterImage, characterGroupImage } from "../src/data/experience/characters.ts";
 import { LICENSE_STATUS, MEDIA, WEEK_COVER_REGISTRY, WEEK_MEDIA } from "../src/data/experience/media.ts";
-import { WEEK_INDEX } from "../src/lib/weeks/week-index.ts";
+import { APPROVED_WEEK_TITLES, WEEK_INDEX } from "../src/lib/weeks/week-index.ts";
 import { NURI_AREA_LABEL, APPROVED_SOYE_CORE_EXPERIENCES, GROWTH_METRIC_LABEL } from "../src/lib/curriculum/taxonomies.ts";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+/** 자료 PDF 의 PART 이름 원문 (화면 이름은 2026-10-29 승인값 — src/lib/weeks/week-types.ts PARTS) */
+const PDF_PART_NAME = { 1: "씨앗과 숲", 2: "우리 그리고 모두의 사계절", 3: "두근두근 세계여행" };
 const NURI = new Set(Object.values(NURI_AREA_LABEL));
 const SOYE = new Set(APPROVED_SOYE_CORE_EXPERIENCES);
 
@@ -90,18 +92,20 @@ test("누리과정은 공식 5개 영역 명칭만, SOYE KIDS 핵심경험은 �
   }
 });
 
-test("24주 모두 기본 수업 35분 = 5 + 7 + 13 + 7 + 3 — 시간은 한 곳(lesson-time.ts)에서만 온다", () => {
-  assert.deepEqual(LESSON_STAGE_MINUTES, { open: 5, story: 7, move: 13, make: 7, share: 3 });
-  assert.equal(LESSON_TIME.totalMinutes, 35);
-  assert.equal(LESSON_TIME.label, "기본 수업 35분");
+test("24주 모두 기본 수업 45분 (2026-10-29) — 시간은 한 곳(lesson-time.ts)에서만 오고, 단계별 분은 임시 내부 값이다", () => {
+  assert.equal(LESSON_TIME.totalMinutes, 45);
+  assert.equal(LESSON_TIME.label, "기본 수업 45분");
+  // 단계별 분은 확정 값이 아니다 — 임시 · 대표 승인 전으로 기록되어 있어야 한다
+  assert.match(LESSON_STAGE_MINUTES_STATUS, /임시.*대표 승인 전/);
+  assert.equal(Object.values(LESSON_STAGE_MINUTES).reduce((a, b) => a + b, 0), 45);
   for (const w of EXPERIENCE_WEEKS) {
     assert.deepEqual(w.stages.map((s) => s.key), STAGE_ORDER);
     // 단계 합이 화면이 말하는 시간과 정확히 같아야 한다. 어긋나면 교사가 수업 중에 시간을 잘못 잡는다.
     assert.deepEqual(Object.fromEntries(w.stages.map((s) => [s.key, s.minutes])), LESSON_STAGE_MINUTES, `${w.weekNo}주 단계별 분`);
     const sum = w.stages.reduce((n, s) => n + s.minutes, 0);
-    assert.equal(sum, 35, `${w.weekNo}주 단계 합`);
-    assert.equal(w.totalMinutes, 35, `${w.weekNo}주 totalMinutes`);
-    assert.equal(w.duration.coreMinutes, 35, `${w.weekNo}주 기본 수업 시간`);
+    assert.equal(sum, 45, `${w.weekNo}주 단계 합`);
+    assert.equal(w.totalMinutes, 45, `${w.weekNo}주 totalMinutes`);
+    assert.equal(w.duration.coreMinutes, 45, `${w.weekNo}주 기본 수업 시간`);
     // 원본 표기는 지우지 않고 출처 기록으로 들고 있어야 한다
     assert.match(w.duration.pdfDurationLabel, /CORE 45분/, `${w.weekNo}주 자료 시간 표기 보존`);
     const plan = officialPlan(w.weekNo);
@@ -126,6 +130,25 @@ test("화면 소스에 수업 시간 숫자를 직접 적지 않는다 (35분 ·
   assert.deepEqual(offenders, []);
 });
 
+test("2026-10-29 수정 — 단계별 분 · 「개편 후보」 · 이전 PART 이름이 화면 소스에 없고, PART · 연락처 · 도메인이 승인값이다", () => {
+  const offenders = [];
+  for (const d of ["src/app", "src/components"]) {
+    for (const f of readdirSync(join(ROOT, d), { recursive: true })) {
+      if (!/\.(ts|tsx)$/.test(f)) continue;
+      const s = readFileSync(join(ROOT, d, f), "utf8");
+      // 단계별 분 숫자를 그리는 자리 (s.minutes · stage.minutes · estimatedMinutes · breakdown)
+      for (const m of s.matchAll(/\.minutes\s*\}\s*분|estimatedMinutes\}?분|\.breakdown\b|약 \$\{x\.estimatedMinutes\}|PART_NAME_CANDIDATE_LABEL|개편 후보|씨앗과 숲|우리 그리고 모두의 사계절/g)) offenders.push(`${d}/${f}: ${m[0]}`);
+    }
+  }
+  assert.deepEqual(offenders, []);
+  assert.deepEqual(PARTS.map((p) => [p.title, p.nameProvisional]), [["씨앗에서 숲까지", false], ["우리 모두의 사계절", false], ["두근두근 세계여행", false]]);
+  const site = readFileSync(join(ROOT, "src/data/site.ts"), "utf8");
+  assert.match(site, /SITE_URL = "https:\/\/teachableartplay-class\.soyes\.kr"/);
+  assert.match(site, /phoneHref: "tel:01048140998"/);
+  assert.match(site, /백향은 대표/);
+  assert.match(site, /https:\/\/teachableartplay-pr\.soyes\.kr\//);
+});
+
 test("교사 검토에서 지적된 표현이 체험 문장에 없다", () => {
   const text = JSON.stringify(DEMO_LESSONS) + JSON.stringify(DEMO_REPORT) + JSON.stringify(WEEK_PROPOSALS);
   for (const bad of ["몰래", "촬영하는 것처럼", "키즈노트", "엄마"]) assert.ok(!text.includes(bad), bad);
@@ -144,7 +167,19 @@ test("1~24주 — 목록 · 상세 · 교실 플레이어 · 교사 대시보드
     const d = WEEK_DASHBOARDS.find((x) => x.weekNo === w.weekNo);
     const at = `${w.weekNo}주`;
     assert.ok(d, `${at} 대시보드 없음`);
-    assert.equal(norm(w.title), norm(d.pdfTitle), `${at} 주차 제목: 사이트 「${w.title}」 · 자료 「${d.pdfTitle}」`);
+    // 수업 내용의 출처 제목(sourceTitle)은 그 주차 자료의 제목이다 — 14 · 17~24주는 공식 교사용 수업가이드,
+    // 나머지는 자료 PDF. 2026-10-29 승인 제목은 가이드 제목과 같은 수업이라 「업데이트 교안 확인 필요」가 없다.
+    assert.equal(norm(w.sourceTitle), norm(d.pdfTitle), `${at} 자료 제목: 사이트 「${w.sourceTitle}」 · 자료 「${d.pdfTitle}」`);
+    if (APPROVED_WEEK_TITLES[w.weekNo]) {
+      assert.equal(w.title, APPROVED_WEEK_TITLES[w.weekNo], `${at} 승인 제목`);
+      assert.equal(d.sourceKind, "officialGuide", `${at} 공식 가이드 기준 수업`);
+      // 승인 제목과 가이드 제목은 띄어쓰기 · 문장부호만 다를 수 있다
+      assert.equal(norm(w.title).replace(/[.!]/g, ""), norm(d.pdfTitle).replace(/[.!]/g, ""), `${at} 승인 제목 = 가이드 제목`);
+      assert.equal(w.lessonUpdatePending, false, `${at} 교안이 제목과 맞다`);
+    } else {
+      assert.equal(norm(w.title), norm(d.pdfTitle), `${at} 주차 제목: 사이트 「${w.title}」 · 자료 「${d.pdfTitle}」`);
+      assert.equal(w.lessonUpdatePending, false, `${at} 제목이 그대로인 주차`);
+    }
     assert.equal(norm(w.storybook), norm(d.storybookTitle), `${at} 그림책: 사이트 《${w.storybook}》 · 자료 《${d.storybookTitle}》`);
     assert.equal(w.growthKeyword, d.keyword, `${at} 성장 키워드`);
     // 그림책 활동 · 준비물이 같은 그림책을 쓴다 (교실 플레이어와 대시보드가 같은 책)
@@ -160,17 +195,25 @@ test("1~24주 — 목록 · 상세 · 교실 플레이어 · 교사 대시보드
     }
     // 두 번째 대표활동(7 · 9주차)도 수업 본문에 있다
     if (d.physical2) assert.ok(tokens(d.physical2.title).some((t) => site.includes(t)) || site.includes("자리를 바꿔") || site.includes("꿀"), `${at} 두 번째 활동: 「${d.physical2.title}」`);
-    // PART 이름도 자료와 같다
-    const part = PARTS.find((p) => p.partNo === w.partNo);
-    assert.ok(d.part.endsWith(part.title), `${at} PART: 자료 「${d.part}」 · 사이트 「${part.title}」`);
+    // PART — 자료 PDF 원문은 PDF 이름 그대로 남고(출처 기록), 화면은 2026-10-29 승인 이름을 쓴다 (가이드에는 PART 칸이 없다)
+    if (d.sourceKind !== "officialGuide") assert.ok(d.part.endsWith(PDF_PART_NAME[w.partNo]), `${at} PART 자료 원문: 「${d.part}」`);
   }
 });
 
-test("바꾸기 전 17~24주 · 14주 주제가 화면 데이터에 남아 있지 않다", () => {
-  const text = JSON.stringify(WEEK_INDEX) + JSON.stringify(DEMO_LESSONS) + JSON.stringify(EXPERIENCE_PARTS) + JSON.stringify(DEMO_REPORT);
-  for (const old of ["짝! 우리들의 색", "반짝이는 물길", "숲 속 작은 연주회", "주렁주렁", "두근두근 하늘여행", "오늘 밤, 무슨 일", "별빛이 찾아온", "서로 다른 하루", "말하지 않아도 괜찮아", "세계의 축제 (가칭)", "열기구", "태극기", "마음을 담은 비누", "반쪽 토마토"]) {
-    assert.ok(!text.includes(old), old);
+test("14 · 17~24주 — 공식 가이드 수업만 화면 데이터에 있고, 같은 주차 자료 PDF(다른 주제) 수업이 섞이지 않는다", () => {
+  // ★ 2026-10-29: 승인 제목 = 공식 가이드 제목이라 그 주차 수업을 가이드 전사본 기준으로 맞췄다.
+  //   그 주차의 자료 PDF 수업(물놀이 안전 · 색 섞기 · 젬베 · 명절 밥상 · 토마토 축제 · 호박 마을 · 산타의 긴 여행 · 어디 별에서 · 눈 결정)은
+  //   보관만 하고 화면 데이터(주차 지도 · 수업 본문 · 대시보드 · PART 소개 · 리포트)에 들어오지 않는다.
+  const PDF_TOPICS = { 14: ["하얀 도화지", "눈 결정", "하얀 눈밭"], 17: ["첨벙", "안전 튜브"], 18: ["색이 섞이", "색 카드"], 19: ["리듬탐험대", "젬베", "소리를 따라가면"], 20: ["복을 전해요", "명절"], 21: ["동글동글 토마토", "토마토 축제", "토마토 도장"], 22: ["호박 마을", "할로윈 파티를 열어요"], 23: ["산타는 어디서", "산타의 긴 여행"], 24: ["어디 별에서", "지구 조각"] };
+  for (const [n, topics] of Object.entries(PDF_TOPICS)) {
+    const w = EXPERIENCE_WEEKS.find((x) => x.weekNo === Number(n));
+    const d = WEEK_DASHBOARDS.find((x) => x.weekNo === Number(n));
+    const text = JSON.stringify([WEEK_INDEX.find((x) => x.weekNo === Number(n)), DEMO_LESSONS.find((x) => x.weekNo === Number(n)), d, w.stages, w.extensions]);
+    for (const t of topics) assert.ok(!text.includes(t), `${n}주 화면 데이터에 자료 PDF(다른 주제) 「${t}」`);
+    assert.equal(d.sourceKind, "officialGuide", `${n}주 공식 가이드`);
   }
+  const shared = JSON.stringify(EXPERIENCE_PARTS) + JSON.stringify(DEMO_REPORT);
+  for (const old of ["세계의 축제 (가칭)"]) assert.ok(!shared.includes(old), old);
   assert.equal(PARTS.find((p) => p.partNo === 3).title, "두근두근 세계여행");
 });
 
@@ -186,13 +229,19 @@ test("관찰 문항 · 활동 목표 · 음원 — 저장소의 자료 원문 �
   const EXTRA = join(ROOT, "docs/curriculum-upgrade/dashboard-source-21-24");
   const squash = (s) => s.normalize("NFC").replace(/[\s?.!,·ˮ”“"'‘’ʼ]/g, "");
   for (const d of WEEK_DASHBOARDS) {
-    const file = d.weekNo <= 20 ? join(DEV, `week-${String(d.weekNo).padStart(2, "0")}.txt`) : join(EXTRA, `week-${d.weekNo}.txt`);
+    const guide = d.sourceKind === "officialGuide";
+    // 14 · 17~24주는 공식 가이드 공개 요약이 원문이다 (PDF 의 「미작성」 · 곡 수 표기는 가이드 형식에 없다)
+    const file = guide ? join(ROOT, "src/data/experience/teacher-dashboard/guide-summaries.ts") : d.weekNo <= 20 ? join(DEV, `week-${String(d.weekNo).padStart(2, "0")}.txt`) : join(EXTRA, `week-${d.weekNo}.txt`);
     const raw = readFileSync(file, "utf8");
     const src = squash(raw);
     const at = `${d.weekNo}주`;
     // 대시보드 문장은 원문에 그대로 있다
     for (const o of [...d.observations, ...d.goals]) assert.ok(src.includes(squash(o)), `${at} 원문에 없는 문장: ${o}`);
     for (const m of d.media) assert.ok(src.includes(squash(m.split(" — ")[0])), `${at} 원문에 없는 음원: ${m}`);
+    if (guide) {
+      assert.ok(d.observations.length > 0 && d.goals.length > 0, `${at} 가이드 관찰 · 목표`);
+      continue;
+    }
     // 자료가 「미작성」이라고 적지 않은 칸은 비어 있으면 안 된다 (추출 누락)
     const obsMissing = /관찰\s*문항\s*미작성/.test(raw), goalMissing = /활동\s*목표\s*미작성/.test(raw);
     assert.equal(d.observations.length === 0, obsMissing, `${at} 관찰: 원문 ${obsMissing ? "미작성" : "있음"} · 대시보드 ${d.observations.length}개`);
@@ -238,9 +287,8 @@ test("24주 모두 근거 자료 기반(adapted), 2주 핵심 교정 유지", ()
   const w2 = DEMO_LESSONS.find((l) => l.weekNo === 2);
   assert.match(w2.movement, /젓가락/);
   assert.doesNotMatch(JSON.stringify(w2), /콩주머니|선 따라 걷기/);
-  // 18주(색 섞기) — 제목은 자료 그대로지만 발문은 보이는 변화를 말하게 한다
-  const w18 = DEMO_LESSONS.find((l) => l.weekNo === 18);
-  assert.match(w18.teacherQuestions.join(" "), /무엇이 보여|이름을 붙여/);
+  // (자료 PDF 18주 「색 섞기」 발문 검사는 18주가 공식 가이드 「반짝이는 물길 놀이터」로 바뀌어 뺐다 —
+  //  정답 색을 묻지 않는 규칙은 바로 위 「교사 발문 · 교실 문장은 정답을 묻지 않는다」가 24주 모두에 건다)
   // 성별을 고정한 가족 표현을 공개 체험에 쓰지 않는다
   for (const l of DEMO_LESSONS) assert.doesNotMatch(JSON.stringify(l), /아빠/, `${l.weekNo}주`);
 });
@@ -309,12 +357,19 @@ test("2차 원문 대조 — 두 번째 대표활동(7 · 9주) · 미술 제목
   assert.equal(D(8).homeKitHow.length, 4, "8주 교사 사전 준비 4단계");
   const weeksOf = (n) => gatherForWeek(n).map((x) => Number(x.split("주차")[0]));
   assert.deepEqual(weeksOf(8), [4, 5, 6, 7], "8주차는 4~7주차 결과물을 모은다");
-  assert.deepEqual(weeksOf(16), [9, 10, 11, 12, 13, 14, 15]);
-  assert.deepEqual(weeksOf(24), [17, 18, 19, 20, 21, 22, 23]);
+  // 14주는 공식 가이드 수업이라 자료 PDF 의 「→ 16주차 회고 사진」 연계가 없다 (가이드에 16주 연계 없음)
+  assert.deepEqual(weeksOf(16), [9, 10, 11, 12, 13, 15]);
+  // 24주(공식 가이드)는 앞 주차 「주차 연계」 칸이 아니라 가이드 준비물 「17~23주 실제 활동사진」으로 모은다
+  assert.deepEqual(weeksOf(24), []);
+  assert.match(D(24).orgItems.join(" "), /17~23주 실제 활동사진/);
 });
 
 const SRC_DIR = join(ROOT, "docs/curriculum-upgrade/TAP_Curriculum_Development_Pack/TeachAble_24Week_Dashboard_DevPack/source_text");
-const sourceText = (n) => readFileSync(n <= 20 ? join(SRC_DIR, `week-${String(n).padStart(2, "0")}.txt`) : join(ROOT, `docs/curriculum-upgrade/dashboard-source-21-24/week-${n}.txt`), "utf8");
+// 원문 텍스트 — 14 · 17~24주는 공식 교사용 수업가이드의 공개 요약(guide-summaries.ts · 원문 전사본은 비공개), 나머지는 자료 PDF 추출본
+const GUIDE_WEEKS = [14, 17, 18, 19, 20, 21, 22, 23, 24];
+const sourceText = (n) => GUIDE_WEEKS.includes(n)
+  ? readFileSync(join(ROOT, "src/data/experience/teacher-dashboard/guide-summaries.ts"), "utf8")
+  : readFileSync(n <= 20 ? join(SRC_DIR, `week-${String(n).padStart(2, "0")}.txt`) : join(ROOT, `docs/curriculum-upgrade/dashboard-source-21-24/week-${n}.txt`), "utf8");
 const squashAll = (s) => s.normalize("NFC").replace(/[\s?.!,·ˮ”“"'‘’()~\-–]/g, "");
 
 test("「PDF 원문」으로 표시한 문장은 저장소의 PDF 원문 텍스트에 그대로 있다 (단계 · 수업 전 준비)", () => {
@@ -368,7 +423,8 @@ test("교사용 전체 흐름 — 수업 전 준비 → 다섯 단계 → 확장
     for (const x of [...w.prep.before, w.prep.space, w.prep.cleanup, ...w.stages.flatMap((s) => s.steps)]) assert.ok(["source", "edited", "proposal", "review"].includes(x.origin), at);
   }
   // 통합 주차는 앞 주차 결과물 모으기가 수업 전 준비에 원문으로 들어간다
-  for (const [n, from] of [[8, [4, 5, 6, 7]], [16, [9, 10, 11, 12, 13, 14, 15]], [24, [17, 18, 19, 20, 21, 22, 23]]]) {
+  // (14주 · 24주는 공식 가이드 수업 — 14주는 16주 연계가 없고, 24주는 가이드 준비물 「17~23주 실제 활동사진」으로 모은다)
+  for (const [n, from] of [[8, [4, 5, 6, 7]], [16, [9, 10, 11, 12, 13, 15]], [24, []]]) {
     const w = EXPERIENCE_WEEKS.find((x) => x.weekNo === n);
     const got = w.prep.before.filter((x) => x.origin === "source" && /^\d+주차 — /.test(x.text)).map((x) => Number(x.text.split("주차")[0]));
     assert.deepEqual(got, from, `${n}주 모아 올 것`);
@@ -387,7 +443,8 @@ test("자료에 적힌 발문(진행 팁 · 운영 포인트 속 따옴표 문�
       assert.ok(src.includes(squashAll(q)), `${n}주 자료 발문이 원문에 없다: ${q}`);
     }
   }
-  assert.ok(total >= 9, `자료 발문 ${total}개`);
+  // 14 · 17~24주는 공식 가이드 수업 — 공개 요약에는 가이드의 발문 목록을 싣지 않는다 (2026-10-29)
+  assert.ok(total >= 4, `자료 발문 ${total}개`);
 });
 
 test("단계 · 수업 전 준비 문장에 「을(를)」 같은 기계적 조사가 없다", () => {
@@ -420,14 +477,16 @@ test("수업 전 · 마무리 확인 목록 — 24주 모두 빠진 묶음이 �
     const pre = preLessonChecks(w);
     const keys = pre.map((g) => g.key);
     for (const k of ["goal", "materials", "space", "safety", "script", "media"]) assert.ok(keys.includes(k), `${w.weekNo}주 수업 전 ${k}`);
-    assert.equal(keys.includes("gather"), [8, 16, 24].includes(w.weekNo), `${w.weekNo}주 앞 주차 결과물`);
+    // 24주(공식 가이드)는 「주차 연계」 모으기가 아니라 준비물의 「17~23주 실제 활동사진」으로 모은다
+    assert.equal(keys.includes("gather"), [8, 16].includes(w.weekNo), `${w.weekNo}주 앞 주차 결과물`);
     const close = closingChecks(w, next);
     for (const k of ["share", "cleanup", "observe"]) assert.ok(close.some((g) => g.key === k), `${w.weekNo}주 마무리 ${k}`);
     // 24주는 다음 주차가 없다 — 주차 연계 원문은 「다음 주차로」가 아니라 따로 묶는다 (이번 주 → 다음 · 앞 주차 → 이번 주가 함께 적힌 칸)
     assert.equal(close.some((g) => g.key === "next"), w.weekNo < 24, `${w.weekNo}주 다음 주차 준비`);
     assert.equal(close.some((g) => g.key === "crossweek"), Boolean(WEEK_DASHBOARDS.find((d) => d.weekNo === w.weekNo).crossWeek), `${w.weekNo}주 주차 연계 원문`);
-    assert.equal(keys.includes("premake"), [4, 11, 16, 17, 22, 24].includes(w.weekNo), `${w.weekNo}주 미리 준비 · 사전 제작`);
-    assert.equal(close.some((g) => g.key === "worldmap"), w.weekNo >= 18 && w.weekNo <= 23, `${w.weekNo}주 세계지도 깃발`);
+    // 17 · 22 · 24주 사전 제작 · 18~23주 세계지도 깃발은 자료 PDF 수업의 것이라, 공식 가이드 기준이 된 그 주차에는 없다
+    assert.equal(keys.includes("premake"), [4, 11, 16].includes(w.weekNo), `${w.weekNo}주 미리 준비 · 사전 제작`);
+    assert.equal(close.some((g) => g.key === "worldmap"), false, `${w.weekNo}주 세계지도 깃발`);
     for (const g of [...pre, ...close]) {
       assert.ok(g.items.length > 0 && g.items.every((x) => x.text.trim()), `${w.weekNo}주 ${g.key} 비어 있음`);
       for (const it of g.items) {
@@ -498,10 +557,11 @@ test("교사 대시보드 12개 영역의 자료 문장은 모두 그 주차 PDF
       }
     }
   }
-  // 고쳐 쓴 문장 — 고치기 전 원문은 PDF 에 있고, 고친 문장은 원문이 아니다
+  // 고쳐 쓴 문장 — 고치기 전 원문은 PDF 에 있고, 고친 문장은 원문이 아니다 (EDITED_LINES 는 자료 PDF 문장에만 붙는다)
+  const pdfText = (n) => readFileSync(n <= 20 ? join(SRC_DIR, `week-${String(n).padStart(2, "0")}.txt`) : join(ROOT, `docs/curriculum-upgrade/dashboard-source-21-24/week-${n}.txt`), "utf8");
   for (const e of EDITED_LINES) {
-    assert.ok(sq(sourceText(e.weekNo)).includes(sq(e.original)), `${e.weekNo}주 고치기 전 원문이 PDF 에 없다`);
-    assert.ok(!sq(sourceText(e.weekNo)).includes(sq(e.text)), `${e.weekNo}주 원문 그대로인데 편집으로 표시`);
+    assert.ok(sq(pdfText(e.weekNo)).includes(sq(e.original)), `${e.weekNo}주 고치기 전 원문이 PDF 에 없다`);
+    assert.ok(!sq(pdfText(e.weekNo)).includes(sq(e.text)), `${e.weekNo}주 원문 그대로인데 편집으로 표시`);
     assert.ok(e.reason.trim(), `${e.weekNo}주 고친 까닭`);
   }
 });

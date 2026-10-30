@@ -1,5 +1,3 @@
-import { LESSON_TOTAL_MINUTES } from "@/lib/weeks/lesson-time";
-
 /**
  * 공개 체험(/experience) 데이터 타입.
  *
@@ -33,10 +31,9 @@ export type StageKey = "open" | "story" | "move" | "explore" | "make" | "share";
 
 export const STAGE_LABEL: Record<StageKey, string> = {
   open: "이야기 열기",
-  story: "그림책 만나기",
-  // 「몸·감각으로 탐색」의 가운데 점과 「짧은」의 첫 글자는 제목 글꼴에 없다.
-  // 한 제목이 두 글꼴로 갈라져 보이므로 뜻이 같은 다른 말을 쓴다.
-  move: "몸과 감각으로 탐색",
+  // 2026-10-29 수정 지시 — 그림책 만나기 → 동화책 읽기 · 몸과 감각으로 탐색 → 신체활동
+  story: "동화책 읽기",
+  move: "신체활동",
   explore: "탐색하기",
   make: "예술로 표현하기",
   share: "나누고 정리",
@@ -44,6 +41,9 @@ export const STAGE_LABEL: Record<StageKey, string> = {
 
 /** 기본 수업에 실제로 쓰는 다섯 단계 (explore 는 move 안으로 들어간다) */
 export const CORE_STAGE_ORDER: readonly StageKey[] = ["open", "story", "move", "make", "share"];
+
+/** 화면에 보이는 단계 순서 — 분 숫자 없이 과정만 */
+export const CORE_STAGE_FLOW = CORE_STAGE_ORDER.map((k) => STAGE_LABEL[k]).join(" → ");
 
 /**
  * 선택 확장활동 — 기본 수업을 마친 뒤 교사가 **골라서** 하는 것.
@@ -74,7 +74,7 @@ export interface OptionalExtension {
  * 교사용 문장의 출처 — 문장 · 활동 단위로 붙인다. 주차 상세 · 대시보드 · 교실 플레이어가 같은 값을 쓴다.
  *
  *   source   — PDF 원문 확인: 자료 PDF 에 적힌 문장 그대로 (tests 가 저장소의 원문 텍스트와 대조한다)
- *   edited   — 35분 체험 편집: 근거 자료(PDF · 이전 공식 가이드)를 35분 체험용으로 줄이거나 다듬은 문장
+ *   edited   — 웹 체험 편집: 근거 자료(PDF · 이전 공식 가이드)를 웹 체험 수업용으로 줄이거나 다듬은 문장
  *   proposal — 교사용 제안: 자료에 없어 새로 쓴 문장 (본사 검수 전)
  *   review   — 검수 필요: 자료에도 제안에도 없어 비어 있는 자리
  *
@@ -83,8 +83,9 @@ export interface OptionalExtension {
 export type TextOrigin = "source" | "edited" | "proposal" | "review";
 
 export const TEXT_ORIGIN_LABEL: Record<TextOrigin, string> = {
-  source: "PDF 원문",
-  edited: `${LESSON_TOTAL_MINUTES}분 체험 편집`,
+  // 자료 PDF 원문 · 공식 교사용 수업가이드 원문(14 · 17~24주) 모두 「자료 원문」
+  source: "자료 원문",
+  edited: "웹 체험 편집",
   proposal: "교사용 제안",
   review: "검수 필요",
 };
@@ -102,7 +103,7 @@ export interface Sourced {
  * ★ 원본 표기 두 가지는 지우지 않고 출처 기록으로만 들고 있다.
  */
 export interface LessonDuration {
-  /** 기본 수업 단계 합 — 24주 모두 LESSON_TIME.totalMinutes (35) */
+  /** 기본 수업 단계 합 — 24주 모두 LESSON_TIME.totalMinutes (45) */
   coreMinutes: number;
   /** 자료 PDF 의 시간 원문 (예: CORE 45분) */
   pdfDurationLabel: string;
@@ -161,8 +162,12 @@ export interface ClassStage {
 export interface OfficialWeekMeta {
   weekNo: number;
   partNo: 1 | 2 | 3;
-  /** 주차 제목 */
+  /** 주차 제목 (2026-10-29 승인 제목이 있으면 그것) */
   title: string;
+  /** 자료 PDF 주차 제목 — 지금 수업 내용의 출처 */
+  sourceTitle: string;
+  /** 제목은 바뀌었는데 새 교안이 아직 없다 → 화면에 「업데이트 교안 확인 필요」 */
+  lessonUpdatePending: boolean;
   /** 그림책 제목 — 주차 제목과 다를 수 있다 */
   storybook: string;
   growthKeyword: string;

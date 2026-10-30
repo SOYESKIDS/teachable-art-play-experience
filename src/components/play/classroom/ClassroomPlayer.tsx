@@ -16,6 +16,7 @@ import { CoverTitleNote, WeekArt } from "../WeekArt";
 import { OriginTag } from "../OriginTag";
 import { displayFallback } from "../display-font";
 import { LESSON_TIME } from "@/lib/weeks/lesson-time";
+import { LessonUpdateNotice } from "../LessonUpdateNotice";
 import { MATERIALS_ORIGIN, MEDIA_STATE_LABEL, SAFETY_ORIGIN, type CheckGroup } from "@/data/experience/lesson-labels";
 import type { StageExtra, StageExtras } from "@/data/experience/lesson-engine/stage-extras";
 import { LessonChecks } from "../LessonChecks";
@@ -320,8 +321,8 @@ export function ClassroomPlayer({ week, nextWeekNo, checks, extras }: { week: Ex
           <span className="tabular">
             {phase.kind === "stage" && current ? (
               <>
-                이 단계 {formatClock(stageElapsed)} / {current.minutes}분 · 전체 {formatClock(elapsed)}
-                {stageElapsed > current.minutes * 60 ? <span className="ml-1.5 text-pop-pink-deep">· 계획 시간 지남</span> : null}
+                {/* 단계별 분 배분은 확정 전이라 계획 시간을 보이지 않는다 — 지난 시간만 */}
+                이 단계 {formatClock(stageElapsed)} · 전체 {formatClock(elapsed)} / {LESSON_TIME.shortLabel}
               </>
             ) : (
               LESSON_TIME.label
@@ -472,7 +473,6 @@ export function ClassroomPlayer({ week, nextWeekNo, checks, extras }: { week: Ex
                       <span className="block text-[16px] font-bold text-pop-ink">{i + 1}. {s.title}</span>
                       <span className="block text-[14px] text-pop-ink-muted">{s.childLine}</span>
                     </span>
-                    <span className="text-[13px] font-bold text-pop-ink-muted">약 {s.minutes}분</span>
                   </button>
                 </li>
               ))}
@@ -524,11 +524,12 @@ function IntroScreen({ week, onStart, checks }: { week: ExperienceWeek; onStart:
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full bg-pop-yellow-soft px-3 py-1 text-[14px] font-bold text-pop-ink">#{week.growthKeyword}</span>
           <span className="rounded-full bg-pop-sky-soft px-3 py-1 text-[14px] font-bold text-pop-sky-deep">{LESSON_TIME.label}</span>
-          <span className="rounded-full bg-pop-cream px-3 py-1 text-[14px] font-bold text-pop-ink-muted">선택 확장활동 별도</span>
+          <LessonUpdateNotice week={week} compact />
         </div>
         <div>
           <h2 className={cx("font-display text-[40px] leading-tight text-pop-ink sm:text-[52px]", displayFallback(week.title))}>{week.title}</h2>
-          <p className="mt-1 text-[17px] font-bold text-pop-ink-muted">그림책 《{week.storybook}》</p>
+          <p className="mt-1 text-[17px] font-bold text-pop-ink-muted">동화책 《{week.storybook}》</p>
+          <LessonUpdateNotice week={week} className="mt-3" />
           <CoverTitleNote week={week} className="mt-1" />
         </div>
         <p className="text-[19px] font-medium leading-relaxed text-pop-ink">{week.coreMessage}</p>
@@ -576,7 +577,7 @@ function Fold({ title, badge, children, defaultOpen = false }: { title: string; 
 function TeacherPane({ week, stage, stageExtra, activeStep }: { week: ExperienceWeek; stage: ClassStage; stageExtra: StageExtra | null; activeStep: number | null }) {
   const extra: Record<StageKey, { label: string; text: string }[]> = {
     open: [{ label: "오늘 여는 말", text: week.body.goal }],
-    story: [{ label: "그림책 활동", text: week.body.story }],
+    story: [{ label: "동화책 활동", text: week.body.story }],
     move: [{ label: "신체표현", text: week.body.movement }, { label: "음악 · 리듬", text: week.body.music }],
     explore: [{ label: "탐색", text: week.body.explore }],
     make: [{ label: "미술 활동", text: week.body.art }, { label: "결과물", text: week.outcome ?? `${week.activitySummary} (결과물 정리 중)` }],
@@ -594,7 +595,6 @@ function TeacherPane({ week, stage, stageExtra, activeStep }: { week: Experience
           <span className="rounded-full bg-pop-ink px-2.5 py-0.5 font-sans text-[12px] font-extrabold tracking-wide text-white">교사용</span>
           {stage.title}
         </p>
-        <span className="shrink-0 rounded-full bg-pop-cream px-3 py-1 text-[14px] font-bold text-pop-ink">약 {stage.minutes}분</span>
       </div>
       {stageExtra?.goal ? (
         <p className="mt-3 rounded-2xl bg-pop-cream px-4 py-2.5 text-[14px] leading-relaxed text-pop-ink">
@@ -668,20 +668,17 @@ function TeacherPane({ week, stage, stageExtra, activeStep }: { week: Experience
         {stage.transition ? <p><span className="font-bold">다음 단계로 · </span>“{stage.transition}”</p> : null}
       </div>
       {/*
-        선택 확장활동 — 교사 화면에만 둔다. 교실 화면(아이들이 보는 쪽)에는 띄우지 않는다.
-        ★ 기본 수업 완료를 막지 않는다. 접힌 채로 두고 필요할 때만 연다.
+        연계 활동(워크북 · 작품 완성 · 가정연계) — 교사 화면에만 둔다. 교실 화면(아이들이 보는 쪽)에는 띄우지 않는다.
+        ★ 수업 완료를 막지 않는다. 접힌 채로 두고 필요할 때만 연다. 분 숫자는 보이지 않는다 (2026-10-29).
       */}
       {week.extensions.length ? (
         <div className="mt-4">
-          <Fold title={`선택 확장활동 ${week.extensions.length}개 (기본 수업 뒤)`}>
+          <Fold title={`연계 활동 ${week.extensions.length}개`}>
             <ul className="grid gap-3">
               {week.extensions.map((x) => (
                 <li key={x.key} className="rounded-2xl bg-pop-cream p-4">
                   <p className="flex flex-wrap items-center gap-2">
                     <span className="font-display text-[17px] text-pop-ink">{x.title}</span>
-                    <span className="rounded-full bg-white px-2 py-0.5 text-[12px] font-bold text-pop-ink-muted">
-                      {x.estimatedMinutes === null ? "예상 시간 검수 필요" : `약 ${x.estimatedMinutes}분`}
-                    </span>
                   </p>
                   <p className="mt-1.5 text-[15px] leading-relaxed text-pop-ink">{x.activity}</p>
                   <p className="mt-1.5 text-[13px] leading-relaxed text-pop-ink-muted">준비물 · {x.materials.slice(0, 4).join(" · ")}</p>
@@ -725,7 +722,7 @@ function TeacherPane({ week, stage, stageExtra, activeStep }: { week: Experience
             ) : null}
             {stageExtra.assets.length ? (
               <>
-                <p className="mt-3 text-[13px] font-bold text-pop-ink-muted">이 단계 자료 (PDF 그림 자리)</p>
+                <p className="mt-3 text-[13px] font-bold text-pop-ink-muted">이 단계 자료 (그림 자리)</p>
                 <ul className="mt-1.5 grid gap-1.5 text-[14px] leading-relaxed text-pop-ink">
                   {stageExtra.assets.map((a) => (
                     <li key={a.id}>

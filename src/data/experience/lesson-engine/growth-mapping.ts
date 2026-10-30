@@ -16,7 +16,8 @@ import type { TextOrigin } from "../types";
  */
 const RULES: readonly { code: GrowthMetricCode; re: RegExp }[] = [
   // 「이야기를 듣는가」는 듣기다 — 자기 설명이 아니다 (아래 listening 에서 참여 · 몰입으로 본다)
-  { code: "self_explanation", re: /말로|말하|이야기하|이야기를 나누|설명|소개|전하|대답|인사|발표|질문하|마음을 표현|따뜻한 말/ },
+  // 「전하」는 「안전하게」 안에도 있다 — 안전 문항이 자기 설명으로 잘못 가지 않게 「안」 뒤의 「전하」는 뺀다
+  { code: "self_explanation", re: /말로|말하|이야기하|이야기를 나누|설명|소개|(?<!안)전하|대답|인사|발표|질문하|마음을 표현|따뜻한 말/ },
   { code: "creative_attempt", re: /새로운|다른 방법|방법을 바꾸|바꿔|다시 시도|도전|실험|상상|예상|궁금|스스로 생각|자기만의|자신만의|나만의|이름을 붙이/ },
   // 「큰 소리로 부르기」 · 「재료를 나누어 쓰기」는 표현의 폭이 아니다 — 소리 · 재료는 표현 대상일 때만
   { code: "expression_variety", re: /색|재료로|재료를 골|다양한 재료|소리(를|의|에|가)|악기|리듬|다양|여러|꾸미|몸으로|동작|움직임|흉내|표정|흔적|골라 표현|자유롭게 표현/ },
@@ -31,10 +32,13 @@ export interface IndicatorLink {
   origin: TextOrigin;
 }
 
-const LISTENING = /듣는가|듣고|들어 주|귀 기울/;
+const LISTENING = /듣는가|듣고|들어 주|들으려|들으며|귀 기울/;
+/** 「소리를 듣는가」처럼 듣기만 묻는 문항 — 소리는 표현 대상이 아니라 듣는 대상이다 */
+const EXPRESSION_BEYOND_SOUND = /색|재료|악기|리듬|다양|여러|꾸미|몸으로|동작|움직임|흉내|표정|흔적|표현/;
 
 export function indicatorsFor(item: string): readonly GrowthMetricCode[] {
-  const hits = RULES.filter((r) => r.re.test(item)).map((r) => r.code);
+  let hits = RULES.filter((r) => r.re.test(item)).map((r) => r.code);
+  if (LISTENING.test(item) && !EXPRESSION_BEYOND_SOUND.test(item)) hits = hits.filter((c) => c !== "expression_variety");
   if (LISTENING.test(item) && !hits.includes("engagement_immersion")) hits.push("engagement_immersion");
   return hits.slice(0, 2);
 }

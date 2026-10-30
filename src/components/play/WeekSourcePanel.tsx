@@ -1,5 +1,5 @@
 import { weekSource, SOURCE_STATE_LABEL } from "@/data/experience/teacher-dashboard/source-register";
-import { LESSON_TIME, PDF_DURATION_LABEL, SOURCE_TIME_NOTE } from "@/lib/weeks/lesson-time";
+import { LESSON_TIME, PDF_DURATION_LABEL, PDF_TIME_NOTE } from "@/lib/weeks/lesson-time";
 
 /**
  * 주차 자료 상태 — 읽기 전용.
@@ -38,8 +38,13 @@ export function WeekSourcePanel({ weekNo }: { weekNo: number }) {
       </div>
 
       <p className="mt-2 text-[15px] leading-relaxed text-pop-ink-muted">
-        받은 주차 자료 PDF 와 이 화면을 맞대어 본 결과입니다.
-        {entry.state === "confirmed" ? null : (
+        {entry.state === "guide" ? "받은 공식 교사용 수업가이드와 이 화면을 맞대어 본 결과입니다." : "받은 주차 자료 PDF 와 이 화면을 맞대어 본 결과입니다."}
+        {entry.state === "confirmed" ? null : entry.state === "guide" ? (
+          <>
+            {" "}수업 내용은 가이드 원문이고,{" "}
+            <strong className="font-bold text-pop-ink">웹 화면에 옮긴 결과는 본사 확인 전입니다.</strong>
+          </>
+        ) : (
           <>
             {" "}자료가 아직 초안이라{" "}
             <strong className="font-bold text-pop-ink">공식 교안으로 확정된 내용이 아닙니다.</strong>
@@ -77,11 +82,11 @@ export function WeekSourcePanel({ weekNo }: { weekNo: number }) {
       <dl className="mt-5 flex flex-col gap-1.5 border-t border-pop-ink/5 pt-5 text-[13px] leading-relaxed text-pop-ink-muted">
         <div className="flex flex-wrap gap-x-2">
           <dt className="shrink-0 font-bold">{LESSON_TIME.label}</dt>
-          <dd>운영 기준입니다 ({LESSON_TIME.breakdown}). {LESSON_TIME.extensionNote}</dd>
+          <dd>운영 기준입니다. {LESSON_TIME.connectNote} 단계별 시간은 정하지 않았습니다.</dd>
         </div>
         <div className="flex flex-wrap gap-x-2">
           <dt className="shrink-0 font-bold">자료 표기 {PDF_DURATION_LABEL}</dt>
-          <dd>{SOURCE_TIME_NOTE}.</dd>
+          <dd>{PDF_TIME_NOTE}.</dd>
         </div>
         {entry.assetSlotsOnly ? (
           <div className="flex flex-wrap gap-x-2">

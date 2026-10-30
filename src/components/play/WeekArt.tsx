@@ -131,7 +131,7 @@ export function CoverTitleNote({ week, className }: { week: ExperienceWeek; clas
   if (!cover || cover === week.storybook) return null;
   return (
     <p className={cx("text-[13px] font-semibold leading-relaxed text-pop-ink-muted", className)}>
-      표지 글씨 《{cover}》 · 자료의 그림책 제목 《{week.storybook}》
+      표지 글씨 《{cover}》 · 자료의 동화책 제목 《{week.storybook}》
     </p>
   );
 }
@@ -149,7 +149,7 @@ function BookCover({ week, hero, className }: { week: ExperienceWeek; hero: bool
       className={cx("@container relative isolate overflow-hidden", className)}
       style={{ background: `linear-gradient(165deg, #fffdf6 0%, ${week.themeColor}1f 52%, ${week.themeColor}42 100%)` }}
       role="img"
-      aria-label={`${week.weekNo}주차 그림책 《${week.storybook}》 표지 그림`}
+      aria-label={`${week.weekNo}주차 동화책 《${week.storybook}》 표지 그림`}
     >
       <div aria-hidden="true" className="dots absolute inset-0 opacity-40" />
       {/* 책등 */}

@@ -11,7 +11,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const imp = (p) => import(pathToFileURL(join(ROOT, p)).href);
 const { launch } = await imp("scripts/cdp.mjs");
 const { EXPERIENCE_WEEKS } = await imp("src/data/experience/weeks.ts");
-const { weekDashboard } = await imp("src/data/experience/teacher-dashboard/week-dashboards.ts");
+const { weekDashboard, isOfficialGuideWeek } = await imp("src/data/experience/teacher-dashboard/week-dashboards.ts");
 const { pdfExtraOf } = await imp("src/data/experience/teacher-dashboard/week-pdf-extra.ts");
 const { weekProposal } = await imp("src/data/experience/teacher-dashboard/proposals.ts");
 
@@ -29,7 +29,8 @@ const imgs = () => page.eval(`[...document.querySelectorAll('img')].map(i=>i.cur
 /** 주차 데이터에서 화면에 꼭 보여야 할 원문 문장 */
 function expected(n) {
   const d = weekDashboard(n);
-  const x = pdfExtraOf(n);
+  // 14 · 17~24주는 공식 가이드 기준 수업 — PDF 추가 칸이 없다 (빈 묶음으로 본다)
+  const x = pdfExtraOf(n) ?? { artUse: [], artExamples: [], kitLead: [], kitMissions: [] };
   const p = weekProposal(n);
   const areas = {
     "2 그림책": [d.storybookTitle, d.storySummary, d.storyMessage, x.ebook],
@@ -78,7 +79,9 @@ for (const week of EXPERIENCE_WEEKS) {
   const gd = await page.eval(`(()=>({t:document.body.innerText, h2:[...document.querySelectorAll('article h2')].map(h=>h.textContent.trim()), robots:document.querySelector('meta[name=robots]')?.content??''}))()`);
   const gm = missingIn(gd.t, areas);
   r.guide = { missing: gm, h2: gd.h2 };
-  note(gd.h2.length === 13 && gm.length === 0 && /noindex/.test(gd.robots), `${n}주 상세 지도안 13개 절 · 원문 ${total}칸 · noindex`, JSON.stringify({ h2: gd.h2.length, gm, robots: gd.robots }));
+  // 14 · 17~24주도 13개 절 — 공식 가이드 원문 전문은 공개 체험에 싣지 않는다 (2026-10-29, 공개 요약만)
+  const wantH2 = 13;
+  note(gd.h2.length === wantH2 && !gd.t.includes("공식 교사용 수업가이드 원문") && gm.length === 0 && /noindex/.test(gd.robots), `${n}주 상세 지도안 ${wantH2}개 절 · 원문 ${total}칸 · noindex${isOfficialGuideWeek(n) ? " · 가이드 원문 영역 없음" : ""}`, JSON.stringify({ h2: gd.h2.length, gm, robots: gd.robots }));
   const stageTotal = week.stages.reduce((a, s) => a + s.steps.length, 0);
   const guideSteps = await page.eval(`[...document.querySelectorAll('article section')].find(s=>s.querySelector('h2')?.textContent.startsWith('11.'))?.querySelectorAll('ol ol li').length ?? 0`);
   note(guideSteps === stageTotal, `${n}주 지도안 단계별 진행 ${guideSteps}/${stageTotal}줄`);

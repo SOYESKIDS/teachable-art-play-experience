@@ -25,8 +25,8 @@ export function OriginLegend({ className }: { className?: string }) {
   return (
     <p className={cx("flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-pop-ink-muted", className)}>
       <span className="font-bold">문장 출처</span>
-      <OriginTag origin="source" /> 자료 PDF 문장 그대로
-      <OriginTag origin="edited" /> 근거 자료를 35분용으로 다듬음
+      <OriginTag origin="source" /> 자료(PDF · 공식 가이드) 문장 그대로
+      <OriginTag origin="edited" /> 근거 자료를 웹 체험 수업용으로 다듬음
       <OriginTag origin="proposal" /> 새로 쓴 제안 · 본사 검수 전
       <OriginTag origin="review" /> 아직 비어 있음
     </p>

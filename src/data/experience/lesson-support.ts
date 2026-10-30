@@ -24,11 +24,12 @@ export function weekGoals(week: ExperienceWeek): readonly Sourced[] {
   return [{ text: week.coreMessage, origin: "edited" }];
 }
 
-/** 통합 주차(8 · 16 · 24) — 앞 주차 결과물을 모아 완성한다. 이름은 화면 안내용(35분 체험 편집) */
+/** 통합 주차(8 · 16 · 24) — 앞 주차 결과물을 모아 완성한다. 이름은 화면 안내용(웹 체험 편집) */
 export const INTEGRATION_LABEL: Partial<Record<number, string>> = {
   8: "PART 1 통합 활동 — 4~7주차 결과물로 숲을 완성해요",
   16: "PART 2 통합 활동 — 9~15주차를 돌아보며 한 뼘 자란 나를 만나요",
-  24: "PART 3 마무리 활동 — 17~23주차를 모아 우리 지구를 완성해요",
+  // 24주 — 공식 가이드(17~23주 활동사진을 지구촌 판에 붙이기)
+  24: "PART 3 마무리 활동 — 17~23주 활동사진을 지구촌 판에 모아요",
 };
 
 /** 수업 시작 전 확인 — 목표 · 교구 · 공간 · 안전 · 앞 주차 결과물 · 발문 · 미디어 */
@@ -87,7 +88,7 @@ export function closingChecks(week: ExperienceWeek, next: ExperienceWeek | null)
   const nd = next ? weekDashboard(next.weekNo) : null;
   const nextItems: Sourced[] = [];
   if (next) {
-    nextItems.push({ text: `${next.weekNo}주차 「${next.title}」 — 그림책 《${next.storybook}》`, origin: "edited" });
+    nextItems.push({ text: `${next.weekNo}주차 「${next.title}」 — 동화책 《${next.storybook}》`, origin: "edited" });
     for (const k of (nd?.kitItems ?? []).slice(0, 3)) nextItems.push(src(`${next.weekNo}주차 교구 · ${k}`));
   }
   if (nextItems.length) groups.push({ key: "next", label: "다음 주차 준비", items: nextItems });
@@ -96,7 +97,7 @@ export function closingChecks(week: ExperienceWeek, next: ExperienceWeek | null)
   if (week.extensions.length) {
     groups.push({
       key: "extension",
-      label: "선택 확장활동 (기본 수업 뒤)",
+      label: "연계 활동 (워크북 · 작품 완성 · 가정연계)",
       items: week.extensions.map((x) => ({ text: x.title, origin: "edited" as const })),
     });
   }
@@ -113,8 +114,8 @@ export function mediaStatus(week: ExperienceWeek): readonly MediaRow[] {
   const ebook = [...week.body.materials, ...(d?.physicalMaterials ?? [])].some((m) => /E-?BOOK/i.test(m));
   return [
     week.image
-      ? { key: "cover", label: "그림책 표지", state: "ready", detail: "소예키즈 그림책 표지 (공개 사용 확인)" }
-      : { key: "cover", label: "그림책 표지", state: "pending", detail: "화면에는 자체 제작 그림을 씁니다" },
+      ? { key: "cover", label: "동화책 표지", state: "ready", detail: "소예키즈 동화책 표지 (공개 사용 확인)" }
+      : { key: "cover", label: "동화책 표지", state: "pending", detail: "화면에는 자체 제작 그림을 씁니다" },
     { key: "ebook", label: "E-BOOK", state: ebook ? "listed" : "pending", detail: ebook ? "준비물에 E-BOOK 이 적혀 있습니다 · 파일은 없습니다" : "자료에 없습니다" },
     { key: "audio", label: "동화 음원", state: d?.media.length ? "listed" : "pending", detail: d?.media.length ? `${d.media.length}개 이름이 자료에 있습니다` : "자료에 없습니다" },
     { key: "video", label: "뮤직비디오", state: "pending", detail: "영상 파일이 없습니다" },
